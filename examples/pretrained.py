@@ -13,3 +13,10 @@ if __name__ == "__main__":
     wav_input_16khz = torch.randn(1, 10000)
     z = model.feature_extractor(wav_input_16khz)
     c = model.feature_aggregator(z)
+
+
+    print(model)
+
+    # Freeze all the parameters in the network
+    for param in model.parameters():
+        param.requires_grad = False
