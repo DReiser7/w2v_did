@@ -1,7 +1,7 @@
-import torchaudio
 from torch.utils.data import Dataset
 import torch
 import pandas as pd
+import librosa
 
 
 class ExampleDataset(Dataset):
@@ -34,19 +34,6 @@ class ExampleDataset(Dataset):
 
         # format the file path and load the file
         path = self.root_dir + str(self.folders[idx]) + "/" + self.file_names[idx]
-        sound = torchaudio.load(path)
-        # load returns a tensor with the sound data and the sampling frequency (44.1kHz for UrbanSound8K)
-        sound_data = sound[0]
-        # downsample the audio to ~8kHz
-        temp_data = torch.zeros([160000, 1])  # tempData accounts for audio clips that are too short
-        if sound_data.numel() < 160000:
-            temp_data[:sound_data.numel()] = sound_data[:]
-        else:
-            temp_data[:] = sound_data[:160000]
+        sound = librosa.load(path, sr=16000,  mono=True,)
 
-        sound_data = temp_data
-        sound_formatted = torch.zeros([32000, 1])
-        sound_formatted[:32000] = sound_data[::5]  # take every fifth sample of soundData
-        sound_formatted = sound_formatted.permute(1, 0)
-
-        return sound_formatted, self.labels[idx]
+        return sound, self.labels[idx]
