@@ -3,7 +3,7 @@ import csv
 
 if __name__ == "__main__":
 
-    dir = '/data/dev/wav'
+    dir = './data/dev/wav'
 
     pathlist = Path(dir).glob('**/*.wav')
     folders = []
