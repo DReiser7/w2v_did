@@ -37,7 +37,7 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+    #os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 

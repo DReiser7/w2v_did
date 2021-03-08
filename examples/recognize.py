@@ -7,7 +7,8 @@ from fairseq import utils
 from fairseq.models import BaseFairseqModel
 from examples.speech_recognition.w2l_decoder import W2lViterbiDecoder
 from fairseq.data import Dictionary
-from fairseq.models.wav2vec.wav2vec2_asr import base_architecture, Wav2VecEncoder
+from fairseq.models.speech_to_text import base_architecture
+from fairseq.models.wav2vec.wav2vec2_asr import Wav2VecEncoder
 from wav2letter.decoder import CriterionType
 from wav2letter.criterion import CpuViterbiPath, get_data_ptr_as_bytes
 

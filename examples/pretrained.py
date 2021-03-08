@@ -4,7 +4,6 @@ import torch
 import fairseq
 import torch.nn as nn
 import torch.optim as optim
-import datasets
 import torchaudio
 
 from ExampleDataset import ExampleDataset
@@ -16,12 +15,11 @@ if __name__ == "__main__":
     model = model[0]
     model.eval()
 
-    wav_input_16khz = torch.randn(1, 10000)
-    z = model.feature_extractor(wav_input_16khz)
-    c = model.feature_aggregator(z)
-
-
     print(model)
+
+    wav_input_16khz = torch.randn(1, 1000)
+    #z = model.feature_extractor(wav_input_16khz)
+    #c = model.feature_aggregator(z)
 
     # Freeze all the parameters in the network
     for param in model.parameters():
