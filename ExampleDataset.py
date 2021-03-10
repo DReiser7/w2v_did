@@ -2,6 +2,8 @@ from torch.utils.data import Dataset
 import torch
 import pandas as pd
 import librosa
+import soundfile as sf
+import numpy as np
 
 
 class ExampleDataset(Dataset):
@@ -34,6 +36,9 @@ class ExampleDataset(Dataset):
 
         # format the file path and load the file
         path = self.root_dir + str(self.folders[idx]) + "/" + self.file_names[idx]
-        sound = librosa.load(path, sr=16000,  mono=True,)
+        sound = librosa.load(path, sr=16000,  mono=True)
+
+        speech, fs = sf.read(path)
+        sound = librosa.resample(speech, fs, 16000)
 
         return sound, self.labels[idx]
