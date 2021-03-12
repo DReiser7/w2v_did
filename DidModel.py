@@ -8,7 +8,7 @@ class DidModel(nn.Module):
     def __init__(self):
         super(DidModel, self).__init__()
 
-        cp_path = '../models/xlsr_53_56k.pt'  #
+        cp_path = './models/xlsr_53_56k.pt'  #
         model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
         self.model = model[0]
 
