@@ -1,7 +1,6 @@
 # !pip install fairseq
 # !pip install torch
 import torch
-import fairseq
 import torch.nn as nn
 import torch.optim as optim
 from torch.nn.utils.rnn import pack_sequence
@@ -39,19 +38,9 @@ def train(model, epoch):
 
 
 if __name__ == "__main__":
-
-    # cp_path = '../models/xlsr_53_56k.pt'  # TODO: https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt
-    # model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
-    # model = model[0]
-    # model.eval()
-
     model = DidModel()
     print(model)
     model = model.double()
-
-    wav_input_16khz = torch.randn(1, 1000)
-    # z = model.feature_extractor(wav_input_16khz)
-    # c = model.feature_aggregator(z)
 
     # Freeze all the parameters in the network
     # for param in model.parameters():
@@ -64,10 +53,6 @@ if __name__ == "__main__":
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, num_workers=2)
 
     # Define a Loss function and optimizer
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-
-
     optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
