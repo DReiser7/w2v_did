@@ -1,0 +1,147 @@
+import torch.nn as nn
+import fairseq
+from fairseq.modules import GradMultiply
+import torch
+
+
+class DidModel(nn.Module):
+    def __init__(self):
+        super(DidModel, self).__init__()
+
+        cp_path = '../models/xlsr_53_56k.pt'  #
+        model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
+        self.model = model[0]
+
+        self.classifier_layer = nn.Sequential(
+            nn.Linear(768, 5),
+            # nn.BatchNorm1d(512),
+            # nn.Dropout(0.2),
+            # nn.Linear(512, 256),
+            # nn.Linear(256, 5)
+        )
+
+    def forward(self, source, padding_mask=None, mask=True, features_only=False):
+
+        if self.model.feature_grad_mult > 0:
+            features = self.model.feature_extractor(source)
+            if self.model.feature_grad_mult != 1.0:
+                features = GradMultiply.apply(features, self.model.feature_grad_mult)
+        else:
+            with torch.no_grad():
+                features = self.model.feature_extractor(source)
+
+        features_pen = features.float().pow(2).mean()
+
+        features = features.transpose(1, 2)
+        features = self.model.layer_norm(features)
+        unmasked_features = features.clone()
+
+        if padding_mask is not None:
+            input_lengths = (1 - padding_mask.long()).sum(-1)
+            # apply conv formula to get real output_lengths
+            output_lengths = self.model._get_feat_extract_output_lengths(input_lengths)
+
+            padding_mask = torch.zeros(
+                features.shape[:2], dtype=features.dtype, device=features.device
+            )
+
+            # these two operations makes sure that all values
+            # before the output lengths indices are attended to
+            padding_mask[(torch.arange(padding_mask.shape[0], device=padding_mask.device), output_lengths - 1)] = 1
+            padding_mask = (1 - padding_mask.flip([-1]).cumsum(-1).flip([-1])).bool()
+
+        if self.model.post_extract_proj is not None:
+            features = self.model.post_extract_proj(features)
+
+        features = self.model.dropout_input(features)
+        unmasked_features = self.model.dropout_features(unmasked_features)
+
+        num_vars = None
+        code_ppl = None
+        prob_ppl = None
+        curr_temp = None
+
+        if self.model.input_quantizer:
+            q = self.model.input_quantizer(features, produce_targets=False)
+            features = q["x"]
+            num_vars = q["num_vars"]
+            code_ppl = q["code_perplexity"]
+            prob_ppl = q["prob_perplexity"]
+            curr_temp = q["temp"]
+            features = self.model.project_inp(features)
+
+        if mask:
+            x, mask_indices = self.model.apply_mask(features, padding_mask)
+            if mask_indices is not None:
+                y = unmasked_features[mask_indices].view(
+                    unmasked_features.size(0), -1, unmasked_features.size(-1)
+                )
+            else:
+                y = unmasked_features
+        else:
+            x = features
+            y = unmasked_features
+            mask_indices = None
+
+        x = self.model.encoder(x, padding_mask=padding_mask)
+
+        if features_only:
+            return {"x": x, "padding_mask": padding_mask}
+
+        if self.model.quantizer:
+            q = self.model.quantizer(y, produce_targets=False)
+            y = q["x"]
+            num_vars = q["num_vars"]
+            code_ppl = q["code_perplexity"]
+            prob_ppl = q["prob_perplexity"]
+            curr_temp = q["temp"]
+
+            y = self.model.project_q(y)
+
+            if self.model.negatives_from_everywhere:
+                neg_cands, *_ = self.model.quantizer(unmasked_features, produce_targets=False)
+                negs, _ = self.model.sample_negatives(neg_cands, y.size(1))
+                negs = self.model.project_q(negs)
+
+            else:
+                negs, _ = self.model.sample_negatives(y, y.size(1))
+
+            if self.model.codebook_negatives > 0:
+                cb_negs = self.model.quantizer.sample_from_codebook(
+                    y.size(0) * y.size(1), self.model.codebook_negatives
+                )
+                cb_negs = cb_negs.view(
+                    self.model.codebook_negatives, y.size(0), y.size(1), -1
+                )  # order doesnt matter
+                cb_negs = self.model.project_q(cb_negs)
+                negs = torch.cat([negs, cb_negs], dim=0)
+        else:
+            y = self.model.project_q(y)
+
+            if self.model.negatives_from_everywhere:
+                negs, _ = self.model.sample_negatives(unmasked_features, y.size(1))
+                negs = self.model.project_q(negs)
+            else:
+                negs, _ = self.model.sample_negatives(y, y.size(1))
+
+        x = x[mask_indices].view(x.size(0), -1, x.size(-1))
+
+        if self.model.target_glu:
+            y = self.model.target_glu(y)
+            negs = self.model.target_glu(negs)
+
+        x = self.model.final_proj(x)
+        # x = self.model.compute_preds(x, y, negs)
+
+        x = self.classifier_layer(x)
+
+        result = {"x": x, "padding_mask": padding_mask, "features_pen": features_pen}
+
+        if prob_ppl is not None:
+            result["prob_perplexity"] = prob_ppl
+            result["code_perplexity"] = code_ppl
+            result["num_vars"] = num_vars
+            result["temp"] = curr_temp
+
+        return result
+    
