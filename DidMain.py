@@ -13,11 +13,11 @@ if __name__ == "__main__":
     kwargs = {'num_workers': 1, 'pin_memory': True} if device == 'cuda' else {}  # needed for using datasets on gpu
 
     # load data
-    csv_path = './data/dev/wav/metadata.csv'
-    file_path = './data/dev/wav/'
+    csv_path = './data/dev/segmented/metadata.csv'
+    file_path = './data/dev/segmented/'
 
     train_set = ExampleDataset(csv_path, file_path)
-    train_loader = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, **kwargs)
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=2, shuffle=True, **kwargs)
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
     model = DidModel()
@@ -36,5 +36,6 @@ if __name__ == "__main__":
         scheduler.step()
         runner.train(train_loader=train_loader, epoch=epoch, log_interval=log_interval)
         # runner.test(test_loader=test_loader)
+        # todo maybe safe model after every epoch
 
     print('Finished Training')
