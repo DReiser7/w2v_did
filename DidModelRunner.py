@@ -23,8 +23,8 @@ class DidModelRunner:
             target = target.to(self.device)
             data = data.requires_grad_()  # set requires_grad to True for training
             output = self.model(data)
-            output = output['x'].permute(1, 0, 2)  # original output dimensions are batchSizex1x10
-            loss = F.nll_loss(output[0], target)  # the loss functions expects a batchSizex10 input
+            output = output['x']
+            loss = F.nll_loss(output, target)  # the loss functions expects a batchSizex5 input
             loss.backward()
             self.optimizer.step()
             if batch_idx % log_interval == 0:  # print training stats

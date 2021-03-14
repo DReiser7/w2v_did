@@ -5,19 +5,23 @@ import torch
 
 
 class DidModel(nn.Module):
-    def __init__(self):
+    def __init__(self, freeze_fairseq=False):
         super(DidModel, self).__init__()
 
-        cp_path = './models/xlsr_53_56k.pt'  #
+        cp_path = './models/xlsr_53_56k.pt'
         model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
         self.model = model[0]
 
+        if freeze_fairseq:
+            for param in self.model.parameters():
+                param.requires_grad = False
+
         self.classifier_layer = nn.Sequential(
-            nn.Linear(768, 5),
-            # nn.BatchNorm1d(512),
-            # nn.Dropout(0.2),
-            # nn.Linear(512, 256),
-            # nn.Linear(256, 5)
+            nn.Linear(768, 512),
+            nn.BatchNorm1d(512),
+            nn.Dropout(0.2),
+            nn.Linear(512, 256),
+            nn.Linear(256, 5)
         )
 
     def forward(self, source, padding_mask=None, mask=True, features_only=False):
@@ -133,7 +137,9 @@ class DidModel(nn.Module):
         x = self.model.final_proj(x)
         # x = self.model.compute_preds(x, y, negs)
 
-        x = self.classifier_layer(x)
+        # reduce dimension with mean
+        x_reduced = torch.mean(x, -2)
+        x = self.classifier_layer(x_reduced)
 
         result = {"x": x, "padding_mask": padding_mask, "features_pen": features_pen}
 
@@ -144,4 +150,3 @@ class DidModel(nn.Module):
             result["temp"] = curr_temp
 
         return result
-    

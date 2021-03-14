@@ -17,10 +17,12 @@ if __name__ == "__main__":
     file_path = './data/dev/segmented/'
 
     train_set = ExampleDataset(csv_path, file_path)
+    print("Train set size: " + str(len(train_set)))
+
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=2, shuffle=True, **kwargs)
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
-    model = DidModel()
+    model = DidModel(freeze_fairseq=True)
 
     # Define a Loss function and optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
@@ -29,13 +31,13 @@ if __name__ == "__main__":
     # create runner for training and testing
     runner = DidModelRunner(device=device, model=model, optimizer=optimizer, scheduler=scheduler)
 
-    log_interval = 20
+    log_interval = 1
     for epoch in range(1, 41):
         if epoch == 31:
             print("First round of training complete. Setting learn rate to 0.001.")
-        scheduler.step()
         runner.train(train_loader=train_loader, epoch=epoch, log_interval=log_interval)
         # runner.test(test_loader=test_loader)
+        scheduler.step()
         # todo maybe safe model after every epoch
 
     print('Finished Training')
