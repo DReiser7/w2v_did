@@ -2,10 +2,11 @@ import torch.nn as nn
 import fairseq
 from fairseq.modules import GradMultiply
 import torch
+import torch.nn.functional as F
 
 
 class DidModel(nn.Module):
-    def __init__(self, freeze_fairseq=False):
+    def __init__(self, num_classes, freeze_fairseq=False):
         super(DidModel, self).__init__()
 
         cp_path = './models/xlsr_53_56k.pt'
@@ -21,7 +22,7 @@ class DidModel(nn.Module):
             nn.BatchNorm1d(512),
             nn.Dropout(0.2),
             nn.Linear(512, 256),
-            nn.Linear(256, 5)
+            nn.Linear(256, num_classes)
         )
 
     def forward(self, source, padding_mask=None, mask=True, features_only=False):
@@ -140,8 +141,9 @@ class DidModel(nn.Module):
         # reduce dimension with mean
         x_reduced = torch.mean(x, -2)
         x = self.classifier_layer(x_reduced)
+        softmax = F.softmax(x, dim=1)
 
-        result = {"x": x, "padding_mask": padding_mask, "features_pen": features_pen}
+        result = {"x": x, "softmax": softmax, "padding_mask": padding_mask, "features_pen": features_pen}
 
         if prob_ppl is not None:
             result["prob_perplexity"] = prob_ppl

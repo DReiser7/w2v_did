@@ -7,7 +7,7 @@ from torch.nn.utils.rnn import pack_sequence
 import torch.nn.functional as F
 
 
-from ExampleDataset import ExampleDataset
+from DidDataset import DidDataset
 from DidModel import DidModel
 
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     csv_path = '../data/dev/wav/metadata.csv'
     file_path = '../data/dev/wav/'
 
-    train_set = ExampleDataset(csv_path, file_path)
+    train_set = DidDataset(csv_path, file_path)
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, num_workers=2)
 
     # Define a Loss function and optimizer

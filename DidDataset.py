@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 import numpy as np
 
 
-class ExampleDataset(Dataset):
+class DidDataset(Dataset):
     """ExampleDataset."""
 
     # Argument List

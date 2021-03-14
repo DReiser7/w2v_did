@@ -3,7 +3,7 @@ import torch.optim as optim
 
 from DidModel import DidModel
 from DidModelRunner import DidModelRunner
-from ExampleDataset import ExampleDataset
+from DidDataset import DidDataset
 
 if __name__ == "__main__":
     # get device on which training should run
@@ -16,13 +16,13 @@ if __name__ == "__main__":
     csv_path = './data/dev/segmented/metadata.csv'
     file_path = './data/dev/segmented/'
 
-    train_set = ExampleDataset(csv_path, file_path)
+    train_set = DidDataset(csv_path, file_path)
     print("Train set size: " + str(len(train_set)))
 
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=2, shuffle=True, **kwargs)
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
-    model = DidModel(freeze_fairseq=True)
+    model = DidModel(num_classes=5, freeze_fairseq=True)
 
     # Define a Loss function and optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
