@@ -9,4 +9,5 @@ RUN pip install torch
 RUN pip install soundfile
 RUN pip install fairseq
 
+
 CMD [ "python", "./DidMain.py" ]
