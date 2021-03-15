@@ -13,15 +13,15 @@ if __name__ == "__main__":
     kwargs = {'num_workers': 1, 'pin_memory': True} if device == 'cuda' else {}  # needed for using datasets on gpu
 
     # build train data
-    csv_path_train = './data/dev/segmented/metadata.csv'
     file_path_train = './data/dev/segmented/'
+    csv_path_train = file_path_train + 'metadata.csv'
 
     train_set = DidDataset(csv_path_train, file_path_train)
     print("Train set size: " + str(len(train_set)))
 
     # build test data
-    csv_path_test = './data/dev/segmented/metadata.csv'
     file_path_test = './data/dev/segmented/'
+    csv_path_test = file_path_test + 'metadata.csv'
 
     test_set = DidDataset(csv_path_test, file_path_test)
     print("Test set size: " + str(len(test_set)))
