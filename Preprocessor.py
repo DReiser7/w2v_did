@@ -50,11 +50,12 @@ def create_metadata_csv(dir):
 if __name__ == "__main__":
     print('start preprocessing ...')
     do_segment = True
-    dir = './data/dev/wav'
+    dir_wav = './data/dev/wav'
+    dir_segmented = './data/dev/segmented'
 
     resample_and_segment_audio(dir, do_segment)
-    create_metadata_csv(dir)
+    create_metadata_csv(dir_wav)
     if do_segment:
-        create_metadata_csv('C:/workspaces/BA/Corpora/Arabic/train/segmented')
+        create_metadata_csv(dir_segmented)
 
     print('... preprocessing done!')
