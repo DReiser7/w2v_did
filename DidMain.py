@@ -36,6 +36,7 @@ if __name__ == "__main__":
         if epoch == 31:
             print("First round of training complete. Setting learn rate to 0.001.")
         runner.train(train_loader=train_loader, epoch=epoch, log_interval=log_interval)
+
         # runner.test(test_loader=test_loader)
         scheduler.step()
         # todo maybe safe model after every epoch

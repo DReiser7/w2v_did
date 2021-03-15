@@ -27,6 +27,7 @@ class DidModel(nn.Module):
 
     def forward(self, source, padding_mask=None, mask=True, features_only=False):
 
+        # FAIRSEQ CODE wav2vec.py start
         if self.model.feature_grad_mult > 0:
             features = self.model.feature_extractor(source)
             if self.model.feature_grad_mult != 1.0:
@@ -137,6 +138,8 @@ class DidModel(nn.Module):
 
         x = self.model.final_proj(x)
         # x = self.model.compute_preds(x, y, negs)
+
+        ## END FAIRSEQ CODE
 
         # reduce dimension with mean
         x_reduced = torch.mean(x, -2)
