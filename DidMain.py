@@ -53,4 +53,3 @@ if __name__ == "__main__":
             torch.save(model.state_dict(), model_path)
 
     print('Finished Training')
-
