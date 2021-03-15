@@ -9,6 +9,7 @@ def resample_and_segment_audio(dir, do_segment=False):
 
     for path in pathlist:
         absolute_path = str(path)
+        print('preprocessing ' + absolute_path + ' ...')
 
         # do resampling on root path
         speech, fs = sf.read(path)
@@ -32,6 +33,7 @@ def create_metadata_csv(dir):
     pathlist = Path(dir).glob('**/*.wav')
     folders = []
 
+    print('writing metadata: ', dir + '\metadata.csv')
     with open(dir + '\metadata.csv', 'w', newline='') as csvfile:
         for path in pathlist:
             # because path is object not string
@@ -46,10 +48,13 @@ def create_metadata_csv(dir):
 
 
 if __name__ == "__main__":
+    print('start preprocessing ...')
     do_segment = True
     dir = './data/dev/wav'
 
     resample_and_segment_audio(dir, do_segment)
     create_metadata_csv(dir)
     if do_segment:
-        create_metadata_csv('./data/dev/segmented')
+        create_metadata_csv('C:/workspaces/BA/Corpora/Arabic/train/segmented')
+
+    print('... preprocessing done!')
