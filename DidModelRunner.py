@@ -31,7 +31,7 @@ class DidModelRunner:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch, batch_idx * len(data),
                                                                                len(train_loader.dataset),
                                                                                100. * batch_idx / len(train_loader),
-                                                                               loss))
+                                                                               loss.detach().float()))
 
     def test(self, test_loader):
         self.model.eval()
@@ -40,8 +40,8 @@ class DidModelRunner:
             data = data.to(self.device)
             target = target.to(self.device)
             output = self.model(data)
-            output = output.permute(1, 0, 2)
-            pred = output.max(2)[1]  # get the index of the max log-probability
+            output = output['x']
+            pred = output.max(1)[1]  # get the index of the max log-probability
             correct += pred.eq(target).cpu().sum().item()
         print('\nTest set: Accuracy: {}/{} ({:.0f}%)\n'.format(correct, len(test_loader.dataset),
                                                                100. * correct / len(test_loader.dataset)))

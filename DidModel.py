@@ -1,8 +1,8 @@
-import torch.nn as nn
 import fairseq
-from fairseq.modules import GradMultiply
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
+from fairseq.modules import GradMultiply
 
 
 class DidModel(nn.Module):
