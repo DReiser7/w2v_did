@@ -146,12 +146,6 @@ class DidModel(nn.Module):
         x = self.classifier_layer(x_reduced)
         softmax = F.softmax(x, dim=1)
 
-        result = {"x": x, "softmax": softmax, "padding_mask": padding_mask, "features_pen": features_pen}
-
-        if prob_ppl is not None:
-            result["prob_perplexity"] = prob_ppl
-            result["code_perplexity"] = code_ppl
-            result["num_vars"] = num_vars
-            result["temp"] = curr_temp
+        result = {"x": x, "softmax": softmax}
 
         return result
