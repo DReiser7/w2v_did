@@ -3,3 +3,4 @@ venv
 models
 examples/pytorch/data
 data
+__pycache__

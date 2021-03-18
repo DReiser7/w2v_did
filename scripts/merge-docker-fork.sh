@@ -1,8 +1,9 @@
 # enter into script folder with git bash and run over " start merge-docker-fork.sh "
 
-cd ../../
+cd ../
+cd ../
 
-if [ ! -d "/f_w2v_did" ]
+if [ -d "/f_w2v_did" ]
 then
    mkdir f_w2v_did
    cd f_w2v_did
@@ -16,5 +17,4 @@ git fetch upstream
 git merge upstream/master
 git push
 
-echo "type something "
-input
+read  -n 1 -p "Input Selection:" mainmenuinput
