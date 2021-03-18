@@ -17,4 +17,7 @@ git fetch upstream
 git merge upstream/master
 git push
 
-read  -n 1 -p "Input Selection:" mainmenuinput
+
+echo "pull docker img over  [ docker pull fiviapas/w2v_did ]"
+echo "run img over          [ docker run -d w2v_did ]"
+read  -n 1 -p "" mainmenuinput
