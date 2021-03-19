@@ -17,7 +17,7 @@ git fetch upstream
 git merge upstream/master
 git push
 
-
+echo "build local img       [ docker build -t w2v_did ]"
 echo "pull docker img over  [ docker pull fiviapas/w2v_did ]"
 echo "run img over          [ docker run -d w2v_did ]"
 read  -n 1 -p "" mainmenuinput
