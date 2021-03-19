@@ -6,24 +6,36 @@ from fairseq.modules import GradMultiply
 
 
 class DidModel(nn.Module):
-    def __init__(self, num_classes, freeze_fairseq=False):
+    def __init__(self, num_classes, freeze_fairseq=False, model_small=False):
         super(DidModel, self).__init__()
 
-        cp_path = './models/xlsr_53_56k.pt'
+        cp_path = ""
+        if model_small:
+            cp_path = './models/wav2vec_small.pt'
+        else:
+            cp_path = './models/xlsr_53_56k.pt'
+
         model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
         self.model = model[0]
 
         if freeze_fairseq:
             for param in self.model.parameters():
                 param.requires_grad = False
-
-        self.classifier_layer = nn.Sequential(
-            nn.Linear(768, 512),
-            nn.BatchNorm1d(512),
-            nn.Dropout(0.2),
-            nn.Linear(512, 256),
-            nn.Linear(256, num_classes)
-        )
+        if model_small:
+            self.classifier_layer = nn.Sequential(
+                nn.Linear(256, 256),
+                # nn.BatchNorm1d(256),
+                nn.Dropout(0.2),
+                nn.Linear(256, num_classes)
+            )
+        else:
+            self.classifier_layer = nn.Sequential(
+                nn.Linear(768, 512),
+                nn.BatchNorm1d(512),
+                nn.Dropout(0.2),
+                nn.Linear(512, 256),
+                nn.Linear(256, num_classes)
+            )
 
     def forward(self, source, padding_mask=None, mask=True, features_only=False):
 
