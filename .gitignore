@@ -1,6 +1,6 @@
 .idea
 venv
-models
+data/models
 examples/pytorch/data
 data
 __pycache__

@@ -93,7 +93,7 @@ if __name__ == "__main__":
     print('Finished Training')
 
     # Let’s quickly save our trained model
-    PATH = '../../models/cifar_net.pth'
+    PATH = '../../data/models/cifar_net.pth'
     torch.save(net.state_dict(), PATH)
 
     # Test the network on the test data
