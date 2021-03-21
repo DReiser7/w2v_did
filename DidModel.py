@@ -2,11 +2,12 @@ import fairseq
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import time
 from fairseq.modules import GradMultiply
 
 
 class DidModel(nn.Module):
-    def __init__(self, model_path, num_classes, freeze_fairseq=False, model_small=True):
+    def __init__(self, model_path, num_classes, freeze_fairseq=False, model_small=False):
         super(DidModel, self).__init__()
 
         cp_path = ""
@@ -18,13 +19,18 @@ class DidModel(nn.Module):
         else:
             cp_path = model_path
 
+        print("Loading model: " + cp_path)
+        t = time.time()
         model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
+        print("Model loaded - duration: " + (time.time() - t))
         self.model = model[0]
 
         if freeze_fairseq:
+            print("Freezing fairseq layers")
             for param in self.model.parameters():
                 param.requires_grad = False
         if model_small:
+            print("Chose Classifier-Layer for model_small")
             self.classifier_layer = nn.Sequential(
                 nn.Linear(256, 256),
                 # nn.BatchNorm1d(256),
@@ -32,6 +38,7 @@ class DidModel(nn.Module):
                 nn.Linear(256, num_classes)
             )
         else:
+            print("Chose Classifier-Layer for XLSR")
             self.classifier_layer = nn.Sequential(
                 nn.Linear(768, 512),
                 nn.BatchNorm1d(512),
