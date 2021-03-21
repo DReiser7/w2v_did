@@ -40,7 +40,7 @@ class DidDataset(Dataset):
         speech, fs = sf.read(path)
         # sound = self.transform(path)
 
-        return speech, self.labels[idx]
+        return np.array(speech), np.array(self.labels[idx])
 
     def transform(self, path):
         dict = {}
