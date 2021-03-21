@@ -6,14 +6,17 @@ from fairseq.modules import GradMultiply
 
 
 class DidModel(nn.Module):
-    def __init__(self, num_classes, freeze_fairseq=False, model_small=True):
+    def __init__(self, model_path, num_classes, freeze_fairseq=False, model_small=True):
         super(DidModel, self).__init__()
 
         cp_path = ""
-        if model_small:
-            cp_path = 'data/models/wav2vec_small.pt'
+        if model_path is None:
+            if model_small:
+                cp_path = 'data/models/wav2vec_small.pt'
+            else:
+                cp_path = 'data/models/xlsr_53_56k.pt'
         else:
-            cp_path = 'data/models/xlsr_53_56k.pt'
+            cp_path = model_path
 
         model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
         self.model = model[0]

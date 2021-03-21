@@ -13,4 +13,5 @@ RUN pip install soundfile
 RUN pip install torch
 RUN pip install fairseq
 
-CMD [ "python", "./DidMain.py" ]
+#CMD [ "python", "./DidMain.py" ]
+CMD python  ./DidMain.py $TRAIN $TEST $MODEL

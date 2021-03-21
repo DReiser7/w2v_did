@@ -1,11 +1,16 @@
 import torch
 import torch.optim as optim
+import sys
 
 from DidDataset import DidDataset
 from DidModel import DidModel
 from DidModelRunner import DidModelRunner
 
 if __name__ == "__main__":
+    file_path_train = sys.argv[0]
+    file_path_test = sys.argv[1]
+    model_path = sys.argv[3]
+
     # get device on which training should run
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -13,14 +18,14 @@ if __name__ == "__main__":
     kwargs = {'num_workers': 1, 'pin_memory': True} if device == 'cuda' else {}  # needed for using datasets on gpu
 
     # build train data
-    file_path_train = './data/dev/segmented/'
+    # file_path_train = './data/dev/segmented/'
     csv_path_train = file_path_train + 'metadata.csv'
 
     train_set = DidDataset(csv_path_train, file_path_train)
     print("Train set size: " + str(len(train_set)))
 
     # build test data
-    file_path_test = './data/dev/segmented/'
+    # file_path_test = './data/dev/segmented/'
     csv_path_test = file_path_test + 'metadata.csv'
 
     test_set = DidDataset(csv_path_test, file_path_test)
@@ -31,7 +36,7 @@ if __name__ == "__main__":
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=128, shuffle=True, **kwargs)
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
-    model = DidModel(num_classes=5, freeze_fairseq=True)
+    model = DidModel(model_path=model_path, num_classes=5, freeze_fairseq=True)
 
     # Define a Loss function and optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)

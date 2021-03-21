@@ -21,4 +21,5 @@ git push
 echo "build local img       [ docker build -t w2v_did ]"
 echo "pull docker img over  [ docker pull fiviapas/w2v_did ]"
 echo "run img over          [ docker run -d fiviapas/w2v_did ]"
+echo 'run local img over    [ docker run -d -e "TEST=/data/dev/segmented" -e "TRAIN=/data/dev/segmented/" -e "MODEL=/data/models/wav2vec_small.pt"  -v //c/workarea/w2v_did/data:/data  fiviapas/w2v_did ]'
 read  -n 1 -p "" mainmenuinput
