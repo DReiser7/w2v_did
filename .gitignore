@@ -4,3 +4,4 @@ data/models
 examples/pytorch/data
 data
 __pycache__
+/temp/

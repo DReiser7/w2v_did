@@ -14,4 +14,5 @@ RUN pip install torch
 RUN pip install fairseq
 
 #CMD [ "python", "./DidMain.py" ]
-CMD python  ./DidMain.py $TRAIN $TEST $MODEL
+CMD ["sh", "-c", "python ./DidMain.py  $TRAIN $TEST $MODEL"]
+#CMD python DidMain.py $TRAIN $TEST $MODEL

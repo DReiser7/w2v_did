@@ -7,10 +7,13 @@ from DidModel import DidModel
 from DidModelRunner import DidModelRunner
 
 if __name__ == "__main__":
-    file_path_train = sys.argv[0]
-    file_path_test = sys.argv[1]
+    print(sys.argv)
+    file_path_train = sys.argv[1]
+    file_path_test = sys.argv[2]
     model_path = sys.argv[3]
-
+    print(file_path_train)
+    print(file_path_test)
+    print(model_path)
     # get device on which training should run
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
