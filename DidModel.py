@@ -22,7 +22,7 @@ class DidModel(nn.Module):
         print("Loading model: " + cp_path)
         t = time.time()
         model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
-        print("Model loaded - duration: " + (time.time() - t))
+        print("Model loaded - duration: " + str((time.time() - t)))
         self.model = model[0]
 
         if freeze_fairseq:
