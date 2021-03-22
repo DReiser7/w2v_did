@@ -20,5 +20,5 @@ RUN git clone https://github.com/pytorch/fairseq
 RUN pip install --editable ./fairseq/
 
 #CMD [ "python", "./DidMain.py" ]
-CMD ["sh", "-c", "python ./DidMain.py  $TRAIN $TEST $MODEL $EPOCHS"]
+CMD ["sh", "-c", "python ./DidMain.py  $TRAIN $TEST $MODEL $EPOCHS $BSIZE"]
 #CMD python DidMain.py $TRAIN $TEST $MODEL

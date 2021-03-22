@@ -13,6 +13,7 @@ if __name__ == "__main__":
     file_path_test = sys.argv[2]
     model_path = sys.argv[3]
     epochs = int(sys.argv[4])
+    batch_size = int(sys.argv[5])
     # use_hugginface = sys.argv[4]
     print(file_path_train)
     print(file_path_test)
@@ -41,8 +42,8 @@ if __name__ == "__main__":
     print("Test set size: " + str(len(test_set)))
 
     # build data loaders
-    train_loader = torch.utils.data.DataLoader(train_set, batch_size=16, shuffle=True, **kwargs)
-    test_loader = torch.utils.data.DataLoader(test_set, batch_size=16, shuffle=True, **kwargs)
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True, **kwargs)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuffle=True, **kwargs)
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
     model = DidModel(model_path=model_path, num_classes=5, freeze_fairseq=True)
