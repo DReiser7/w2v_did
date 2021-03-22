@@ -12,9 +12,14 @@ if __name__ == "__main__":
     file_path_train = sys.argv[1]
     file_path_test = sys.argv[2]
     model_path = sys.argv[3]
+    epochs = int(sys.argv[4])
+    # use_hugginface = sys.argv[4]
     print(file_path_train)
     print(file_path_test)
     print(model_path)
+    print(epochs)
+    # print(use_hugginface)
+
     # get device on which training should run
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -49,10 +54,10 @@ if __name__ == "__main__":
     # create runner for training and testing
     runner = DidModelRunner(device=device, model=model, optimizer=optimizer, scheduler=scheduler)
 
-    log_interval = 20
-    for epoch in range(1, 41):
+    log_interval = 5
+    for epoch in range(1, epochs):
         if epoch == 31:
-            print("First round of training complete. Setting learn rate to 0.001.")
+            print("First round of training complete")
         runner.train(train_loader=train_loader, epoch=epoch, log_interval=log_interval)
         runner.test(test_loader=test_loader)
         scheduler.step()
