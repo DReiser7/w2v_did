@@ -4,6 +4,7 @@ import sys
 
 from DidDataset import DidDataset
 from DidModel import DidModel
+from DidModelHuggingFace import DidModelHuggingFace
 from DidModelRunner import DidModelRunner
 
 if __name__ == "__main__":
@@ -35,8 +36,8 @@ if __name__ == "__main__":
     print("Test set size: " + str(len(test_set)))
 
     # build data loaders
-    train_loader = torch.utils.data.DataLoader(train_set, batch_size=128, shuffle=True, **kwargs)
-    test_loader = torch.utils.data.DataLoader(test_set, batch_size=128, shuffle=True, **kwargs)
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=16, shuffle=True, **kwargs)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=16, shuffle=True, **kwargs)
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
     model = DidModel(model_path=model_path, num_classes=5, freeze_fairseq=True)
