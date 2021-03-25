@@ -22,4 +22,5 @@ running on GPULAND:
 `docker run -d --gpus all -e "TEST=/data/test_segmented/" -e "TRAIN=/data/train_segmented/" -e "MODEL=./data/models/xlsr_53_56k.pt" -e "EPOCHS=10" -e "BSIZE=15" -v "$(pwd)"/data:/data fiviapas/w2v_did`
 
 
-running on GPU-Cluster
+running on GPU-Cluster **not working yet**
+srun --ntasks=1 --cpus-per-task=4 --mem=12G --gres=gpu:1 singularity exec ./w2v_did.simg --gpus all -e "TEST=../data/reisedom/data/test_segmented/" -e "TRAIN=../data/reisedom/data/train_segmented/" -e "MODEL=../data/reisedom/data/models/xlsr_53_56k.pt" -e "EPOCHS=10" -e "BSIZE=15" -v ../data/reisedom/data:/data fiviapas/w2v_did
