@@ -23,3 +23,8 @@ running on GPULAND:
 
 
 running on GPU-Cluster
+
+# GPUCLuster ZHAW
+
+pulling image:
+`srun --ntasks=1 --cpus-per-task=4 --mem=8G  singularity pull docker://fiviapas/w2v_did`
