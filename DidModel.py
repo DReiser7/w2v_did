@@ -7,7 +7,7 @@ from fairseq.modules import GradMultiply
 
 
 class DidModel(nn.Module):
-    def __init__(self, model_path, num_classes, freeze_fairseq=False, model_small=False):
+    def __init__(self, model_path, num_classes, freeze_fairseq=False, model_small=True):
         super(DidModel, self).__init__()
 
         cp_path = ""
