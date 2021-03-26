@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     for epoch in range(config.epochs):
         closs = runner.train(train_loader=train_loader, epoch=epoch, log_interval=log_interval)
-        wandb.log({"loss": closs / config.batch_size})
+        wandb.log({"loss": closs / (len(train_loader.dataset) / config.batch_size)})
 
         if epoch % log_interval == 0:  # save model every 5 epochs
             accuracy = runner.test(test_loader=test_loader)
