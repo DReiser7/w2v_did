@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 class DidModelRunner:
 
-    def __init__(self, device, model, optimizer, scheduler):
+    def __init__(self, device, model, optimizer, scheduler, wandb):
         self.device = device
         print('running on device: ', self.device)
 

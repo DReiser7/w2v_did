@@ -1,6 +1,7 @@
 import torch
 import torch.optim as optim
 import sys
+import wandb
 
 from DidDataset import DidDataset
 from DidModel import DidModel
@@ -19,10 +20,18 @@ if __name__ == "__main__":
     print(file_path_test)
     print(model_path)
     print(epochs)
-    # print(use_hugginface)
+    config_defaults = {
+        'epochs': int(sys.argv[4]),
+        'batch_size': int(sys.argv[5]),
+    }
 
     # get device on which training should run
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Initialize a new wandb run
+    wandb.init(project='w2v_did', config=config_defaults, entity='fiviapas')
+    # Config is a variable that holds and saves hyperparameters and inputs
+    config = wandb.config
 
     # define params for data loaders
     kwargs = {'num_workers': 1, 'pin_memory': True} if device == 'cuda' else {}  # needed for using datasets on gpu
@@ -49,8 +58,9 @@ if __name__ == "__main__":
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
     # create runner for training and testing
-    runner = DidModelRunner(device=device, model=model, optimizer=optimizer, scheduler=scheduler)
+    runner = DidModelRunner(device=device, model=model, optimizer=optimizer, scheduler=scheduler, wandb=wandb)
 
+    wandb.watch(model)
     log_interval = 5
     model.train()
     for epoch in range(config.epochs):

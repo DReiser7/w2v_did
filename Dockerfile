@@ -14,6 +14,7 @@ RUN pip install pandas
 RUN pip install soundfile
 RUN pip install torch
 RUN pip install transformers
+RUN pip install wandb
 
 #install fairseq over repo
 RUN git clone https://github.com/pytorch/fairseq
