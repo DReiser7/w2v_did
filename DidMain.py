@@ -62,17 +62,18 @@ if __name__ == "__main__":
 
     wandb.watch(model)
     log_interval = 5
-    model.train()
+
     for epoch in range(config.epochs):
         closs = runner.train(train_loader=train_loader, epoch=epoch, log_interval=log_interval)
         wandb.log({"loss": closs / config.batch_size})
-        accuracy = runner.test(test_loader=test_loader)
-        wandb.log({"accuracy": accuracy})
-        scheduler.step()
 
-        # if epoch % 5 == 0:  # save model every 5 epochs
+        if epoch % log_interval == 0:  # save model every 5 epochs
+            accuracy = runner.test(test_loader=test_loader)
+            wandb.log({"accuracy": accuracy})
         #     model_path = './models/did_model_epoch_' + str(epoch) + '.pt'
         #     print("Saving model to " + model_path)
         #     torch.save(model.state_dict(), model_path)
+
+        scheduler.step()
 
     print('Finished Training')
