@@ -7,17 +7,12 @@ from fairseq.modules import GradMultiply
 
 
 class DidModel(nn.Module):
-    def __init__(self, model_path, num_classes, freeze_fairseq=False, model_small=True):
+    def __init__(self, model_path, num_classes, freeze_fairseq=False):
         super(DidModel, self).__init__()
-
-        cp_path = ""
-        if model_path is None:
-            if model_small:
-                cp_path = 'data/models/wav2vec_small.pt'
-            else:
-                cp_path = 'data/models/xlsr_53_56k.pt'
-        else:
-            cp_path = model_path
+        model_small = False
+        cp_path = model_path
+        if cp_path == 'data/models/wav2vec_small.pt':
+            model_small = True
 
         print("Loading model: " + cp_path)
         t = time.time()
