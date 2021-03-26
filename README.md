@@ -23,4 +23,9 @@ running on GPULAND:
 
 
 running on GPU-Cluster **not working yet**
-srun --ntasks=1 --cpus-per-task=4 --mem=12G --gres=gpu:1 singularity exec ./w2v_did.simg --gpus all -e "TEST=../data/reisedom/data/test_segmented/" -e "TRAIN=../data/reisedom/data/train_segmented/" -e "MODEL=../data/reisedom/data/models/xlsr_53_56k.pt" -e "EPOCHS=10" -e "BSIZE=15" -v ../data/reisedom/data:/data fiviapas/w2v_did
+srun --pty --ntasks=1 --cpus-per-task=4 --mem=16G --gres=gpu:1 singularity shell w2v_did_wandb.simg
+git clone https://github.com/DReiser7/w2v_did.git
+cd w2v_did
+git checkout wandb
+cd ..
+python ./w2v_did/DidMain.py  "/cluster/home/reisedom/data/train_segmented/" "/cluster/home/reisedom/data/test_segmented/" "/cluster/home/reisedom/data/models/xlsr_53_56k.pt" 3 2
