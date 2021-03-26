@@ -16,6 +16,7 @@ class DidModelRunner:
         self.scheduler = scheduler
 
     def train(self, train_loader, epoch, log_interval):
+        self.model.train()
         closs = 0
         for batch_idx, (data, target) in enumerate(train_loader):
             self.optimizer.zero_grad()
@@ -26,9 +27,9 @@ class DidModelRunner:
             output = output['x']
             loss = F.nll_loss(output, target)  # the loss functions expects a batchSizex5 input
             loss.backward()
-            closs = closs + loss.item()
+            closs = closs + loss.detach().item()
             self.optimizer.step()
-            self.wandb.log({"batch loss": loss.item()})
+            self.wandb.log({"batch loss": loss.detach().item()})
             if batch_idx % log_interval == 0:  # print training stats
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch, batch_idx * len(data),
                                                                                len(train_loader.dataset),
