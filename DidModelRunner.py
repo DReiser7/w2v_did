@@ -5,6 +5,7 @@ class DidModelRunner:
 
     def __init__(self, device, model, optimizer, scheduler, wandb):
         self.device = device
+        self.wandb = wandb
         print('running on device: ', self.device)
 
         self.model = model
@@ -24,7 +25,7 @@ class DidModelRunner:
             target = target.to(self.device)
             data = data.requires_grad_()  # set requires_grad to True for training
             output = self.model(data)
-            output = output['x']
+            output = output['softmax']
             loss = F.nll_loss(output, target)  # the loss functions expects a batchSizex5 input
             loss.backward()
             closs = closs + loss.detach().item()
