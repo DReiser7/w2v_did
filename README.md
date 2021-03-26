@@ -22,7 +22,7 @@ running on GPULAND:
 `docker run -d --gpus all -e "TEST=/data/test_segmented/" -e "TRAIN=/data/train_segmented/" -e "MODEL=./data/models/xlsr_53_56k.pt" -e "EPOCHS=10" -e "BSIZE=15" -v "$(pwd)"/data:/data fiviapas/w2v_did`
 
 
-running on GPU-Cluster **not working yet**
+running on GPU-Cluster
 srun --pty --ntasks=1 --cpus-per-task=4 --mem=16G --gres=gpu:1 singularity shell w2v_did_wandb.simg
 git clone https://github.com/DReiser7/w2v_did.git
 cd w2v_did
