@@ -2,6 +2,7 @@ import torch
 import torch.optim as optim
 import sys
 import wandb
+import datetime
 
 from DidDataset import DidDataset
 from DidModel import DidModel
@@ -29,7 +30,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Initialize a new wandb run
-    wandb.init(project='w2v_did', config=config_defaults, entity='fiviapas')
+    wandb.init(project='w2v_did', config=config_defaults, entity='ba-reisedomfiviapas', monitor_gym=True, name=datetime.now().strftime("w2v_did " + "_%Y%m%d-%H%M%S"))
     # Config is a variable that holds and saves hyperparameters and inputs
     config = wandb.config
 
