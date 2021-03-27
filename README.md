@@ -54,3 +54,7 @@ reattach screen session:
 ```bash
 screen -r username-session
 ```
+kill screen session:
+```bash
+screen -X -S username-session kill
+```
