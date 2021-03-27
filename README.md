@@ -44,7 +44,10 @@ cd ..
 ```
 run main application:
 ```bash
+#reisedom
 python ./w2v_did/DidMain.py  "/cluster/home/reisedom/data/train_segmented/" "/cluster/home/reisedom/data/test_segmented/" "/cluster/home/reisedom/data/models/xlsr_53_56k.pt" 3 2
+#fiviapas
+python ./w2v_did/DidMain.py  "/cluster/home/fiviapas/data/train_segmented/" "/cluster/home/fiviapas/data/test_segmented/" "/cluster/home/fiviapas/data/models/xlsr_53_56k.pt" 3 2
 ```
 detach screen session:
 ```bash
