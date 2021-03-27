@@ -1,0 +1,36 @@
+{
+  "data": {
+    "train_dataset": "data/dev/segmented/",
+    "test_dataset": "data/dev/segmented/",
+    "batch_size": 2,
+    "shuffle": true
+  },
+  "model": {
+    "model_location": "data/models/wav2vec_small.pt",
+    "num_classes": 5,
+    "freeze_fairseq": true
+  },
+  "general": {
+    "num_workers": 1,
+    "epochs": 3,
+    "optimizer": "adam",
+    "loss_function": "nllLoss",
+    "log_interval": 5,
+    "model_save_interval": 2
+  },
+  "optimizers": {
+    "adam": {
+      "lr": 0.01,
+      "weight_decay": 0.0001
+    }
+  },
+  "loss_functions": {
+    "nllLoss": {
+      "output": "log_softmax"
+    }
+  },
+  "scheduler": {
+    "step_size": 20,
+    "gamma": 0.1
+  }
+}
