@@ -20,6 +20,10 @@ RUN pip install wandb
 RUN git clone https://github.com/pytorch/fairseq
 RUN pip install --editable ./fairseq/
 
+RUN git clone https://github.com/DReiser7/w2v_did.git
+RUN cd w2v_did
+RUN git checkout wandb
+
 #CMD [ "python", "./DidMain.py" ]
 CMD ["sh", "-c", "python ./DidMain.py  $TRAIN $TEST $MODEL $EPOCHS $BSIZE"]
 #CMD python DidMain.py $TRAIN $TEST $MODEL
