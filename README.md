@@ -22,10 +22,35 @@ running on GPULAND:
 `docker run -d --gpus all -e "TEST=/data/test_segmented/" -e "TRAIN=/data/train_segmented/" -e "MODEL=./data/models/xlsr_53_56k.pt" -e "EPOCHS=10" -e "BSIZE=15" -v "$(pwd)"/data:/data fiviapas/w2v_did`
 
 
-running on GPU-Cluster
+###running on GPU-Cluster
+pull image:
+```bash
+srun --ntasks=1 --cpus-per-task=4 --mem=8G  singularity pull docker://reisedom/w2v_did_wandb
+```
+create screen session:
+```bash
+screen -S username-session
+```
+run image:
+```bash
 srun --pty --ntasks=1 --cpus-per-task=4 --mem=16G --gres=gpu:1 singularity shell w2v_did_wandb.simg
+```
+clone git repository:
+```bash
 git clone https://github.com/DReiser7/w2v_did.git
 cd w2v_did
 git checkout wandb
 cd ..
+```
+run main application:
+```bash
 python ./w2v_did/DidMain.py  "/cluster/home/reisedom/data/train_segmented/" "/cluster/home/reisedom/data/test_segmented/" "/cluster/home/reisedom/data/models/xlsr_53_56k.pt" 3 2
+```
+detach screen session:
+```bash
+Ctrl+A, D
+```
+reattach screen session:
+```bash
+screen -r username-session
+```
