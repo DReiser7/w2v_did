@@ -1,5 +1,6 @@
 import torch
 import torch.optim as optim
+import torch.nn as nn
 import sys
 import wandb
 from datetime import datetime
@@ -54,7 +55,12 @@ if __name__ == "__main__":
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
     model = DidModel(model_path=model_path, num_classes=5, freeze_fairseq=True)
 
-    # Define a Loss function and optimizer
+    #Using more than one GPU
+    if torch.cuda.device_count() > 1:
+        print("Using:", torch.cuda.device_count(), "GPUs!")
+        model = nn.DataParallel(model)
+
+    # Optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
