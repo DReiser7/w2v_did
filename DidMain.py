@@ -34,8 +34,8 @@ if __name__ == "__main__":
     if torch.cuda.device_count() > 1:
         device_count = torch.cuda.device_count()
         print("Using:", device_count, "GPUs!")
-        config_defaults["batch_size"] = config_defaults["batch_size"] * device_count
-        print("Multiplying batch * GPUs new batch_size=", config_defaults["batch_size"])
+        # config_defaults["batch_size"] = config_defaults["batch_size"] * device_count
+        # print("Multiplying batch * GPUs new batch_size=", config_defaults["batch_size"])
 
     # Initialize a new wandb run
     wandb.init(project='w2v_did', config=config_defaults, entity='ba-reisedomfiviapas', name=datetime.now().strftime("w2v_did " + "_%Y%m%d-%H%M%S"))
