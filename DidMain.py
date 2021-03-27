@@ -48,17 +48,20 @@ if __name__ == "__main__":
     test_set = DidDataset(csv_path_test, file_path_test)
     print("Test set size: " + str(len(test_set)))
 
-    # build data loaders
-    train_loader = torch.utils.data.DataLoader(train_set, batch_size=config.batch_size, shuffle=True, **kwargs)
-    test_loader = torch.utils.data.DataLoader(test_set, batch_size=config.batch_size, shuffle=True, **kwargs)
-
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
     model = DidModel(model_path=model_path, num_classes=5, freeze_fairseq=True)
 
     #Using more than one GPU
     if torch.cuda.device_count() > 1:
-        print("Using:", torch.cuda.device_count(), "GPUs!")
+        device_count = torch.cuda.device_count()
+        print("Using:", device_count , "GPUs!")
+        config.batch_size = config.batch_size * device_count
+        print("Multiplying batch * GPUs new batch_size=", config.batch_size)
         model = nn.DataParallel(model)
+
+    # build data loaders
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=config.batch_size, shuffle=True, **kwargs)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=config.batch_size, shuffle=True, **kwargs)
 
     # Optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
