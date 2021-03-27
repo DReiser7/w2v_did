@@ -30,6 +30,13 @@ if __name__ == "__main__":
     # get device on which training should run
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    #Using more than one GPU
+    if torch.cuda.device_count() > 1:
+        device_count = torch.cuda.device_count()
+        print("Using:", device_count , "GPUs!")
+        config_defaults.batch_size = config_defaults.batch_size * device_count
+        print("Multiplying batch * GPUs new batch_size=", config_defaults.batch_size)
+
     # Initialize a new wandb run
     wandb.init(project='w2v_did', config=config_defaults, entity='ba-reisedomfiviapas', name=datetime.now().strftime("w2v_did " + "_%Y%m%d-%H%M%S"))
     # Config is a variable that holds and saves hyperparameters and inputs
@@ -53,10 +60,7 @@ if __name__ == "__main__":
 
     #Using more than one GPU
     if torch.cuda.device_count() > 1:
-        device_count = torch.cuda.device_count()
-        print("Using:", device_count , "GPUs!")
-        config.batch_size = config.batch_size * device_count
-        print("Multiplying batch * GPUs new batch_size=", config.batch_size)
+        print("Wrapping model with DataParallel")
         model = nn.DataParallel(model)
 
     # build data loaders
