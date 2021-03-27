@@ -1,9 +1,7 @@
-import torch.nn.functional as F
-
 
 class DidModelRunner:
 
-    def __init__(self, device, model, optimizer, scheduler, wandb):
+    def __init__(self, device, model, optimizer, scheduler, wandb, loss_function, output_for_loss):
         self.device = device
         self.wandb = wandb
         print('running on device: ', self.device)
@@ -15,6 +13,8 @@ class DidModelRunner:
 
         self.optimizer = optimizer
         self.scheduler = scheduler
+        self.loss_function = loss_function
+        self.output_for_loss = output_for_loss
 
     def train(self, train_loader, epoch, log_interval):
         self.model.train()
@@ -25,8 +25,8 @@ class DidModelRunner:
             target = target.to(self.device)
             data = data.requires_grad_()  # set requires_grad to True for training
             output = self.model(data)
-            output = output['log_softmax']
-            loss = F.nll_loss(output, target)  # the loss functions expects a batchSizex5 input
+            output = output[self.output_for_loss]
+            loss = self.loss_function(output, target)  # the loss functions expects a batchSizex5 input
             loss.backward()
             closs = closs + loss.detach().item()
             self.optimizer.step()
