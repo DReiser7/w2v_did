@@ -25,7 +25,7 @@ class DidModelRunner:
             target = target.to(self.device)
             data = data.requires_grad_()  # set requires_grad to True for training
             output = self.model(data)
-            output = output['softmax']
+            output = output['log_softmax']
             loss = F.nll_loss(output, target)  # the loss functions expects a batchSizex5 input
             loss.backward()
             closs = closs + loss.detach().item()

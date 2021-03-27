@@ -162,7 +162,8 @@ class DidModel(nn.Module):
         x_reduced = torch.mean(x, -2)
         x = self.classifier_layer(x_reduced)
         softmax = F.softmax(x, dim=1)
+        log_softmax = F.log_softmax(x, dim=1)
 
-        result = {"x": x, "softmax": softmax}
+        result = {"x": x, "softmax": softmax, "log_softmax": log_softmax}
 
         return result
