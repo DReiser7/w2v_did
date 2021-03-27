@@ -36,7 +36,7 @@ class DidModel(nn.Module):
             print("Chose Classifier-Layer for XLSR")
             self.classifier_layer = nn.Sequential(
                 nn.Linear(768, 512),
-                nn.SyncBatchNorm(512),
+                nn.InstanceNorm1d(512),
                 nn.Dropout(0.2),
                 nn.Linear(512, 256),
                 nn.Linear(256, num_classes)
