@@ -1,16 +1,19 @@
 {
   "data": {
+    "desc": "defines the data",
     "train_dataset": "data/dev/segmented/",
     "test_dataset": "data/dev/segmented/",
     "batch_size": 2,
     "shuffle": true
   },
   "model": {
+    "desc": "defines the model",
     "model_location": "data/models/wav2vec_small.pt",
     "num_classes": 5,
     "freeze_fairseq": true
   },
   "general": {
+    "desc": "defines general information for the training run and which optimizer and loss_function are taken",
     "num_workers": 1,
     "epochs": 3,
     "optimizer": "adam",
@@ -19,17 +22,20 @@
     "model_save_interval": 2
   },
   "optimizers": {
+    "desc": "defines usable optimizer and their needed inputs",
     "adam": {
       "lr": 0.01,
       "weight_decay": 0.0001
     }
   },
   "loss_functions": {
+    "desc": "defines for which loss_function which output from the model must be taken",
     "nllLoss": {
       "output": "log_softmax"
     }
   },
   "scheduler": {
+    "desc": "defines params for scheduler",
     "step_size": 20,
     "gamma": 0.1
   }
