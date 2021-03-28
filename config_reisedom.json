@@ -28,12 +28,6 @@
       "weight_decay": 0.0001
     }
   },
-  "loss_functions": {
-    "desc": "defines for which loss_function which output from the model must be taken",
-    "nllLoss": {
-      "output": "log_softmax"
-    }
-  },
   "scheduler": {
     "desc": "defines params for scheduler",
     "step_size": 20,
