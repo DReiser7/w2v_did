@@ -15,7 +15,7 @@ from DidModel import DidModel
 from DidModelRunner import DidModelRunner
 
 if __name__ == "__main__":
-    with open('config.json') as f:
+    with open('w2v_did/config.json') as f:
         did_config = json.load(f)
 
     # get device on which training should run
