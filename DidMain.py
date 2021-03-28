@@ -1,16 +1,15 @@
 import argparse
 import json
 import os
-import sys
 from datetime import datetime
 
 import torch
+import torch.distributed as dist
+import torch.multiprocessing as mp
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.utils.data import SubsetRandomSampler
-import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel
-import torch.distributed as dist
+from torch.utils.data import SubsetRandomSampler
 
 import wandb
 from DidDataset import DidDataset
