@@ -35,7 +35,8 @@ def print_Config():
         config.general['model_save_interval']))
 
 
-def train(gpu, args, config):
+def train(gpu, args):
+    # config = args.config
     rank = args.nr * args.gpus + gpu
     dist.init_process_group(
         backend='nccl',
@@ -172,11 +173,12 @@ if __name__ == "__main__":
         device_count = torch.cuda.device_count()
         args.world_size = device_count * args.nodes
         args.gpus = device_count
+        args.config = config
         os.environ['MASTER_ADDR'] = 'localhost'
         os.environ['MASTER_PORT'] = '8711'
         print("set env vars")
         print("Using:", device_count, "GPUs!")
-        mp.spawn(train, nprocs=args.gpus, args=(args,), config=config)
+        mp.spawn(train, nprocs=args.gpus, args=(args,))
         # config_defaults["batch_size"] = config_defaults["batch_size"] * device_count
         # print("Multiplying batch * GPUs new batch_size=", config_defaults["batch_size"])
 
