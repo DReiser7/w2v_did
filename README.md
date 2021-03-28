@@ -40,14 +40,14 @@ clone git repository:
 git clone https://github.com/DReiser7/w2v_did.git
 cd w2v_did
 git checkout wandb
-cd ..
 ```
 run main application:
+running **inside** git repo
 ```bash
 #reisedom
-python ./w2v_did/DidMain.py  "/cluster/home/reisedom/data/train_segmented/" "/cluster/home/reisedom/data/test_segmented/" "/cluster/home/reisedom/data/models/xlsr_53_56k.pt" 3 2
+python ./DidMain.py "config_reisedom.json"
 #fiviapas
-python ./w2v_did/DidMain.py  "/cluster/home/fiviapas/data/train_segmented/" "/cluster/home/fiviapas/data/test_segmented/" "/cluster/home/fiviapas/data/models/xlsr_53_56k.pt" 3 2
+python ./DidMain.py "config_fiviapas.json"
 ```
 detach screen session:
 ```bash
