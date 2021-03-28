@@ -45,7 +45,7 @@ def main(device_count, epochs):
     args.gpus = device_count
     args.epochs = epochs
     os.environ['MASTER_ADDR'] = 'localhost'  #
-    os.environ['MASTER_PORT'] = '8888'  #
+    os.environ['MASTER_PORT'] = '8711'  #
     mp.spawn(train, nprocs=args.gpus, args=(args,))
 
 
