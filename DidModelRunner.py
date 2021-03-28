@@ -1,7 +1,7 @@
 
 class DidModelRunner:
 
-    def __init__(self, device, model, optimizer, scheduler, wandb, loss_function, output_for_loss):
+    def __init__(self, device, model, optimizer, scheduler, wandb, loss_function):
         self.device = device
         self.wandb = wandb
         print('running on device: ', self.device)
@@ -14,7 +14,6 @@ class DidModelRunner:
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.loss_function = loss_function
-        self.output_for_loss = output_for_loss
 
     def train(self, train_loader, epoch, log_interval):
         self.model.train()
