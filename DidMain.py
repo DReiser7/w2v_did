@@ -35,22 +35,6 @@ def print_Config():
         config.general['model_save_interval']))
 
 
-def main(device_count, epochs):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--nodes', default=1,
-                        type=int, metavar='N')
-    parser.add_argument('-nr', '--nr', default=0, type=int,
-                        help='ranking within the nodes')
-    args = parser.parse_args()
-    args.world_size = device_count * args.nodes
-    args.gpus = device_count
-    args.epochs = epochs
-    os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '8711'
-    print("set env vars")
-    mp.spawn(train, nprocs=args.gpus, args=(args,))
-
-
 def train(gpu, args):
     rank = args.nr * args.gpus + gpu
     dist.init_process_group(
@@ -163,7 +147,16 @@ def train(gpu, args):
 
 
 if __name__ == "__main__":
-    config_path = sys.argv[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config',
+                        type=str)
+    parser.add_argument('-n', '--nodes', default=1,
+                        type=int, metavar='N')
+    parser.add_argument('-nr', '--nr', default=0, type=int,
+                        help='ranking within the nodes')
+    args = parser.parse_args()
+    config_path = args.config
+
     with open(config_path) as f:
         did_config = json.load(f)
 
@@ -180,8 +173,13 @@ if __name__ == "__main__":
     # Using more than one GPU
     if torch.cuda.device_count() > 1:
         device_count = torch.cuda.device_count()
+        args.world_size = device_count * args.nodes
+        args.gpus = device_count
+        os.environ['MASTER_ADDR'] = 'localhost'
+        os.environ['MASTER_PORT'] = '8711'
+        print("set env vars")
         print("Using:", device_count, "GPUs!")
-        main(device_count=device_count, epochs=config.general['epochs'])
+        mp.spawn(train, nprocs=args.gpus, args=(args,))
         # config_defaults["batch_size"] = config_defaults["batch_size"] * device_count
         # print("Multiplying batch * GPUs new batch_size=", config_defaults["batch_size"])
 
