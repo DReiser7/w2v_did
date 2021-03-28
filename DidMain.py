@@ -35,7 +35,7 @@ def print_Config():
         config.general['model_save_interval']))
 
 
-def train(gpu, args):
+def train(gpu, args, config):
     rank = args.nr * args.gpus + gpu
     dist.init_process_group(
         backend='nccl',
@@ -44,10 +44,6 @@ def train(gpu, args):
         rank=rank
     )
     torch.cuda.set_device(gpu)
-
-    # define params for data loaders
-    kwargs = {'num_workers': config.general['num_workers'],
-              'pin_memory': True} if device == 'cuda' else {}  # needed for using datasets on gpu
 
     # build train data
     csv_path_train = config.data['train_dataset'] + 'metadata.csv'  # file_path_train = './data/dev/segmented/'
@@ -69,12 +65,14 @@ def train(gpu, args):
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
                                                shuffle=False,
-                                               sampler=train_sampler
-                                               **kwargs)
+                                               sampler=train_sampler,
+                                               num_workers=config.general['num_workers'],
+                                               pin_memory=True)
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=config.data['batch_size'],
                                               shuffle=False,
-                                              **kwargs)
+                                              num_workers=config.general['num_workers'],
+                                              pin_memory=True)
 
     # Loss Function and fitting exponential normalizing function
     if config.general['loss_function'] == 'nllLoss':
@@ -145,7 +143,6 @@ def train(gpu, args):
     print('Finished Training')
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config',
@@ -179,7 +176,7 @@ if __name__ == "__main__":
         os.environ['MASTER_PORT'] = '8711'
         print("set env vars")
         print("Using:", device_count, "GPUs!")
-        mp.spawn(train, nprocs=args.gpus, args=(args,))
+        mp.spawn(train, nprocs=args.gpus, args=(args,), config=config)
         # config_defaults["batch_size"] = config_defaults["batch_size"] * device_count
         # print("Multiplying batch * GPUs new batch_size=", config_defaults["batch_size"])
 
