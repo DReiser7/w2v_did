@@ -124,8 +124,7 @@ if __name__ == "__main__":
                             optimizer=optimizer,
                             scheduler=scheduler,
                             wandb=wandb,
-                            loss_function=loss_function,
-                            output_for_loss=output_for_loss)
+                            loss_function=loss_function)
 
     wandb.watch(model)
 
