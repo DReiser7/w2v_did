@@ -3,7 +3,7 @@
     "desc": "defines the data",
     "train_dataset": "/cluster/home/fiviapas/data/train_segmented/",
     "test_dataset": "/cluster/home/fiviapas/data/test_segmented/",
-    "batch_size": 4,
+    "batch_size": 2,
     "shuffle": true
   },
   "model": {
