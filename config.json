@@ -3,7 +3,7 @@
     "desc": "defines the data",
     "train_dataset": "data/dev/segmented/",
     "test_dataset": "data/dev/segmented/",
-    "batch_size": 2,
+    "batch_size": 4,
     "shuffle": true
   },
   "model": {
