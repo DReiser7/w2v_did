@@ -2,6 +2,7 @@ import json
 import sys
 from datetime import datetime
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
@@ -62,9 +63,12 @@ if __name__ == "__main__":
     csv_path_train = config.data['train_dataset'] + 'metadata.csv'  # file_path_train = './data/dev/segmented/'
     train_set = DidDataset(csv_path_train, config.data['train_dataset'])
 
-    train_indices = [index for index in list(range(len(train_set))) if index % 5 == 1]
+    train_set_indices = list(range(len(train_set)))
+    np.random.shuffle(train_set_indices)
+    val_split_index = int(np.floor(config.data['train_set_percentage'] * len(train_set)))
+    train_idx = train_set_indices[:val_split_index]
 
-    print("Train set size: " + str(len(train_indices)))
+    print("Train set size: " + str(len(train_idx)))
 
     # build test data
     csv_path_test = config.data['test_dataset'] + 'metadata.csv'  # file_path_test = './data/dev/segmented/'
@@ -74,9 +78,8 @@ if __name__ == "__main__":
     # build data loaders
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
-                                               shuffle=config.data['shuffle'],
-                                               sampler=SubsetRandomSampler(train_indices)
-                                                       ** kwargs)
+                                               sampler=SubsetRandomSampler(train_idx),
+                                               **kwargs)
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=config.data['batch_size'],
                                               shuffle=config.data['shuffle'],
@@ -142,9 +145,9 @@ if __name__ == "__main__":
         if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
             accuracy = runner.test(test_loader=test_loader)
             wandb.log({"accuracy": accuracy})
-        #     model_path = './models/did_model_epoch_' + str(epoch) + '.pt'
-        #     print("Saving model to " + model_path)
-        #     torch.save(model.state_dict(), model_path)
+            model_path = config.model['model_location'] + 'did_model_epoch_' + str(epoch) + '.pt'
+            print("Saving model to " + model_path)
+            torch.save(model.state_dict(), model_path)
 
         scheduler.step()
 

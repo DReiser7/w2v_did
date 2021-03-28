@@ -4,13 +4,15 @@
     "train_dataset": "data/dev/segmented/",
     "test_dataset": "data/dev/segmented/",
     "batch_size": 4,
-    "shuffle": true
+    "shuffle": true,
+    "train_set_percentage": 1
   },
   "model": {
     "desc": "defines the model",
     "model_location": "data/models/wav2vec_small.pt",
     "num_classes": 5,
-    "freeze_fairseq": true
+    "freeze_fairseq": true,
+    "path_trained_model": "data/models/"
   },
   "general": {
     "desc": "defines general information for the training run and which optimizer and loss_function are taken",
