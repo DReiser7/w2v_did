@@ -7,6 +7,7 @@ from datetime import datetime
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.utils.data import SubsetRandomSampler
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel
 import torch.distributed as dist
@@ -49,7 +50,10 @@ def train(gpu, args):
     # build train data
     csv_path_train = config.data['train_dataset'] + 'metadata.csv'  # file_path_train = './data/dev/segmented/'
     train_set = DidDataset(csv_path_train, config.data['train_dataset'])
-    print("Train set size: " + str(len(train_set)))
+
+    train_indices = [index for index in list(range(len(train_set))) if index % 5 == 1]
+
+    print("Train set size: " + str(len(train_indices)))
 
     # build test data
     csv_path_test = config.data['test_dataset'] + 'metadata.csv'  # file_path_test = './data/dev/segmented/'
