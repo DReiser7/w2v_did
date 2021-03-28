@@ -55,6 +55,9 @@ if __name__ == "__main__":
     config = wandb.config
     print_Config()
 
+    # files that match that pattern will save immediately once they're written to wandb.run.dir
+    wandb.save("*.pt")
+
     # define params for data loaders
     kwargs = {'num_workers': config.general['num_workers'],
               'pin_memory': True} if device == 'cuda' else {}  # needed for using datasets on gpu
@@ -145,7 +148,7 @@ if __name__ == "__main__":
         if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
             accuracy = runner.test(test_loader=test_loader)
             wandb.log({"accuracy": accuracy})
-            model_path = config.model['model_location'] + 'did_model_epoch_' + str(epoch) + '.pt'
+            model_path = wandb.run.dir + '/did_model_epoch_' + str(epoch) + '.pt'
             print("Saving model to " + model_path)
             torch.save(model.state_dict(), model_path)
 
