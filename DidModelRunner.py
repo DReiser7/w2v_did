@@ -9,7 +9,7 @@ class DidModelRunner:
         self.model = model
         self.model = self.model.double()
         self.model.to(self.device)
-        print('print model: ', self.model)
+        # print('print model: ', self.model)
 
         self.optimizer = optimizer
         self.scheduler = scheduler
@@ -19,6 +19,7 @@ class DidModelRunner:
         self.model.train()
         closs = 0
         for batch_idx, (data, target) in enumerate(train_loader):
+            print("Batch_idx="+ str(batch_idx) + "  Data.size=" + str(data.size()))
             self.optimizer.zero_grad()
             data = data.to(self.device)
             target = target.to(self.device)
