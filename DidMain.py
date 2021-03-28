@@ -1,27 +1,26 @@
 import json
+import sys
 from datetime import datetime
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
+import torch.optim as optim
 
 import wandb
-
-from parallel import DataParallelModel, DataParallelCriterion
-from datetime import datetime
 from DidDataset import DidDataset
 from DidModel import DidModel
 from DidModelRunner import DidModelRunner
+from parallel import DataParallelModel, DataParallelCriterion
 
 if __name__ == "__main__":
-    with open('w2v_did/config.json') as f:
+    config_path = sys.argv[1]
+    with open(config_path) as f:
         did_config = json.load(f)
 
     # get device on which training should run
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    #Using more than one GPU
+    # Using more than one GPU
     if torch.cuda.device_count() > 1:
         device_count = torch.cuda.device_count()
         print("Using:", device_count, "GPUs!")
