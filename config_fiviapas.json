@@ -1,0 +1,42 @@
+{
+  "data": {
+    "desc": "defines the data",
+    "train_dataset": "/cluster/home/fiviapas/data/train_segmented/",
+    "test_dataset": "/cluster/home/fiviapas/data/test_segmented/",
+    "batch_size": 4,
+    "shuffle": true
+  },
+  "model": {
+    "desc": "defines the model",
+    "model_location": "/cluster/home/fiviapas/data/models/xlsr_53_56k.pt",
+    "num_classes": 5,
+    "freeze_fairseq": true
+  },
+  "general": {
+    "desc": "defines general information for the training run and which optimizer and loss_function are taken",
+    "num_workers": 1,
+    "epochs": 3,
+    "optimizer": "adam",
+    "loss_function": "nllLoss",
+    "log_interval": 5,
+    "model_save_interval": 1
+  },
+  "optimizers": {
+    "desc": "defines usable optimizer and their needed inputs",
+    "adam": {
+      "lr": 0.01,
+      "weight_decay": 0.0001
+    }
+  },
+  "loss_functions": {
+    "desc": "defines for which loss_function which output from the model must be taken",
+    "nllLoss": {
+      "output": "log_softmax"
+    }
+  },
+  "scheduler": {
+    "desc": "defines params for scheduler",
+    "step_size": 20,
+    "gamma": 0.1
+  }
+}

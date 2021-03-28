@@ -1,22 +1,20 @@
 import json
+import sys
 from datetime import datetime
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
-from torch.utils.data import SubsetRandomSampler
+import torch.optim as optim
 
 import wandb
-
-from parallel import DataParallelModel, DataParallelCriterion
-from datetime import datetime
 from DidDataset import DidDataset
 from DidModel import DidModel
 from DidModelRunner import DidModelRunner
+from parallel import DataParallelModel, DataParallelCriterion
 
 if __name__ == "__main__":
-    with open('w2v_did/config.json') as f:
+    config_path = sys.argv[1]
+    with open(config_path) as f:
         did_config = json.load(f)
 
     # get device on which training should run
@@ -60,10 +58,7 @@ if __name__ == "__main__":
     # build train data
     csv_path_train = config.data['train_dataset'] + 'metadata.csv'  # file_path_train = './data/dev/segmented/'
     train_set = DidDataset(csv_path_train, config.data['train_dataset'])
-
-    train_indices = [index for index in list(range(len(train_set))) if index % 5 == 1]
-
-    print("Train set size: " + str(len(train_indices)))
+    print("Train set size: " + str(len(train_set)))
 
     # build test data
     csv_path_test = config.data['test_dataset'] + 'metadata.csv'  # file_path_test = './data/dev/segmented/'
@@ -84,8 +79,7 @@ if __name__ == "__main__":
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
                                                shuffle=config.data['shuffle'],
-                                               sampler=SubsetRandomSampler(train_indices)
-                                                       ** kwargs)
+                                               **kwargs)
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=config.data['batch_size'],
                                               shuffle=config.data['shuffle'],
