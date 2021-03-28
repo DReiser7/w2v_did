@@ -8,6 +8,9 @@ import torch.nn.functional as F
 from torch.utils.data import SubsetRandomSampler
 
 import wandb
+
+from parallel import DataParallelModel, DataParallelCriterion
+from datetime import datetime
 from DidDataset import DidDataset
 from DidModel import DidModel
 from DidModelRunner import DidModelRunner
@@ -75,7 +78,7 @@ if __name__ == "__main__":
     # Using more than one GPU
     if torch.cuda.device_count() > 1:
         print("Wrapping model with DataParallel")
-        model = nn.DataParallel(model)
+        model = DataParallelModel(model)
 
     # build data loaders
     train_loader = torch.utils.data.DataLoader(train_set,
@@ -111,6 +114,11 @@ if __name__ == "__main__":
         loss_function = F.nll_loss
     else:
         raise SystemExit("you must specify loss_function for " + config.general['loss_function'])
+
+    # Using more than one GPU
+    if torch.cuda.device_count() > 1:
+        print("Wrapping loss_function with DataParallelCriterion")
+        loss_function = DataParallelCriterion(loss_function)
 
     output_for_loss = config.loss_functions[config.general['loss_function']]['output']
 
