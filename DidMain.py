@@ -5,6 +5,7 @@ from datetime import datetime
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.nn import DataParallel
 
 import wandb
 from DidDataset import DidDataset
@@ -98,6 +99,7 @@ if __name__ == "__main__":
     # Using more than one GPU
     if torch.cuda.device_count() > 1:
         print("Wrapping model with DataParallel")
+        model = DataParallel(model)
         model = DataParallelModel(model)
 
     # Optimizer
