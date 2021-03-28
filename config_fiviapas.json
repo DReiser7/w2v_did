@@ -4,13 +4,15 @@
     "train_dataset": "/cluster/home/fiviapas/data/train_segmented/",
     "test_dataset": "/cluster/home/fiviapas/data/test_segmented/",
     "batch_size": 4,
-    "shuffle": true
+    "shuffle": true,
+    "train_set_percentage": 0.2
   },
   "model": {
     "desc": "defines the model",
     "model_location": "/cluster/home/fiviapas/data/models/xlsr_53_56k.pt",
     "num_classes": 5,
-    "freeze_fairseq": true
+    "freeze_fairseq": true,
+    "path_trained_model": "/cluster/home/reisedom/data/models/"
   },
   "general": {
     "desc": "defines general information for the training run and which optimizer and loss_function are taken",
