@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel
+import torch.distributed as dist
 
 import wandb
 from DidDataset import DidDataset
@@ -44,14 +45,15 @@ def main(device_count, epochs):
     args.world_size = device_count * args.nodes
     args.gpus = device_count
     args.epochs = epochs
-    os.environ['MASTER_ADDR'] = 'localhost'  #
-    os.environ['MASTER_PORT'] = '8711'  #
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '8711'
+    print("set env vars")
     mp.spawn(train, nprocs=args.gpus, args=(args,))
 
 
 def train(gpu, args):
     rank = args.nr * args.gpus + gpu
-    torch.dist.init_process_group(
+    dist.init_process_group(
         backend='nccl',
         init_method='env://',
         world_size=args.world_size,
