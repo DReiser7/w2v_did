@@ -7,24 +7,12 @@ from fairseq.modules import GradMultiply
 
 
 class DidModel(nn.Module):
-    def __init__(self, model_path, num_classes, freeze_fairseq=False):
+    # exp_norm_func - Exponential normalizing function -> Function used for normalizing outputs of forward
+    def __init__(self, model_path, num_classes, exp_norm_func, freeze_fairseq=False):
         super(DidModel, self).__init__()
-        model_small = False
-        cp_path = model_path
-        if cp_path == 'data/models/wav2vec_small.pt':
-            model_small = True
+        self.exp_norm_func = exp_norm_func
 
-        print("Loading model: " + cp_path)
-        t = time.time()
-        model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
-        print("Model loaded - duration: " + str((time.time() - t)))
-        self.model = model[0]
-
-        if freeze_fairseq:
-            print("Freezing fairseq layers")
-            for param in self.model.parameters():
-                param.requires_grad = False
-        if model_small:
+        if model_path == 'data/models/wav2vec_small.pt':
             print("Chose Classifier-Layer for model_small")
             self.classifier_layer = nn.Sequential(
                 nn.Linear(256, 256),
@@ -41,6 +29,18 @@ class DidModel(nn.Module):
                 nn.Linear(512, 256),
                 nn.Linear(256, num_classes)
             )
+
+        print("Loading model: " + model_path)
+        t = time.time()
+        model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([model_path])
+        print("Model loaded - duration: " + str((time.time() - t)))
+        self.model = model[0]
+
+        if freeze_fairseq:
+            print("Freezing fairseq layers")
+            for param in self.model.parameters():
+                param.requires_grad = False
+
 
     def forward(self, source, padding_mask=None, mask=True, features_only=False):
 
@@ -161,9 +161,8 @@ class DidModel(nn.Module):
         # reduce dimension with mean
         x_reduced = torch.mean(x, -2)
         x = self.classifier_layer(x_reduced)
-        softmax = F.softmax(x, dim=1)
-        log_softmax = F.log_softmax(x, dim=1)
+        result = self.exp_norm_func(x, dim=1)
 
-        result = {"x": x, "softmax": softmax, "log_softmax": log_softmax}
+        # result = {"x": x, "normalized": normalized}
 
         return result

@@ -12,6 +12,25 @@ from DidModel import DidModel
 from DidModelRunner import DidModelRunner
 from parallel import DataParallelModel, DataParallelCriterion
 
+
+def print_Config():
+    print('data:')
+    print("  train_data: " + config.data['train_dataset'])
+    print("  test_data: " + config.data['test_dataset'])
+    print("  batch_size: " + str(config.data['batch_size']) + ", shuffle: " + str(config.data['shuffle']))
+    print('model:')
+    print("  location: " + config.model['model_location'])
+    print("  num_classes: " + str(config.model['num_classes']) + ", freeze_fairseq: " + str(
+        config.model['freeze_fairseq']))
+    print('general:')
+    print("  num_workers: " + str(config.general['num_workers']))
+    print("  epochs: " + str(config.general['epochs']))
+    print("  optimizer: " + config.general['optimizer'])
+    print("  loss_function: " + config.general['loss_function'])
+    print("  log_interval: " + str(config.general['log_interval']) + ", model_save_interval: " + str(
+        config.general['model_save_interval']))
+
+
 if __name__ == "__main__":
     config_path = sys.argv[1]
     with open(config_path) as f:
@@ -32,24 +51,7 @@ if __name__ == "__main__":
                name=datetime.now().strftime("w2v_did " + "_%Y%m%d-%H%M%S"))
     # Config is a variable that holds and saves hyperparameters and inputs
     config = wandb.config
-
-    print('data:')
-    print("  train_data: " + config.data['train_dataset'])
-    print("  test_data: " + config.data['test_dataset'])
-    print("  batch_size: " + str(config.data['batch_size']) + ", shuffle: " + str(config.data['shuffle']))
-
-    print('model:')
-    print("  location: " + config.model['model_location'])
-    print("  num_classes: " + str(config.model['num_classes']) + ", freeze_fairseq: " + str(
-        config.model['freeze_fairseq']))
-
-    print('general:')
-    print("  num_workers: " + str(config.general['num_workers']))
-    print("  epochs: " + str(config.general['epochs']))
-    print("  optimizer: " + config.general['optimizer'])
-    print("  loss_function: " + config.general['loss_function'])
-    print("  log_interval: " + str(config.general['log_interval']) + ", model_save_interval: " + str(
-        config.general['model_save_interval']))
+    print_Config()
 
     # define params for data loaders
     kwargs = {'num_workers': config.general['num_workers'],
@@ -65,16 +67,6 @@ if __name__ == "__main__":
     test_set = DidDataset(csv_path_test, config.data['test_dataset'])
     print("Test set size: " + str(len(test_set)))
 
-    # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
-    model = DidModel(model_path=config.model['model_location'],
-                     num_classes=config.model['num_classes'],
-                     freeze_fairseq=config.model['freeze_fairseq'])
-
-    # Using more than one GPU
-    if torch.cuda.device_count() > 1:
-        print("Wrapping model with DataParallel")
-        model = DataParallelModel(model)
-
     # build data loaders
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
@@ -84,6 +76,29 @@ if __name__ == "__main__":
                                               batch_size=config.data['batch_size'],
                                               shuffle=config.data['shuffle'],
                                               **kwargs)
+
+    # Loss Function and fitting exponential normalizing function
+    if config.general['loss_function'] == 'nllLoss':
+        loss_function = F.nll_loss
+        exp_norm_func = F.log_softmax
+    else:
+        raise SystemExit("you must specify loss_function for " + config.general['loss_function'])
+
+    # Using more than one GPU
+    if torch.cuda.device_count() > 1:
+        print("Wrapping loss_function with DataParallelCriterion")
+        loss_function = DataParallelCriterion(loss_function)
+
+    # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
+    model = DidModel(model_path=config.model['model_location'],
+                     num_classes=config.model['num_classes'],
+                     exp_norm_func=exp_norm_func,
+                     freeze_fairseq=config.model['freeze_fairseq'])
+
+    # Using more than one GPU
+    if torch.cuda.device_count() > 1:
+        print("Wrapping model with DataParallel")
+        model = DataParallelModel(model)
 
     # Optimizer
     print('optimizer_params:')
@@ -102,19 +117,6 @@ if __name__ == "__main__":
     scheduler = optim.lr_scheduler.StepLR(optimizer,
                                           step_size=config.scheduler['step_size'],
                                           gamma=config.scheduler['gamma'])
-
-    # Loss Function
-    if config.general['loss_function'] == 'nllLoss':
-        loss_function = F.nll_loss
-    else:
-        raise SystemExit("you must specify loss_function for " + config.general['loss_function'])
-
-    # Using more than one GPU
-    if torch.cuda.device_count() > 1:
-        print("Wrapping loss_function with DataParallelCriterion")
-        loss_function = DataParallelCriterion(loss_function)
-
-    output_for_loss = config.loss_functions[config.general['loss_function']]['output']
 
     # create runner for training and testing
     runner = DidModelRunner(device=device,
