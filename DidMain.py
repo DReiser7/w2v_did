@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+from torch.utils.data import SubsetRandomSampler
 
 import wandb
 from DidDataset import DidDataset
@@ -18,7 +19,7 @@ if __name__ == "__main__":
     # get device on which training should run
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    #Using more than one GPU
+    # Using more than one GPU
     if torch.cuda.device_count() > 1:
         device_count = torch.cuda.device_count()
         print("Using:", device_count, "GPUs!")
@@ -56,7 +57,10 @@ if __name__ == "__main__":
     # build train data
     csv_path_train = config.data['train_dataset'] + 'metadata.csv'  # file_path_train = './data/dev/segmented/'
     train_set = DidDataset(csv_path_train, config.data['train_dataset'])
-    print("Train set size: " + str(len(train_set)))
+
+    train_indices = [index for index in list(range(len(train_set))) if index % 5 == 1]
+
+    print("Train set size: " + str(len(train_indices)))
 
     # build test data
     csv_path_test = config.data['test_dataset'] + 'metadata.csv'  # file_path_test = './data/dev/segmented/'
@@ -77,7 +81,8 @@ if __name__ == "__main__":
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
                                                shuffle=config.data['shuffle'],
-                                               **kwargs)
+                                               sampler=SubsetRandomSampler(train_indices)
+                                                       ** kwargs)
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=config.data['batch_size'],
                                               shuffle=config.data['shuffle'],
