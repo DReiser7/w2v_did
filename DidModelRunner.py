@@ -1,4 +1,3 @@
-
 class DidModelRunner:
 
     def __init__(self, device, model, optimizer, scheduler, wandb, loss_function):
@@ -15,7 +14,7 @@ class DidModelRunner:
         self.scheduler = scheduler
         self.loss_function = loss_function
 
-    def train(self, train_loader, epoch, log_interval):
+    def train(self, train_loader, epoch, log_interval, batch_size):
         self.model.train()
         closs = 0
         for batch_idx, (data, target) in enumerate(train_loader):
@@ -23,15 +22,16 @@ class DidModelRunner:
             data = data.to(self.device)
             target = target.to(self.device)
             # data = data.requires_grad_()  # set requires_grad to True for training
-            output = self.model(data)['normalized']
+            output = self.model(data)
             loss = self.loss_function(output, target)  # the loss functions expects a batchSizex5 input
             loss.backward()
             closs = closs + loss.detach().item()
             self.optimizer.step()
             self.wandb.log({"batch loss": loss.detach().item()})
             if batch_idx % log_interval == 0:  # print training stats
-                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch, batch_idx * len(data),
-                                                                               len(train_loader),
+                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch,
+                                                                               batch_idx * len(data),
+                                                                               len(train_loader) * batch_size,
                                                                                100. * batch_idx / len(train_loader),
                                                                                loss.detach().float()))
         return closs
