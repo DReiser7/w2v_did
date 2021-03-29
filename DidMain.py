@@ -7,6 +7,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.nn import DataParallel
 from torch.utils.data import SubsetRandomSampler
 
 import wandb
@@ -14,7 +15,6 @@ from DidDataset import DidDataset
 from DidModel import DidModel
 from DidModelHuggingFace import DidModelHuggingFace
 from DidModelRunner import DidModelRunner
-from parallel import DataParallelModel, DataParallelCriterion
 
 
 def print_Config():
@@ -102,11 +102,6 @@ if __name__ == "__main__":
     else:
         raise SystemExit("you must specify loss_function for " + config.general['loss_function'])
 
-    # Using more than one GPU
-    if torch.cuda.device_count() > 1:
-        print("Wrapping loss_function with DataParallelCriterion")
-        loss_function = DataParallelCriterion(loss_function)
-
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
     # model = DidModel(model_path=config.model['model_location'],
     #                  num_classes=config.model['num_classes'],
@@ -121,7 +116,7 @@ if __name__ == "__main__":
     # Using more than one GPU
     if torch.cuda.device_count() > 1:
         print("Wrapping model with DataParallel")
-        model = DataParallelModel(model)
+        model = DataParallel(model)
 
     # Optimizer
     print('optimizer_params:')
