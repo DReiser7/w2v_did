@@ -23,9 +23,9 @@ def print_Config():
     print("  test_data: " + config.data['test_dataset'])
     print("  batch_size: " + str(config.data['batch_size']) + ", shuffle: " + str(config.data['shuffle']))
     print('model:')
-    if config.model['model_location']:
+    try:
         print("  model: " + str(config.model['model_location']))
-    else:
+    except:
         print("  model: HuggingFace")
     print("  num_classes: " + str(config.model['num_classes']) + ", freeze_fairseq: " + str(
         config.model['freeze_fairseq']))
@@ -107,64 +107,64 @@ if __name__ == "__main__":
         raise SystemExit("you must specify loss_function for " + config.general['loss_function'])
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
-    if config.model['model_location']:
+    try:
         model = DidModel(model_path=config.model['model_location'],
                          num_classes=config.model['num_classes'],
                          exp_norm_func=exp_norm_func,
                          freeze_fairseq=config.model['freeze_fairseq'])
-    else:
+    except:
         model = DidModelHuggingFace(
             num_classes=config.model['num_classes'],
             exp_norm_func=exp_norm_func,
             freeze_fairseq=config.model['freeze_fairseq'])
 
-    # Using more than one GPU
-    if torch.cuda.device_count() > 1:
-        print("Wrapping model with DataParallel")
-        model = DataParallel(model)
+# Using more than one GPU
+if torch.cuda.device_count() > 1:
+    print("Wrapping model with DataParallel")
+    model = DataParallel(model)
 
-    # Optimizer
-    print('optimizer_params:')
-    if config.general['optimizer'] == 'adam':
-        print('  lr: ' + str(config.optimizers[config.general['optimizer']]['lr']) + ', weight_decay: ' + str(
-            config.optimizers[config.general['optimizer']]['weight_decay']))
-        optimizer = optim.Adam(model.classifier_layer.parameters(),
-                               lr=config.optimizers[config.general['optimizer']]['lr'],
-                               weight_decay=config.optimizers[config.general['optimizer']]['weight_decay'])
-    else:
-        raise SystemExit("you must specify optimizer for " + config.general['optimizer'])
+# Optimizer
+print('optimizer_params:')
+if config.general['optimizer'] == 'adam':
+    print('  lr: ' + str(config.optimizers[config.general['optimizer']]['lr']) + ', weight_decay: ' + str(
+        config.optimizers[config.general['optimizer']]['weight_decay']))
+    optimizer = optim.Adam(model.classifier_layer.parameters(),
+                           lr=config.optimizers[config.general['optimizer']]['lr'],
+                           weight_decay=config.optimizers[config.general['optimizer']]['weight_decay'])
+else:
+    raise SystemExit("you must specify optimizer for " + config.general['optimizer'])
 
-    # Scheduler
-    print('scheduler_params:')
-    print('  step_size: ' + str(config.scheduler['step_size']) + ', gamma: ' + str(config.scheduler['gamma']))
-    scheduler = optim.lr_scheduler.StepLR(optimizer,
-                                          step_size=config.scheduler['step_size'],
-                                          gamma=config.scheduler['gamma'])
+# Scheduler
+print('scheduler_params:')
+print('  step_size: ' + str(config.scheduler['step_size']) + ', gamma: ' + str(config.scheduler['gamma']))
+scheduler = optim.lr_scheduler.StepLR(optimizer,
+                                      step_size=config.scheduler['step_size'],
+                                      gamma=config.scheduler['gamma'])
 
-    # create runner for training and testing
-    runner = DidModelRunner(device=device,
-                            model=model,
-                            optimizer=optimizer,
-                            scheduler=scheduler,
-                            wandb=wandb,
-                            loss_function=loss_function)
+# create runner for training and testing
+runner = DidModelRunner(device=device,
+                        model=model,
+                        optimizer=optimizer,
+                        scheduler=scheduler,
+                        wandb=wandb,
+                        loss_function=loss_function)
 
-    wandb.watch(model)
+wandb.watch(model)
 
-    for epoch in range(config.general['epochs']):
-        closs = runner.train(train_loader=train_loader,
-                             epoch=epoch,
-                             log_interval=config.general['log_interval'],
-                             batch_size=config.data['batch_size'])
-        wandb.log({"loss": closs / (len(train_idx) / config.data['batch_size'])})
+for epoch in range(config.general['epochs']):
+    closs = runner.train(train_loader=train_loader,
+                         epoch=epoch,
+                         log_interval=config.general['log_interval'],
+                         batch_size=config.data['batch_size'])
+    wandb.log({"loss": closs / (len(train_idx) / config.data['batch_size'])})
 
-        if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
-            accuracy = runner.test(test_loader=test_loader)
-            wandb.log({"accuracy": accuracy})
-            model_path = wandb.run.dir + '/did_model_epoch_' + str(epoch) + '.pt'
-            print("Saving model to " + model_path)
-            torch.save(model.state_dict(), model_path)
+    if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
+        accuracy = runner.test(test_loader=test_loader)
+        wandb.log({"accuracy": accuracy})
+        model_path = wandb.run.dir + '/did_model_epoch_' + str(epoch) + '.pt'
+        print("Saving model to " + model_path)
+        torch.save(model.state_dict(), model_path)
 
-        scheduler.step()
+    scheduler.step()
 
-    print('Finished Training')
+print('Finished Training')
