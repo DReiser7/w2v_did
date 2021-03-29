@@ -31,7 +31,7 @@ class DidModelRunner:
             self.wandb.log({"batch loss": loss.detach().item()})
             if batch_idx % log_interval == 0:  # print training stats
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch, batch_idx * len(data),
-                                                                               len(train_loader.dataset),
+                                                                               len(train_loader),
                                                                                100. * batch_idx / len(train_loader),
                                                                                loss.detach().float()))
         return closs
