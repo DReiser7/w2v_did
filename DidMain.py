@@ -82,10 +82,12 @@ if __name__ == "__main__":
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
                                                sampler=SubsetRandomSampler(train_idx),
+                                               drop_last=True,
                                                **kwargs)
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=config.data['batch_size'],
                                               shuffle=config.data['shuffle'],
+                                              drop_last=True,
                                               **kwargs)
 
     # Loss Function and fitting exponential normalizing function
