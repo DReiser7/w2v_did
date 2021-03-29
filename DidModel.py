@@ -160,8 +160,8 @@ class DidModel(nn.Module):
         # reduce dimension with mean
         x_reduced = torch.mean(x, -2)
         x = self.classifier_layer(x_reduced)
-        result = self.exp_norm_func(x, dim=1)
+        normalized = self.exp_norm_func(x, dim=1)
 
-        # result = {"x": x, "normalized": normalized}
+        result = {"x": x, "normalized": normalized}
 
         return result

@@ -8,6 +8,7 @@ class DidModelHuggingFace(nn.Module):
         super(DidModelHuggingFace, self).__init__()
 
         self.model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-large-xlsr-53")
+        self.model.eval()
 
         if freeze_fairseq:
             print("Freezing wav2vec layers")
@@ -42,6 +43,7 @@ class DidModelHuggingFace(nn.Module):
         # reduce dimension with mean
         x_reduced = torch.mean(x.last_hidden_state, -2)
         x = self.classifier_layer(x_reduced)
-        result = self.exp_norm_func(x, dim=1)
+        normalized = self.exp_norm_func(x, dim=1)
 
+        result = {"x": x, "normalized": normalized}
         return result
