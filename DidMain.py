@@ -128,7 +128,13 @@ if __name__ == "__main__":
     if config.general['optimizer'] == 'adam':
         print('  lr: ' + str(config.optimizers[config.general['optimizer']]['lr']) + ', weight_decay: ' + str(
             config.optimizers[config.general['optimizer']]['weight_decay']))
-        optimizer = optim.Adam(model.classifier_layer.parameters(),
+
+        if torch.cuda.device_count() > 1:
+            optimizer = optim.Adam(model.module.classifier_layer.parameters(),
+                               lr=config.optimizers[config.general['optimizer']]['lr'],
+                               weight_decay=config.optimizers[config.general['optimizer']]['weight_decay'])
+        else:
+            optimizer = optim.Adam(model.classifier_layer.parameters(),
                                lr=config.optimizers[config.general['optimizer']]['lr'],
                                weight_decay=config.optimizers[config.general['optimizer']]['weight_decay'])
     else:
