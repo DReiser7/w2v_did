@@ -36,6 +36,12 @@ class DidModelHuggingFace(nn.Module):
 
         self.exp_norm_func = exp_norm_func
 
+    def freeze_recursive(self, model):
+        for name, child in model.named_children():
+            for param in child.parameters():
+                param.requires_grad = False
+            self.dfs_freeze(child)
+
     def forward(self, source):
         x = self.model(source)
 
