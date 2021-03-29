@@ -1,5 +1,6 @@
 import json
 import sys
+import os
 from datetime import datetime
 
 import numpy as np
@@ -48,10 +49,14 @@ if __name__ == "__main__":
         # config_defaults["batch_size"] = config_defaults["batch_size"] * device_count
         # print("Multiplying batch * GPUs new batch_size=", config_defaults["batch_size"])
 
+    os.environ['WANDB_PROJECT'] = 'w2v_did'
+    os.environ['WANDB_LOG_MODEL'] = 'true'
+
     # Initialize a new wandb run
     wandb.init(project='w2v_did', config=did_config, entity='ba-reisedomfiviapas',
                name=datetime.now().strftime("w2v_did " + "_%Y%m%d-%H%M%S"))
     # Config is a variable that holds and saves hyperparameters and inputs
+
     config = wandb.config
     print_Config()
 
