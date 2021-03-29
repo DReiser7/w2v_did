@@ -12,6 +12,7 @@ from torch.utils.data import SubsetRandomSampler
 import wandb
 from DidDataset import DidDataset
 from DidModel import DidModel
+from DidModelHuggingFace import DidModelHuggingFace
 from DidModelRunner import DidModelRunner
 from parallel import DataParallelModel, DataParallelCriterion
 
@@ -22,7 +23,6 @@ def print_Config():
     print("  test_data: " + config.data['test_dataset'])
     print("  batch_size: " + str(config.data['batch_size']) + ", shuffle: " + str(config.data['shuffle']))
     print('model:')
-    print("  location: " + config.model['model_location'])
     print("  num_classes: " + str(config.model['num_classes']) + ", freeze_fairseq: " + str(
         config.model['freeze_fairseq']))
     print('general:')
@@ -108,10 +108,15 @@ if __name__ == "__main__":
         loss_function = DataParallelCriterion(loss_function)
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
-    model = DidModel(model_path=config.model['model_location'],
-                     num_classes=config.model['num_classes'],
-                     exp_norm_func=exp_norm_func,
-                     freeze_fairseq=config.model['freeze_fairseq'])
+    # model = DidModel(model_path=config.model['model_location'],
+    #                  num_classes=config.model['num_classes'],
+    #                  exp_norm_func=exp_norm_func,
+    #                  freeze_fairseq=config.model['freeze_fairseq'])
+
+    model = DidModelHuggingFace(
+        num_classes=config.model['num_classes'],
+        exp_norm_func=exp_norm_func,
+        freeze_fairseq=config.model['freeze_fairseq'])
 
     # Using more than one GPU
     if torch.cuda.device_count() > 1:
@@ -150,7 +155,7 @@ if __name__ == "__main__":
         closs = runner.train(train_loader=train_loader,
                              epoch=epoch,
                              log_interval=config.general['log_interval'])
-        wandb.log({"loss": closs / (len(train_loader.dataset) / config.batch_size)})
+        wandb.log({"loss": closs / (len(train_idx) / config.data['batch_size'])})
 
         if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
             accuracy = runner.test(test_loader=test_loader)
