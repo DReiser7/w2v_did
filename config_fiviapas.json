@@ -3,7 +3,7 @@
     "desc": "defines the data",
     "train_dataset": "/cluster/home/fiviapas/data/train_segmented/",
     "test_dataset": "/cluster/home/fiviapas/data/test_segmented/",
-    "batch_size": 4,
+    "batch_size": 2,
     "shuffle": true,
     "train_set_percentage": 0.2
   },
@@ -25,7 +25,7 @@
   "optimizers": {
     "desc": "defines usable optimizer and their needed inputs",
     "adam": {
-      "lr": 0.01,
+      "lr": 0.0001,
       "weight_decay": 0.0001
     }
   },
