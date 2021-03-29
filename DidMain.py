@@ -47,15 +47,14 @@ def train(gpu, args):
     torch.cuda.set_device(gpu)
 
     # Initialize a new wandb run
-    wb_name = datetime.now().strftime("w2v_did " + "_%Y%m%d-%H%M%S")
     if rank == 0:
         wandb.init(project='w2v_did', config=did_config, entity='ba-reisedomfiviapas',
-                   name=wb_name)
+                   name=args.wb_name)
         # Config is a variable that holds and saves hyperparameters and inputs
         config = wandb.config
         print_Config()
 
-    wandb.init(group=wb_name)
+    wandb.init(group=args.wb_name)
 
     # build train data
     csv_path_train = config.data['train_dataset'] + 'metadata.csv'  # file_path_train = './data/dev/segmented/'
@@ -179,6 +178,7 @@ if __name__ == "__main__":
         args.world_size = device_count * args.nodes
         args.gpus = device_count
         args.config = did_config
+        args.wb_name = datetime.now().strftime("w2v_did " + "_%Y%m%d-%H%M%S")
         os.environ['MASTER_ADDR'] = 'localhost'
         os.environ['MASTER_PORT'] = '8711'
         print("set env vars")
