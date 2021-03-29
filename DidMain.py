@@ -23,6 +23,10 @@ def print_Config():
     print("  test_data: " + config.data['test_dataset'])
     print("  batch_size: " + str(config.data['batch_size']) + ", shuffle: " + str(config.data['shuffle']))
     print('model:')
+    if config.model['model_location']:
+        print("  model: " + str(config.model['model_location']))
+    else:
+        print("  model: HuggingFace")
     print("  num_classes: " + str(config.model['num_classes']) + ", freeze_fairseq: " + str(
         config.model['freeze_fairseq']))
     print('general:')
@@ -103,15 +107,16 @@ if __name__ == "__main__":
         raise SystemExit("you must specify loss_function for " + config.general['loss_function'])
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
-    model = DidModel(model_path=config.model['model_location'],
-                     num_classes=config.model['num_classes'],
-                     exp_norm_func=exp_norm_func,
-                     freeze_fairseq=config.model['freeze_fairseq'])
-
-    # model = DidModelHuggingFace(
-    #     num_classes=config.model['num_classes'],
-    #     exp_norm_func=exp_norm_func,
-    #     freeze_fairseq=config.model['freeze_fairseq'])
+    if config.model['model_location']:
+        model = DidModel(model_path=config.model['model_location'],
+                         num_classes=config.model['num_classes'],
+                         exp_norm_func=exp_norm_func,
+                         freeze_fairseq=config.model['freeze_fairseq'])
+    else:
+        model = DidModelHuggingFace(
+            num_classes=config.model['num_classes'],
+            exp_norm_func=exp_norm_func,
+            freeze_fairseq=config.model['freeze_fairseq'])
 
     # Using more than one GPU
     if torch.cuda.device_count() > 1:
@@ -149,7 +154,8 @@ if __name__ == "__main__":
     for epoch in range(config.general['epochs']):
         closs = runner.train(train_loader=train_loader,
                              epoch=epoch,
-                             log_interval=config.general['log_interval'])
+                             log_interval=config.general['log_interval'],
+                             batch_size=config.data['batch_size'])
         wandb.log({"loss": closs / (len(train_idx) / config.data['batch_size'])})
 
         if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
