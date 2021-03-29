@@ -103,15 +103,15 @@ if __name__ == "__main__":
         raise SystemExit("you must specify loss_function for " + config.general['loss_function'])
 
     # create our own model with classifier on top of fairseq's xlsr_53_56k.pt
-    # model = DidModel(model_path=config.model['model_location'],
-    #                  num_classes=config.model['num_classes'],
-    #                  exp_norm_func=exp_norm_func,
-    #                  freeze_fairseq=config.model['freeze_fairseq'])
+    model = DidModel(model_path=config.model['model_location'],
+                     num_classes=config.model['num_classes'],
+                     exp_norm_func=exp_norm_func,
+                     freeze_fairseq=config.model['freeze_fairseq'])
 
-    model = DidModelHuggingFace(
-        num_classes=config.model['num_classes'],
-        exp_norm_func=exp_norm_func,
-        freeze_fairseq=config.model['freeze_fairseq'])
+    # model = DidModelHuggingFace(
+    #     num_classes=config.model['num_classes'],
+    #     exp_norm_func=exp_norm_func,
+    #     freeze_fairseq=config.model['freeze_fairseq'])
 
     # Using more than one GPU
     if torch.cuda.device_count() > 1:
