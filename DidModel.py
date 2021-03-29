@@ -162,6 +162,7 @@ class DidModel(nn.Module):
         x = self.classifier_layer(x_reduced)
         normalized = self.exp_norm_func(x, dim=1)
 
+        x = torch.nn.functional.softmax(x, dim=1)
         result = {"x": x, "normalized": normalized}
 
         return result
