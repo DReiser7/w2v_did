@@ -9,6 +9,7 @@
   },
   "model": {
     "desc": "defines the model",
+    "model_location": "/cluster/home/fiviapas/data/models/xlsr_53_56k.pt",
     "num_classes": 5,
     "freeze_fairseq": true
   },
