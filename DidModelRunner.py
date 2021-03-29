@@ -22,8 +22,8 @@ class DidModelRunner:
             self.optimizer.zero_grad()
             data = data.to(self.device)
             target = target.to(self.device)
-            data = data.requires_grad_()  # set requires_grad to True for training
-            output = self.model(data)
+            # data = data.requires_grad_()  # set requires_grad to True for training
+            output = self.model(data)['normalized']
             loss = self.loss_function(output, target)  # the loss functions expects a batchSizex5 input
             loss.backward()
             closs = closs + loss.detach().item()
