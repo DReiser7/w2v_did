@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from transformers import Wav2Vec2Model
 
 
@@ -51,7 +52,7 @@ class DidModelHuggingFace(nn.Module):
         x = self.classifier_layer(x_reduced)
         normalized = self.exp_norm_func(x, dim=1)
 
-        x = torch.nn.functional.softmax(x, dim=1)
+        x = F.softmax(x, dim=1)
 
         result = {"x": x, "normalized": normalized}
         return result
