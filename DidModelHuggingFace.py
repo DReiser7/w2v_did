@@ -10,7 +10,7 @@ class DidModelHuggingFace(nn.Module):
         self.model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-large-xlsr-53")
 
         if freeze_fairseq:
-            print("Freezing fairseq layers")
+            print("Freezing wav2vec layers")
             for params in self.model.base_model.parameters():
                 params.requires_grad = False
             for params in self.model.base_model.encoder.parameters():
