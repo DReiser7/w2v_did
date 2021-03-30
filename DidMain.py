@@ -92,7 +92,6 @@ if __name__ == "__main__":
     # build data loaders
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
-                                               shuffle=config.data['shuffle'],
                                                sampler=SubsetRandomSampler(train_idx),
                                                drop_last=True,
                                                **kwargs)

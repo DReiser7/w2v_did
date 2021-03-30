@@ -4,7 +4,7 @@
     "train_dataset": "/cluster/home/fiviapas/data/train_segmented/",
     "test_dataset": "/cluster/home/fiviapas/data/test_segmented/",
     "batch_size": 16,
-    "shuffle": false,
+    "shuffle": true,
     "train_set_percentage": 0.2
   },
   "model": {
@@ -15,7 +15,7 @@
   "general": {
     "desc": "defines general information for the training run and which optimizer and loss_function are taken",
     "num_workers": 1,
-    "epochs": 10,
+    "epochs": 15,
     "optimizer": "adam",
     "loss_function": "nllLoss",
     "log_interval": 10,
@@ -25,7 +25,7 @@
     "desc": "defines usable optimizer and their needed inputs",
     "adam": {
       "lr": 0.001,
-      "weight_decay": 0.0001
+      "weight_decay": 0.001
     }
   },
   "scheduler": {
