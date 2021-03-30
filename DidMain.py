@@ -46,6 +46,8 @@ if __name__ == "__main__":
     # get device on which training should run
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # batch_size has to stay the same even if we are on multiple gpus
+    batch_size_test = did_config['data']['batch_size']
     # Using more than one GPU
     if torch.cuda.device_count() > 1:
         device_count = torch.cuda.device_count()
@@ -90,11 +92,12 @@ if __name__ == "__main__":
     # build data loaders
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
+                                               shuffle=config.data['shuffle'],
                                                sampler=SubsetRandomSampler(train_idx),
                                                drop_last=True,
                                                **kwargs)
     test_loader = torch.utils.data.DataLoader(test_set,
-                                              batch_size=config.data['batch_size'],
+                                              batch_size=batch_size_test,
                                               shuffle=config.data['shuffle'],
                                               drop_last=True,
                                               **kwargs)
