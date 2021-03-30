@@ -4,7 +4,7 @@
     "train_dataset": "/cluster/home/fiviapas/data/train_segmented/",
     "test_dataset": "/cluster/home/fiviapas/data/test_segmented/",
     "batch_size": 16,
-    "shuffle": true,
+    "shuffle": false,
     "train_set_percentage": 0.2
   },
   "model": {
