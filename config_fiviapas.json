@@ -18,7 +18,7 @@
     "epochs": 15,
     "optimizer": "adam",
     "loss_function": "nllLoss",
-    "log_interval": 10,
+    "log_interval": 8,
     "model_save_interval": 1
   },
   "optimizers": {
