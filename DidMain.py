@@ -167,12 +167,12 @@ if __name__ == "__main__":
         wandb.log({"loss": closs / (len(train_idx) / config.data['batch_size'])})
 
         if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
-            accuracy = runner.test(test_loader=test_loader)
-            wandb.log({"accuracy": accuracy})
+            runner.test(test_loader=test_loader)
             model_path = wandb.run.dir + '/did_model_epoch_' + str(epoch) + '.pt'
             print("Saving model to " + model_path)
             torch.save(model.state_dict(), model_path)
 
         scheduler.step()
+        wandb.log({"learning rate": optimizer.param_groups[0]['lr']})
 
     print('Finished Training')
