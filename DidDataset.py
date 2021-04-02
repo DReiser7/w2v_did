@@ -37,10 +37,10 @@ class DidDataset(Dataset):
         # format the file path and load the file
         path = self.root_dir + str(self.folders[idx]) + "/" + self.file_names[idx]
 
-        speech, fs = sf.read(path)
+        # speech, fs = sf.read(path)
         # sound = self.transform(path)
 
-        return np.array(speech), np.array(self.labels[idx])
+        return np.load(path), np.array(self.labels[idx])
 
     def transform(self, path):
         dict = {}
