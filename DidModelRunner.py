@@ -19,8 +19,9 @@ class DidModelRunner:
     def train(self, train_loader, epoch, log_interval, batch_size):
         self.model.train()
         closs = 0
+        t = time.time()
         for batch_idx, (data, target) in enumerate(train_loader):
-            t = time.time()
+            self.wandb.log({"dataload_duration": (time.time() - t)})
             self.optimizer.zero_grad()
             data = data.to(self.device)
             target = target.to(self.device)
@@ -37,7 +38,8 @@ class DidModelRunner:
                                                                                len(train_loader) * batch_size,
                                                                                100. * batch_idx / len(train_loader),
                                                                                loss.detach().float()))
-                self.wandb.log({"batch_duration": (time.time() - t)})
+
+            t = time.time()
         return closs
 
 
