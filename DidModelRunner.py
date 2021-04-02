@@ -1,4 +1,5 @@
 import time
+import torch
 
 class DidModelRunner:
 
@@ -44,18 +45,19 @@ class DidModelRunner:
 
     def test(self, test_loader):
         self.model.eval()
-        correct = 0
-        vloss = 0
-        for data, target in test_loader:
-            data = data.to(self.device)
-            target = target.to(self.device)
-            output = self.model(data)
-            loss = self.loss_function(output['normalized'], target)  # the loss functions expects a batchSizex5 input
-            vloss = vloss + loss.detach().item()
-            pred = output['x'].max(1)[1]  # get the index of the max log-probability
-            correct += pred.eq(target).cpu().sum().item()
+        with torch.no_grad():
+            correct = 0
+            vloss = 0
+            for data, target in test_loader:
+                data = data.to(self.device)
+                target = target.to(self.device)
+                output = self.model(data)
+                loss = self.loss_function(output['normalized'], target)  # the loss functions expects a batchSizex5 input
+                vloss = vloss + loss.detach().item()
+                pred = output['x'].max(1)[1]  # get the index of the max log-probability
+                correct += pred.eq(target).cpu().sum().item()
 
-        accr = 100. * correct / len(test_loader.dataset)
-        self.wandb.log({"validation loss": vloss})
-        self.wandb.log({"accuracy": accr})
-        print('\nTest set: Accuracy: {}/{} ({:.0f}%)\n'.format(correct, len(test_loader.dataset), accr))
+            accr = 100. * correct / len(test_loader.dataset)
+            self.wandb.log({"validation loss": vloss})
+            self.wandb.log({"accuracy": accr})
+            print('\nTest set: Accuracy: {}/{} ({:.0f}%)\n'.format(correct, len(test_loader.dataset), accr))
