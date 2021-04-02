@@ -43,12 +43,12 @@ class DidModelRunner:
         return closs
 
 
-    def test(self, test_loader):
+    def test(self, test_loader, log_interval):
         self.model.eval()
         with torch.no_grad():
             correct = 0
             vloss = 0
-            for data, target in test_loader:
+            for batch_idx, data, target in enumerate(test_loader):
                 data = data.to(self.device)
                 target = target.to(self.device)
                 output = self.model(data)
@@ -56,6 +56,8 @@ class DidModelRunner:
                 vloss = vloss + loss.detach().item()
                 pred = output['x'].max(1)[1]  # get the index of the max log-probability
                 correct += pred.eq(target).cpu().sum().item()
+                if batch_idx % log_interval == 0:  # print training stats
+                    print('Eval done: {:.0f}%'.format(100. * batch_idx / len(test_loader.dataset)))
 
             accr = 100. * correct / len(test_loader.dataset)
             self.wandb.log({"validation loss": vloss})
