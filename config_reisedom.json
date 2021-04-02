@@ -1,8 +1,8 @@
 {
   "data": {
     "desc": "defines the data",
-    "train_dataset": "/cluster/home/reisedom/data/train_segmented/",
-    "test_dataset": "/cluster/home/reisedom/data/test_segmented/",
+    "train_dataset": "/cluster/home/reisedom/data/train_numpy/",
+    "test_dataset": "/cluster/home/reisedom/data/test_numpy/",
     "batch_size": 16,
     "shuffle": true,
     "train_set_percentage": 0.2
