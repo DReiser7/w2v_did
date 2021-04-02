@@ -159,15 +159,16 @@ if __name__ == "__main__":
 
     wandb.watch(model)
 
-    for epoch in range(config.general['epochs']):
+    for epoch in range(1, config.general['epochs'] + 1):
         closs = runner.train(train_loader=train_loader,
                              epoch=epoch,
                              log_interval=config.general['log_interval'],
                              batch_size=config.data['batch_size'])
         wandb.log({"loss": closs / (len(train_idx) / config.data['batch_size'])})
 
+        runner.test(test_loader=test_loader)
+
         if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
-            runner.test(test_loader=test_loader)
             model_path = wandb.run.dir + '/did_model_epoch_' + str(epoch) + '.pt'
             print("Saving model to " + model_path)
             torch.save(model.state_dict(), model_path)
