@@ -14,7 +14,7 @@
   },
   "general": {
     "desc": "defines general information for the training run and which optimizer and loss_function are taken",
-    "num_workers": 1,
+    "num_workers": 8,
     "epochs": 10,
     "optimizer": "adam",
     "loss_function": "nllLoss",
