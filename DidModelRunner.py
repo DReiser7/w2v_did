@@ -1,3 +1,5 @@
+import time
+
 class DidModelRunner:
 
     def __init__(self, device, model, optimizer, scheduler, wandb, loss_function):
@@ -18,6 +20,7 @@ class DidModelRunner:
         self.model.train()
         closs = 0
         for batch_idx, (data, target) in enumerate(train_loader):
+            t = time.time()
             self.optimizer.zero_grad()
             data = data.to(self.device)
             target = target.to(self.device)
@@ -34,6 +37,7 @@ class DidModelRunner:
                                                                                len(train_loader) * batch_size,
                                                                                100. * batch_idx / len(train_loader),
                                                                                loss.detach().float()))
+                self.wandb.log({"batch_duration": (time.time() - t)})
         return closs
 
 
