@@ -54,6 +54,7 @@ if __name__ == "__main__":
         device_count = torch.cuda.device_count()
         print("Using:", device_count, "GPUs!")
         did_config['data']['batch_size'] = did_config['data']['batch_size'] * device_count
+        batch_size_test = batch_size_test * device_count
         print("Multiplying batch * GPUs new batch_size=", did_config['data']['batch_size'])
 
     os.environ['WANDB_PROJECT'] = 'w2v_did'
