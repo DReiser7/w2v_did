@@ -10,7 +10,6 @@ class DidModelRunner:
         self.model = model
         self.model = self.model.double()
         self.model.to(self.device)
-        print('print model: ', self.model)
 
         self.optimizer = optimizer
         self.scheduler = scheduler
