@@ -48,7 +48,7 @@ class DidModelRunner:
         with torch.no_grad():
             correct = 0
             vloss = 0
-            for batch_idx, data, target in enumerate(test_loader):
+            for batch_idx, (data, target) in enumerate(test_loader):
                 data = data.to(self.device)
                 target = target.to(self.device)
                 output = self.model(data)
