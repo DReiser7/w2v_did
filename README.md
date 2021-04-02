@@ -34,6 +34,7 @@ screen -S username-session
 run image:
 ```bash
 srun --pty --ntasks=1 --cpus-per-task=4 --mem=16G --gres=gpu:1 singularity shell w2v_did_wandb.simg
+srun --pty --ntasks=1 --cpus-per-task=4 --mem=16G --gres=gpu:2 singularity shell w2v_did_wandb.simg
 ```
 clone git repository:
 ```bash
