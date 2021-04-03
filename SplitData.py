@@ -25,8 +25,8 @@ def create_metadata_csv(dir):
 
 if __name__ == "__main__":
     dir_numpy = sys.argv[1]  # example './data/dev/numpy'
-    ratio_train = sys.argv[2]
-    ratio_val = sys.argv[3]
+    ratio_train = float(sys.argv[2])
+    ratio_val = float(sys.argv[3])
 
     output = dir_numpy.replace('numpy', 'splitted')
 
