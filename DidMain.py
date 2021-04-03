@@ -159,7 +159,7 @@ if __name__ == "__main__":
                             wandb=wandb,
                             loss_function=loss_function)
 
-    wandb.watch(model)
+    wandb.watch(model, log="all")
 
     for epoch in range(1, config.general['epochs'] + 1):
         t = time.time()
