@@ -5,7 +5,7 @@
     "test_dataset": "/cluster/home/fiviapas/data/test_numpy/",
     "batch_size": 16,
     "shuffle": true,
-    "train_set_percentage": 0.2
+    "train_set_percentage": 0.01
   },
   "model": {
     "desc": "defines the model",
@@ -19,7 +19,7 @@
     "optimizer": "adam",
     "loss_function": "nllLoss",
     "log_interval": 5,
-    "model_save_interval": 1
+    "model_save_interval": 5
   },
   "optimizers": {
     "desc": "defines usable optimizer and their needed inputs",
@@ -30,7 +30,7 @@
   },
   "scheduler": {
     "desc": "defines params for scheduler",
-    "step_size": 10,
+    "step_size": 1,
     "gamma": 0.1
   }
 }
