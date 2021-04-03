@@ -79,12 +79,12 @@ if __name__ == "__main__":
     csv_path_train = config.data['train_dataset'] + 'metadata.csv'  # file_path_train = './data/dev/segmented/'
     train_set = DidDataset(csv_path_train, config.data['train_dataset'])
 
-    train_set_indices = list(range(len(train_set)))
-    np.random.shuffle(train_set_indices)
-    val_split_index = int(np.floor(config.data['train_set_percentage'] * len(train_set)))
-    train_idx = train_set_indices[:val_split_index]
+    # train_set_indices = list(range(len(train_set)))
+    # np.random.shuffle(train_set_indices)
+    # val_split_index = int(np.floor(config.data['train_set_percentage'] * len(train_set)))
+    # train_idx = train_set_indices[:val_split_index]
 
-    print("Train set size: " + str(len(train_idx)))
+    print("Train set size: " + str(len(train_set)))
 
     # build test data
     csv_path_test = config.data['test_dataset'] + 'metadata.csv'  # file_path_test = './data/dev/segmented/'
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # build data loaders
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=config.data['batch_size'],
-                                               sampler=SubsetRandomSampler(train_idx),
+                                               shuffle=config.data['shuffle'],
                                                drop_last=True,
                                                **kwargs)
     test_loader = torch.utils.data.DataLoader(test_set,
@@ -165,9 +165,9 @@ if __name__ == "__main__":
         t = time.time()
         closs = runner.train(train_loader=train_loader,
                              epoch=epoch,
-                             log_interval=config.general['log_interval'],
-                             batch_size=config.data['batch_size'])
-        wandb.log({"loss": closs / (len(train_idx) / config.data['batch_size'])})
+                             log_interval=config.general['log_interval']
+                             )
+        wandb.log({"loss": closs / (len(train_loader.dataset) / config.data['batch_size'])})
 
         wandb.log({"epoch_duration": (time.time() - t)})
 

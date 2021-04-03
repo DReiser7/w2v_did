@@ -16,7 +16,7 @@ class DidModelRunner:
         self.scheduler = scheduler
         self.loss_function = loss_function
 
-    def train(self, train_loader, epoch, log_interval, batch_size):
+    def train(self, train_loader, epoch, log_interval):
         self.model.train()
         closs = 0
         t = time.time()
@@ -34,7 +34,7 @@ class DidModelRunner:
             if batch_idx % log_interval == 0:  # print training stats
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch,
                                                                                batch_idx * len(data),
-                                                                               len(train_loader) * batch_size,
+                                                                               len(train_loader.dataset),
                                                                                100. * batch_idx / len(train_loader),
                                                                                loss.detach().float()))
 
