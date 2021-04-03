@@ -15,6 +15,7 @@ RUN pip install soundfile
 RUN pip install torch
 RUN pip install transformers
 RUN pip install wandb
+RUN pip install split-folders
 
 #install fairseq over repo
 RUN git clone https://github.com/pytorch/fairseq
