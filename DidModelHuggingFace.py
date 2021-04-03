@@ -30,11 +30,11 @@ class DidModelHuggingFace(nn.Module):
 
         self.classifier_layer = nn.Sequential(
             nn.Linear(1024, 1024),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear(1024, 256),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear(256, 256),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear(256, num_classes)
         )
 
