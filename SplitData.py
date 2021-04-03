@@ -10,7 +10,7 @@ def create_metadata_csv(dir):
     folders = []
 
     print('writing metadata: ', dir + 'metadata.csv')
-    with open(dir + 'metadata.csv', 'w', newline='') as csvfile:
+    with open(dir + '/metadata.csv', 'w', newline='') as csvfile:
         for path in pathlist:
             # because path is object not string
             absolute_path = str(path)
