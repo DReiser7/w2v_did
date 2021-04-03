@@ -29,6 +29,7 @@ class DidModelHuggingFace(nn.Module):
                 params.requires_grad = False
 
         self.classifier_layer = nn.Sequential(
+            nn.Sigmoid(),
             nn.Linear(1024, 1024),
             nn.Sigmoid(),
             nn.Linear(1024, 256),
