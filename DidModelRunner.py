@@ -60,6 +60,6 @@ class DidModelRunner:
                     print('Eval done: {:.0f}%'.format(100. * batch_idx / len(test_loader.dataset)))
 
             accr = 100. * correct / len(test_loader.dataset)
-            self.wandb.log({"validation loss": vloss})
             self.wandb.log({"accuracy": accr})
             print('\nTest set: Accuracy: {}/{} ({:.0f}%)\n'.format(correct, len(test_loader.dataset), accr))
+            return vloss
