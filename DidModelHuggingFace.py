@@ -22,10 +22,11 @@ class DidModelHuggingFace(nn.Module):
                 params.requires_grad = False
             for params in self.model.encoder.parameters():
                 params.requires_grad = False
-            for params in self.model.feature_extractor.parameters():
-                params.requires_grad = False
-            for params in self.model.feature_projection.parameters():
-                params.requires_grad = False
+
+        for params in self.model.feature_extractor.parameters():
+            params.requires_grad = False
+        for params in self.model.feature_projection.parameters():
+            params.requires_grad = False
 
         self.classifier_layer = nn.Sequential(
             nn.LeakyReLU(),
