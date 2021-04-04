@@ -10,7 +10,7 @@
   "model": {
     "desc": "defines the model",
     "num_classes": 5,
-    "freeze_fairseq": true
+    "freeze_fairseq": false
   },
   "general": {
     "desc": "defines general information for the training run and which optimizer and loss_function are taken",

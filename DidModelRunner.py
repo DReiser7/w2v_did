@@ -22,7 +22,6 @@ class DidModelRunner:
         t = time.time()
         for batch_idx, (data, target) in enumerate(train_loader):
             self.wandb.log({"dataload_duration": (time.time() - t)})
-            self.optimizer.zero_grad()
             data = data.to(self.device)
             target = target.to(self.device)
             z = time.time()
@@ -30,6 +29,7 @@ class DidModelRunner:
             self.wandb.log({"model_calc_duration": (time.time() - z)})
             z = time.time()
             loss = self.loss_function(output, target)
+            self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
             self.wandb.log({"batch_loss_calc_duration": (time.time() - z)})
@@ -57,10 +57,10 @@ class DidModelRunner:
                 z = time.time()
                 output = self.model(data)
                 self.wandb.log({"eval_model_calc_duration": (time.time() - z)})
-                z = time.time()
-                loss = self.loss_function(output['normalized'], target)  # the loss functions expects a batchSizex5 input
-                vloss = vloss + loss.detach().item()
-                self.wandb.log({"eval_loss_calc_duration": (time.time() - z)})
+                # z = time.time()
+                # loss = self.loss_function(output['normalized'], target)  # the loss functions expects a batchSizex5 input
+                # vloss = vloss + loss.detach().item()
+                # self.wandb.log({"eval_loss_calc_duration": (time.time() - z)})
                 pred = output['x'].max(1)[1]  # get the index of the max log-probability
                 correct += pred.eq(target).cpu().sum().item()
                 if batch_idx % log_interval == 0:  # print training stats
