@@ -175,7 +175,7 @@ if __name__ == "__main__":
         if epoch % config.general['model_save_interval'] == 0:  # test and save model every n epochs
             t = time.time()
             vloss = runner.test(test_loader=test_loader, log_interval=config.general['log_interval'])
-            wandb.log({"validation loss": vloss / (len(test_loader.dataset) / config.data['batch_size'])})
+            # wandb.log({"validation loss": vloss / (len(test_loader.dataset) / config.data['batch_size'])})
             wandb.log({"eval_duration": (time.time() - t)})
             model_path = wandb.run.dir + '/did_model_epoch_' + str(epoch) + '.pt'
             print("Saving model to " + model_path)
