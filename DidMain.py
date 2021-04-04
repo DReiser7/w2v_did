@@ -80,17 +80,17 @@ if __name__ == "__main__":
     csv_path_train = config.data['train_dataset'] + 'metadata.csv'  # file_path_train = './data/dev/segmented/'
     train_set = DidDataset(csv_path_train, config.data['train_dataset'])
 
-    # train_set_indices = list(range(len(train_set)))
-    # np.random.shuffle(train_set_indices)
-    # val_split_index = int(np.floor(config.data['train_set_percentage'] * len(train_set)))
-    # train_idx = train_set_indices[:val_split_index]
-
     print("Train set size: " + str(len(train_set)))
 
     # build test data
     csv_path_test = config.data['test_dataset'] + 'metadata.csv'  # file_path_test = './data/dev/segmented/'
     test_set = DidDataset(csv_path_test, config.data['test_dataset'])
-    print("Test set size: " + str(len(test_set)))
+
+    test_set_indices = list(range(len(test_set)))
+    np.random.shuffle(test_set_indices)
+    val_split_index = int(np.floor(config.data['train_set_percentage'] * len(train_set)))
+    test_idx = test_set_indices[:val_split_index]
+    print("Test set size: " + str(len(test_idx)))
 
     # build data loaders
     train_loader = torch.utils.data.DataLoader(train_set,
@@ -100,7 +100,7 @@ if __name__ == "__main__":
                                                **kwargs)
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=batch_size_test,
-                                              shuffle=config.data['shuffle'],
+                                              sampler=SubsetRandomSampler(test_idx),
                                               drop_last=True,
                                               **kwargs)
 

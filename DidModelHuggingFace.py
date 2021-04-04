@@ -32,11 +32,11 @@ class DidModelHuggingFace(nn.Module):
             nn.LeakyReLU(),
             nn.Linear(1024, 1024),
             nn.LeakyReLU(),
-            nn.Linear(1024, 256),
+            nn.Linear(1024, 1024),
             nn.Sigmoid(),
-            nn.Linear(256, 256),
+            nn.Linear(1024, 1024),
             nn.Sigmoid(),
-            nn.Linear(256, num_classes)
+            nn.Linear(1024, num_classes)
         )
 
         self.exp_norm_func = exp_norm_func
