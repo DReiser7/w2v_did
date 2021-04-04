@@ -1,8 +1,8 @@
 {
   "data": {
     "desc": "defines the data",
-    "train_dataset": "/cluster/home/fiviapas/data/train_numpy/",
-    "test_dataset": "/cluster/home/fiviapas/data/test_numpy/",
+    "train_dataset": "/cluster/home/fiviapas/data/numpy/",
+    "test_dataset": "/cluster/home/fiviapas/data/numpy/",
     "batch_size": 16,
     "shuffle": true,
     "train_set_percentage": 1
@@ -15,7 +15,7 @@
   "general": {
     "desc": "defines general information for the training run and which optimizer and loss_function are taken",
     "num_workers": 8,
-    "epochs": 50,
+    "epochs": 300,
     "optimizer": "adam",
     "loss_function": "nllLoss",
     "log_interval": 5,
@@ -30,7 +30,7 @@
   },
   "scheduler": {
     "desc": "defines params for scheduler",
-    "step_size": 20,
+    "step_size": 80,
     "gamma": 0.1
   }
 }
