@@ -1,11 +1,11 @@
 {
   "data": {
     "desc": "defines the data",
-    "train_dataset": "/cluster/home/fiviapas/data/train_splitted/val/",
-    "test_dataset": "/cluster/home/fiviapas/data/test_splitted/train/",
+    "train_dataset": "/cluster/home/fiviapas/data/train_numpy/",
+    "test_dataset": "/cluster/home/fiviapas/data/test_numpy/",
     "batch_size": 16,
     "shuffle": true,
-    "train_set_percentage": 0.2
+    "train_set_percentage": 1
   },
   "model": {
     "desc": "defines the model",
