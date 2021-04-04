@@ -15,7 +15,7 @@
   "general": {
     "desc": "defines general information for the training run and which optimizer and loss_function are taken",
     "num_workers": 8,
-    "epochs": 50,
+    "epochs": 60,
     "optimizer": "adam",
     "loss_function": "nllLoss",
     "log_interval": 5,
@@ -30,7 +30,7 @@
   },
   "scheduler": {
     "desc": "defines params for scheduler",
-    "step_size": 10,
+    "step_size": 20,
     "gamma": 0.1
   }
 }
