@@ -16,13 +16,13 @@ class DidModelHuggingFace(nn.Module):
                 params.requires_grad = False
             for params in self.model.base_model.encoder.parameters():
                 params.requires_grad = False
-            for params in self.model.base_model.feature_extractor.parameters():
-                params.requires_grad = False
-            for params in self.model.base_model.feature_projection.parameters():
-                params.requires_grad = False
-            for params in self.model.encoder.parameters():
-                params.requires_grad = False
 
+        for params in self.model.base_model.feature_extractor.parameters():
+            params.requires_grad = False
+        for params in self.model.base_model.feature_projection.parameters():
+            params.requires_grad = False
+        for params in self.model.encoder.parameters():
+            params.requires_grad = False
         for params in self.model.feature_extractor.parameters():
             params.requires_grad = False
         for params in self.model.feature_projection.parameters():
