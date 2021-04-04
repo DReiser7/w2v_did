@@ -3,7 +3,7 @@
     "desc": "defines the data",
     "train_dataset": "/cluster/home/fiviapas/data/numpy/",
     "test_dataset": "/cluster/home/fiviapas/data/numpy/",
-    "batch_size": 4,
+    "batch_size": 2,
     "shuffle": true,
     "train_set_percentage": 1
   },
