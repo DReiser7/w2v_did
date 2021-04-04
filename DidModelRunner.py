@@ -25,7 +25,9 @@ class DidModelRunner:
             self.optimizer.zero_grad()
             data = data.to(self.device)
             target = target.to(self.device)
+            z = time.time()
             output = self.model(data)['normalized']
+            self.wandb.log({"model_calc_duration": (time.time() - z)})
             loss = self.loss_function(output, target)
             loss.backward()
             self.optimizer.step()
