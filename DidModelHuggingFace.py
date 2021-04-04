@@ -9,7 +9,6 @@ class DidModelHuggingFace(nn.Module):
         super(DidModelHuggingFace, self).__init__()
 
         self.model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-large-xlsr-53")
-        self.model.eval()
 
         if freeze_fairseq:
             print("Freezing wav2vec layers")
