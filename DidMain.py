@@ -118,7 +118,7 @@ if __name__ == "__main__":
                          exp_norm_func=exp_norm_func,
                          freeze_fairseq=config.model['freeze_fairseq'])
     except:
-        model = DidModelClassifierOnly(
+        model = DidModelHuggingFace(
             num_classes=config.model['num_classes'],
             exp_norm_func=exp_norm_func,
             freeze_fairseq=config.model['freeze_fairseq'])
