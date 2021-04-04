@@ -58,7 +58,7 @@ class DidModelRunner:
                 pred = output['x'].max(1)[1]  # get the index of the max log-probability
                 correct += pred.eq(target).cpu().sum().item()
                 if batch_idx % log_interval == 0:  # print training stats
-                    print('Eval done: {:.0f}%'.format(100. * batch_idx / len(test_loader.dataset)))
+                    print('Eval done: {:.0f}%'.format(100. * batch_idx / len(test_loader)))
 
             accr = 100. * correct / len(test_loader.dataset)
             self.wandb.log({"accuracy": accr})
