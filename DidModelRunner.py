@@ -28,9 +28,9 @@ class DidModelRunner:
             output = self.model(data)['normalized']
             loss = self.loss_function(output, target)
             loss.backward()
-            closs = closs + loss.detach().item()
             self.optimizer.step()
             self.wandb.log({"batch loss": loss.detach().item()})
+            closs = closs + loss.detach().item()
             if batch_idx % log_interval == 0:  # print training stats
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch,
                                                                                batch_idx * len(data),
