@@ -28,16 +28,20 @@ class DidModelHuggingFace(nn.Module):
             for params in self.model.feature_projection.parameters():
                 params.requires_grad = False
 
-        self.classifier_layer = nn.Sequential(
-            nn.LeakyReLU(),
-            nn.Linear(1024, 1024),
-            nn.LeakyReLU(),
-            nn.Linear(1024, 256),
-            nn.Sigmoid(),
-            nn.Linear(256, 256),
-            nn.Sigmoid(),
-            nn.Linear(256, num_classes)
-        )
+        # self.classifier_layer = nn.Sequential(
+        #     nn.LeakyReLU(),
+        #     nn.Linear(1024, 1024),
+        #     nn.LeakyReLU(),
+        #     nn.Linear(1024, 256),
+        #     nn.Sigmoid(),
+        #     nn.Linear(256, 256),
+        #     nn.Sigmoid(),
+        #     nn.Linear(256, num_classes)
+        # )
+        self.fc1 = nn.Linear(1024, 1024)
+        self.fc2 = nn.Linear(1024, 256)
+        self.fc3 = nn.Linear(256, 256)
+        self.out = nn.Linear(256, num_classes)
 
         self.exp_norm_func = exp_norm_func
 
@@ -52,7 +56,13 @@ class DidModelHuggingFace(nn.Module):
 
         # reduce dimension with mean
         x_reduced = torch.mean(x.last_hidden_state, -2)
-        x = self.classifier_layer(x_reduced)
+
+        # x = self.classifier_layer(x_reduced)
+        x = F.leaky_relu(self.fc1(x_reduced))
+        x = F.leaky_relu(self.fc2(x))
+        x = F.sigmoid(self.fc3(x))
+        x = F.sigmoid(self.out(x))
+
         normalized = self.exp_norm_func(x, dim=1)
 
         x = F.softmax(x, dim=1)
