@@ -19,7 +19,7 @@
     "optimizer": "adam",
     "loss_function": "nllLoss",
     "log_interval": 5,
-    "model_save_interval": 2
+    "model_save_interval": 30
   },
   "optimizers": {
     "desc": "defines usable optimizer and their needed inputs",
