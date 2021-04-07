@@ -3,6 +3,7 @@ import pandas as pd
 import soundfile as sf
 import torch
 from torch.utils.data import Dataset
+from transformers import Wav2Vec2FeatureExtractor
 
 
 class DidDataset(Dataset):
@@ -27,6 +28,9 @@ class DidDataset(Dataset):
 
         self.root_dir = root_dir
 
+        self.feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0,
+                                                          do_normalize=True, return_attention_mask=True)
+
     def __len__(self):
         return len(self.file_names)
 
@@ -40,7 +44,7 @@ class DidDataset(Dataset):
         # speech, fs = sf.read(path)
         # sound = self.transform(path)
 
-        return np.load(path), np.array(self.labels[idx])
+        return self.feature_extractor(np.load(path)).input_values, np.array(self.labels[idx])
 
     def transform(self, path):
         dict = {}
