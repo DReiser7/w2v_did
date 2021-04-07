@@ -26,7 +26,7 @@ class DidModelRunner:
         t = time.time()
         for batch_idx, (data, target) in enumerate(train_loader):
             self.wandb.log({"dataload_duration": (time.time() - t)})
-            data = self.feature_extractor(data, sampling_rate=16000).input_values
+            data = torch.from_numpy(self.feature_extractor(data, sampling_rate=16000).input_values)
             data = data.to(self.device)
             target = target.to(self.device)
             z = time.time()
