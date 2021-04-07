@@ -1,11 +1,11 @@
 {
   "data": {
     "desc": "defines the data",
-    "train_dataset": "/cluster/home/reisedom/data/train_numpy/",
+    "train_dataset": "/cluster/home/reisedom/data/train_splitted/train/",
     "test_dataset": "/cluster/home/reisedom/data/test_numpy/",
     "batch_size": 16,
     "shuffle": true,
-    "train_set_percentage": 1
+    "train_set_percentage": 0.2
   },
   "model": {
     "desc": "defines the model",
@@ -15,7 +15,7 @@
   "general": {
     "desc": "defines general information for the training run and which optimizer and loss_function are taken",
     "num_workers": 8,
-    "epochs": 60,
+    "epochs": 20,
     "optimizer": "adam",
     "loss_function": "nllLoss",
     "log_interval": 5,
@@ -30,7 +30,7 @@
   },
   "scheduler": {
     "desc": "defines params for scheduler",
-    "step_size": 20,
+    "step_size": 10,
     "gamma": 0.1
   }
 }
