@@ -1,6 +1,5 @@
 import time
 import torch
-from transformers import Wav2Vec2FeatureExtractor
 
 class DidModelRunner:
 
@@ -17,16 +16,12 @@ class DidModelRunner:
         self.scheduler = scheduler
         self.loss_function = loss_function
 
-        self.feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0,
-                                                          do_normalize=True, return_attention_mask=True)
-
     def train(self, train_loader, epoch, log_interval):
         self.model.train()
         closs = 0
         t = time.time()
         for batch_idx, (data, target) in enumerate(train_loader):
             self.wandb.log({"dataload_duration": (time.time() - t)})
-            data = torch.from_numpy(self.feature_extractor(data, sampling_rate=16000).input_values)
             data = data.to(self.device)
             target = target.to(self.device)
             z = time.time()
