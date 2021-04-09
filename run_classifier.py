@@ -199,8 +199,8 @@ def main():
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("dialect_speech_corpus", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("dialect_speech_corpus", split="test", cache_dir=model_args.cache_dir)
+    train_dataset = datasets.load_dataset("DidDataset", split="train", cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("DidDataset", split="test", cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
