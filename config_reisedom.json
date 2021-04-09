@@ -8,13 +8,13 @@
   "preprocessing_num_workers": 1,
   "learning_rate": 3e-5,
   "warmup_steps": 20,
-  "evaluation_strategy": "epoch",
+  "evaluation_strategy": "steps",
   "save_steps": 1000,
   "eval_steps": 1000,
   "save_total_limit": 1,
   "logging_steps": 5,
   "do_eval": true,
   "do_train": true,
-  "max_train_samples": 100,
-  "max_val_samples": 100
+  "max_train_samples": 60,
+  "max_val_samples": 60
 }
