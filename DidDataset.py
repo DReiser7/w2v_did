@@ -3,30 +3,15 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import random
 
 import datasets
-import soundfile as sf 
-import random 
-
-_CITATION = """
-"""
-
-_DESCRIPTION = """\
-
-
-```python
 import soundfile as sf
 
-def map_to_array(batch):
-    speech_array, _ = sf.read(batch["file"])
-    batch["speech"] = speech_array
-    return batch
+_CITATION = ""
 
-dataset = dataset.map(map_to_array, remove_columns=["file"])
-```
-"""
+_DESCRIPTION = ""
 
-import soundfile as sf
 
 class DialectSpeechCorpusConfig(datasets.BuilderConfig):
     """BuilderConfig for DialectSpeechCorpusCorpus."""
@@ -45,9 +30,10 @@ class DialectSpeechCorpusConfig(datasets.BuilderConfig):
 
 def map_to_array(batch):
     start, stop = batch['segment'].split('_')
-    speech_array, _ = sf.read(batch["file"], start = start, stop = stop)
+    speech_array, _ = sf.read(batch["file"], start=start, stop=stop)
     batch["speech"] = speech_array
     return batch
+
 
 class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
     """DialectSpeechCorpus dataset."""
@@ -64,11 +50,11 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
                     "file": datasets.Value("string"),
                     "label": datasets.features.ClassLabel(
                         names=[
-                        'EGY',
-                        'NOR',
-                        'GLF',
-                        'LAV',
-                        'MSA'
+                            'EGY',
+                            'NOR',
+                            'GLF',
+                            'LAV',
+                            'MSA'
                         ]
                     )
                 }
@@ -88,7 +74,7 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
     def _generate_examples(self, archive_path):
         """Generate examples from a Librispeech archive_path."""
         wav_dir = os.path.join(archive_path, "wav")
-        
+
         paths = []
         labls = []
 
@@ -104,9 +90,8 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
         random.Random(4).shuffle(data)
         paths, labls = zip(*data)
         for i in range(len(paths)):
-          example = {
-              "file": paths[i],
-              "label":labls[i]
-          }
-          yield str(i), example
-
+            example = {
+                "file": paths[i],
+                "label": labls[i]
+            }
+            yield str(i), example
