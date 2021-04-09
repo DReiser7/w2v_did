@@ -1,6 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
+
+def list_field(default=None, metadata=None):
+    return field(default_factory=lambda: default, metadata=metadata)
+
 @dataclass
 class ModelArguments:
     """
