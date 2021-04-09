@@ -81,7 +81,7 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
         archive_path = '/cluster/home/reisedom/data'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
-            datasets.SplitGenerator(name="dev", gen_kwargs={"archive_path": os.path.join(archive_path, "dev")}),
+            # datasets.SplitGenerator(name="dev", gen_kwargs={"archive_path": os.path.join(archive_path, "dev")}),
             datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
         ]
 

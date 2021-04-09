@@ -1,10 +1,10 @@
 {
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/content/drive/MyDrive/Speech/dialects-test",
-  "cache_dir": "/content/data_dir/",
+  "output_dir": "/cluster/home/reisedom/data/dialects-test",
+  "cache_dir": "/cluster/home/reisedom/data/data_dir/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 1,
-  "per_device_train_batch_size": 8,
+  "per_device_train_batch_size": 4,
   "preprocessing_num_workers": 1,
   "learning_rate": 3e-5,
   "warmup_steps": 1,
