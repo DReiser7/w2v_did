@@ -46,10 +46,6 @@ if version.parse(torch.__version__) >= version.parse("1.6"):
 logger = logging.getLogger(__name__)
 
 
-def list_field(default=None, metadata=None):
-    return field(default_factory=lambda: default, metadata=metadata)
-
-
 @dataclass
 class DataCollatorCTCWithPadding:
     """
