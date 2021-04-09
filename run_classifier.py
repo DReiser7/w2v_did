@@ -45,7 +45,6 @@ if version.parse(torch.__version__) >= version.parse("1.6"):
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class DataCollatorCTCWithPadding:
     """
@@ -160,8 +159,7 @@ def main():
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
-    else:
-        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
     # Detecting last checkpoint.
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
@@ -226,7 +224,7 @@ def main():
         eval_dataset = eval_dataset.select(range(data_args.max_val_samples))
 
     # Preprocessing the datasets.
-    # We need to read the aduio files as arrays and tokenize the targets.
+    # We need to read the audio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch):
         start = 0
         stop = 20
