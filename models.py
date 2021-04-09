@@ -20,7 +20,11 @@ class Wav2Vec2ClassificationModel(Wav2Vec2PreTrainedModel):
         self.init_weights()
         
     def freeze_feature_extractor(self):
-        self.wav2vec2.feature_extractor._freeze_parameters()
+        for params in self.model.feature_extractor.parameters():
+            params.requires_grad = False
+        for params in self.model.feature_projection.parameters():
+            params.requires_grad = False
+        # self.wav2vec2.feature_extractor._freeze_parameters()
 
     def forward(
         self,
