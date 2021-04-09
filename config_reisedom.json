@@ -4,7 +4,7 @@
   "cache_dir": "/cluster/home/reisedom/data/data_dir/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 5,
-  "per_device_train_batch_size": 16,
+  "per_device_train_batch_size": 4,
   "preprocessing_num_workers": 1,
   "learning_rate": 3e-5,
   "warmup_steps": 20,
