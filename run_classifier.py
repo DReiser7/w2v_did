@@ -24,6 +24,8 @@ from transformers import (
     is_apex_available,
     set_seed,
 )
+
+from ArgumentParser import ModelArguments, DataTrainingArguments
 from processors import CustomWav2Vec2Processor
 from models import Wav2Vec2ClassificationModel
 
@@ -31,10 +33,11 @@ from transformers.trainer_utils import get_last_checkpoint, is_main_process
 import soundfile as sf
 from sklearn.metrics import accuracy_score
 
-os.environ["WANDB_DISABLED"] = "true"
+os.environ['WANDB_PROJECT'] = 'w2v_did'
+os.environ['WANDB_LOG_MODEL'] = 'true'
+
 if is_apex_available():
     from apex import amp
-
 
 if version.parse(torch.__version__) >= version.parse("1.6"):
     _is_native_amp_available = True
@@ -45,101 +48,6 @@ logger = logging.getLogger(__name__)
 
 def list_field(default=None, metadata=None):
     return field(default_factory=lambda: default, metadata=metadata)
-
-
-@dataclass
-class ModelArguments:
-    """
-    Arguments pertaining to which model/config/tokenizer we are going to fine-tune from.
-    """
-
-    model_name_or_path: str = field(
-        metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
-    )
-    cache_dir: Optional[str] = field(
-        default=None,
-        metadata={"help": "Where do you want to store the pretrained models downloaded from huggingface.co"},
-    )
-    freeze_feature_extractor: Optional[bool] = field(
-        default=True, metadata={"help": "Whether to freeze the feature extractor layers of the model."}
-    )
-    attention_dropout: Optional[float] = field(
-        default=0.1, metadata={"help": "The dropout ratio for the attention probabilities."}
-    )
-    activation_dropout: Optional[float] = field(
-        default=0.1, metadata={"help": "The dropout ratio for activations inside the fully connected layer."}
-    )
-    hidden_dropout: Optional[float] = field(
-        default=0.1,
-        metadata={
-            "help": "The dropout probabilitiy for all fully connected layers in the embeddings, encoder, and pooler."
-        },
-    )
-    feat_proj_dropout: Optional[float] = field(
-        default=0.1,
-        metadata={"help": "The dropout probabilitiy for all 1D convolutional layers in feature extractor."},
-    )
-    mask_time_prob: Optional[float] = field(
-        default=0.05,
-        metadata={
-            "help": "Propability of each feature vector along the time axis to be chosen as the start of the vector"
-            "span to be masked. Approximately ``mask_time_prob * sequence_length // mask_time_length`` feature"
-            "vectors will be masked along the time axis. This is only relevant if ``apply_spec_augment is True``."
-        },
-    )
-    gradient_checkpointing: Optional[bool] = field(
-        default=True,
-        metadata={
-            "help": "If True, use gradient checkpointing to save memory at the expense of slower backward pass."
-        },
-    )
-    layerdrop: Optional[float] = field(default=0.0, metadata={"help": "The LayerDrop probability."})
-
-
-@dataclass
-class DataTrainingArguments:
-    """
-    Arguments pertaining to what data we are going to input our model for training and eval.
-
-    Using `HfArgumentParser` we can turn this class
-    into argparse arguments to be able to specify them on
-    the command line.
-    """
-
-    dataset_config_name: Optional[str] = field(
-        default=None, metadata={"help": "The configuration name of the dataset to use (via the datasets library)."}
-    )
-    train_split_name: Optional[str] = field(
-        default="train+validation",
-        metadata={
-            "help": "The name of the training data set split to use (via the datasets library). Defaults to 'train'"
-        },
-    )
-    overwrite_cache: bool = field(
-        default=False, metadata={"help": "Overwrite the cached preprocessed datasets or not."}
-    )
-    preprocessing_num_workers: Optional[int] = field(
-        default=None,
-        metadata={"help": "The number of processes to use for the preprocessing."},
-    )
-    max_train_samples: Optional[int] = field(
-        default=None,
-        metadata={
-            "help": "For debugging purposes or quicker training, truncate the number of training examples to this "
-            "value if set."
-        },
-    )
-    max_val_samples: Optional[int] = field(
-        default=None,
-        metadata={
-            "help": "For debugging purposes or quicker training, truncate the number of validation examples to this "
-            "value if set."
-        },
-    )
-    chars_to_ignore: List[str] = list_field(
-        default=[",", "?", ".", "!", "-", ";", ":", '""', "%", "'", '"', "�"],
-        metadata={"help": "A list of characters to remove from the transcripts."},
-    )
 
 
 @dataclass
@@ -180,15 +88,14 @@ class DataCollatorCTCWithPadding:
         # different padding methods
 
         input_features = [{"input_values": feature["input_values"]} for feature in features]
-        
+
         def onehot(lbl):
-            onehot = [0]*5
+            onehot = [0] * 5
             onehot[int(lbl)] = 1
             return onehot
-        
+
         output_features = [onehot(feature["labels"]) for feature in features]
-        
-        
+
         batch = self.processor.pad(
             input_features,
             padding=True,
@@ -228,26 +135,25 @@ class CTCTrainer(Trainer):
         model.train()
         inputs = self._prepare_inputs(inputs)
         loss = self.compute_loss(model, inputs)
-        
+
         if self.args.gradient_accumulation_steps > 1:
             loss = loss / self.args.gradient_accumulation_steps
 
         loss.backward()
 
         return loss.detach()
-    
+
     def compute_loss(self, model, inputs, return_outputs=False):
         # labels = inputs.pop("labels").to('cuda')
         labels = inputs['labels'].to('cuda')
-        outputs = model(**inputs) # torch.Size([32, 5])
+        outputs = model(**inputs)  # torch.Size([32, 5])
         loss_fct = torch.nn.CrossEntropyLoss()
         loss = loss_fct(outputs['logits'],
                         labels.argmax(-1).long())
-        
+
         return (loss, outputs) if return_outputs else loss
 
 
-    
 def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
@@ -300,38 +206,36 @@ def main():
     train_dataset = datasets.load_dataset("dialect_speech_corpus", split="train", cache_dir=model_args.cache_dir)
     eval_dataset = datasets.load_dataset("dialect_speech_corpus", split="test", cache_dir=model_args.cache_dir)
 
-
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
     model = Wav2Vec2ClassificationModel.from_pretrained(
-        "facebook/wav2vec2-large-xlsr-53", 
+        "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
         feat_proj_dropout=0.0,
         mask_time_prob=0.05,
         layerdrop=0.01,
-        gradient_checkpointing=True, 
+        gradient_checkpointing=True,
     )
-    
+
     if model_args.freeze_feature_extractor:
         model.freeze_feature_extractor()
-    
+
     if data_args.max_train_samples is not None:
         train_dataset = train_dataset.select(range(data_args.max_train_samples))
 
     if data_args.max_val_samples is not None:
         eval_dataset = eval_dataset.select(range(data_args.max_val_samples))
 
-    
     # Preprocessing the datasets.
     # We need to read the aduio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch):
-        start = 0 
-        stop = 20 
+        start = 0
+        stop = 20
         srate = 16_000
-        speech_array, sampling_rate = sf.read(batch["file"], start = start * srate , stop = stop * srate)
+        speech_array, sampling_rate = sf.read(batch["file"], start=start * srate, stop=stop * srate)
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
         batch["parent"] = batch["label"]
@@ -347,11 +251,11 @@ def main():
         remove_columns=eval_dataset.column_names,
         num_proc=data_args.preprocessing_num_workers,
     )
-    
+
     def prepare_dataset(batch):
         # check that all files have the correct sampling rate
         assert (
-            len(set(batch["sampling_rate"])) == 1
+                len(set(batch["sampling_rate"])) == 1
         ), f"Make sure all inputs have the same sampling rate of {processor.feature_extractor.sampling_rate}."
         batch["input_values"] = processor(batch["speech"], sampling_rate=batch["sampling_rate"][0]).input_values
         batch["labels"] = batch["parent"]
@@ -371,7 +275,7 @@ def main():
         batched=True,
         num_proc=data_args.preprocessing_num_workers,
     )
-    
+
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
