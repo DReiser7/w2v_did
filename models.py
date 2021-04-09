@@ -48,7 +48,7 @@ class Wav2Vec2ClassificationModel(Wav2Vec2PreTrainedModel):
     ):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         
-        outputs = self.wav2vec2(
+        outputs = self.model(
             input_values,
             attention_mask=attention_mask,
             output_attentions=output_attentions,
