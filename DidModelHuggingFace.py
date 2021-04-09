@@ -13,17 +13,6 @@ class DidModelHuggingFace(Wav2Vec2PreTrainedModel):
 
         self.model = Wav2Vec2Model(config)
 
-        for params in self.model.base_model.feature_extractor.parameters():
-            params.requires_grad = False
-        for params in self.model.base_model.feature_projection.parameters():
-            params.requires_grad = False
-        for params in self.model.encoder.parameters():
-            params.requires_grad = False
-        for params in self.model.feature_extractor.parameters():
-            params.requires_grad = False
-        for params in self.model.feature_projection.parameters():
-            params.requires_grad = False
-
         self.classifier_layer = nn.Sequential(
             nn.LeakyReLU(),
             nn.Linear(1024, 1024),
@@ -34,6 +23,24 @@ class DidModelHuggingFace(Wav2Vec2PreTrainedModel):
             nn.Sigmoid(),
             nn.Linear(1024, 5)
         )
+
+    def freeze_feature_extractor(self):
+        print("Freezing wav2vec layers")
+        # self.model.freeze_feature_extractor()
+        for params in self.model.base_model.parameters():
+            params.requires_grad = False
+        for params in self.model.base_model.encoder.parameters():
+            params.requires_grad = False
+        for params in self.model.base_model.feature_extractor.parameters():
+            params.requires_grad = False
+        for params in self.model.base_model.feature_projection.parameters():
+            params.requires_grad = False
+        for params in self.model.encoder.parameters():
+            params.requires_grad = False
+        for params in self.model.feature_extractor.parameters():
+            params.requires_grad = False
+        for params in self.model.feature_projection.parameters():
+            params.requires_grad = False
 
 
     def forward( self,
