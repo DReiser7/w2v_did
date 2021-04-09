@@ -18,14 +18,15 @@ from torch.nn import functional as F
 import transformers
 from transformers import (
     HfArgumentParser,
+    Trainer,
     Wav2Vec2FeatureExtractor,
     TrainingArguments,
     is_apex_available,
-    set_seed, Trainer,
+    set_seed,
 )
 
 from ArgumentParser import ModelArguments, DataTrainingArguments
-from DidTrainer import DidTrainer
+from DidModelHuggingFace import DidModelHuggingFace
 from processors import CustomWav2Vec2Processor
 from models import Wav2Vec2ClassificationModel
 
@@ -107,6 +108,48 @@ class DataCollatorCTCWithPadding:
         return batch
 
 
+class CTCTrainer(Trainer):
+    def training_step(self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
+        """
+        Perform a training step on a batch of inputs.
+
+        Subclass and override to inject custom behavior.
+
+        Args:
+            model (:obj:`nn.Module`):
+                The model to train.
+            inputs (:obj:`Dict[str, Union[torch.Tensor, Any]]`):
+                The inputs and targets of the model.
+
+                The dictionary will be unpacked before being fed to the model. Most models expect the targets under the
+                argument :obj:`labels`. Check your model's documentation for all accepted arguments.
+
+        Return:
+            :obj:`torch.Tensor`: The tensor with training loss on this batch.
+        """
+
+        model.train()
+        inputs = self._prepare_inputs(inputs)
+        loss = self.compute_loss(model, inputs)
+
+        if self.args.gradient_accumulation_steps > 1:
+            loss = loss / self.args.gradient_accumulation_steps
+
+        loss.backward()
+
+        return loss.detach()
+
+    def compute_loss(self, model, inputs, return_outputs=False):
+        # labels = inputs.pop("labels").to('cuda')
+        labels = inputs['labels'].to('cuda')
+        outputs = model(**inputs)  # torch.Size([32, 5])
+        loss_fct = torch.nn.CrossEntropyLoss()
+        loss = loss_fct(outputs['logits'],
+                        labels.argmax(-1).long())
+
+        return (loss, outputs) if return_outputs else loss
+
+
 def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
@@ -117,7 +160,6 @@ def main():
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
-    else : exit(1)
 
     # Detecting last checkpoint.
     last_checkpoint = None
@@ -156,14 +198,14 @@ def main():
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="test", cache_dir=model_args.cache_dir)
+    train_dataset = datasets.load_dataset("./DidDataset.py", split="train", cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("./DidDataset.py", split="test", cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2ClassificationModel.from_pretrained(
+    model = DidModelHuggingFace.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
@@ -244,7 +286,7 @@ def main():
     data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
 
     # Initialize our Trainer
-    trainer = DidTrainer(
+    trainer = CTCTrainer(
         model=model,
         data_collator=data_collator,
         args=training_args,
