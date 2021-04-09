@@ -1,14 +1,13 @@
 # !pip install fairseq
 # !pip install torch
 import torch
-import torch.nn as nn
 import torch.optim as optim
 from torch.nn.utils.rnn import pack_sequence
 import torch.nn.functional as F
 
 
-from DidDataset import DidDataset
-from DidModel import DidModel
+from old.DidDataset import DidDataset
+from old.DidModel import DidModel
 
 
 def my_collate(batch):
