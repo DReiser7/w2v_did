@@ -1,10 +1,10 @@
 FROM python:3
 
-ADD DidDataset.py /
-ADD DidMain.py /
-ADD DidModel.py /
-ADD DidModelRunner.py /
-ADD DidModelHuggingFace.py /
+ADD old/DidDataset.py /
+ADD old/DidMain.py /
+ADD old/DidModel.py /
+ADD old/DidModelRunner.py /
+ADD old/DidModelHuggingFace.py /
 
 RUN apt-get update
 RUN apt-get --yes install libsndfile1
@@ -16,6 +16,8 @@ RUN pip install torch
 RUN pip install transformers
 RUN pip install wandb
 RUN pip install split-folders
+RUN pip install librosa
+RUN pip install datasets
 
 #install fairseq over repo
 RUN git clone https://github.com/pytorch/fairseq
