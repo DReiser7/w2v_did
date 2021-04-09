@@ -9,7 +9,7 @@ class Wav2Vec2ClassificationModel(Wav2Vec2PreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         
-        self.wav2vec2 = Wav2Vec2Model(config)
+        self.model = Wav2Vec2Model(config)
         
         self.inner_dim = 128
         self.feature_size = 999
@@ -20,11 +20,22 @@ class Wav2Vec2ClassificationModel(Wav2Vec2PreTrainedModel):
         self.init_weights()
         
     def freeze_feature_extractor(self):
-        for params in self.wav2vec2.feature_extractor.parameters():
-            params.requires_grad = False
-        for params in self.wav2vec2.feature_projection.parameters():
-            params.requires_grad = False
-        # self.wav2vec2.feature_extractor._freeze_parameters()
+        print("Freezing wav2vec layers")
+        self.model.freeze_feature_extractor()
+        # for params in self.model.base_model.parameters():
+        #     params.requires_grad = False
+        # for params in self.model.base_model.encoder.parameters():
+        #     params.requires_grad = False
+        # for params in self.model.base_model.feature_extractor.parameters():
+        #     params.requires_grad = False
+        # for params in self.model.base_model.feature_projection.parameters():
+        #     params.requires_grad = False
+        # for params in self.model.encoder.parameters():
+        #     params.requires_grad = False
+        # for params in self.model.feature_extractor.parameters():
+        #     params.requires_grad = False
+        # for params in self.model.feature_projection.parameters():
+        #     params.requires_grad = False
 
     def forward(
         self,
