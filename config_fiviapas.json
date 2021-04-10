@@ -1,7 +1,8 @@
 {
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/cluster/home/fiviapas/data/dialects-test",
-  "cache_dir": "/cluster/home/fiviapas/data/data_dir/",
+  "data_path": "/cluster/home/fiviapas/data/",
+  "output_dir": "/cluster/home/fiviapas/data/model-saves/",
+  "cache_dir": "/cluster/home/fiviapas/data/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 5,
   "per_device_train_batch_size": 16,
