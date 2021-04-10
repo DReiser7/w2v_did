@@ -1,5 +1,6 @@
 {
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
+  "data_path": "/cluster/home/reisedom/data/",
   "output_dir": "/cluster/home/reisedom/data/dialects-test",
   "cache_dir": "/cluster/home/reisedom/data/data_dir/",
   "freeze_feature_extractor": true,
