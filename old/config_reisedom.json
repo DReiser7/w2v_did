@@ -3,7 +3,7 @@
     "desc": "defines the data",
     "train_dataset": "/cluster/home/reisedom/data/train_splitted/train/",
     "test_dataset": "/cluster/home/reisedom/data/test_numpy/",
-    "batch_size": 16,
+    "batch_size": 8,
     "shuffle": true,
     "train_set_percentage": 0.2
   },
