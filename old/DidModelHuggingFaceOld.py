@@ -28,7 +28,7 @@ class DidModelHuggingFaceOld(nn.Module):
                 params.requires_grad = False
 
         self.inner = 128
-        self.features = 999
+        self.features = 499
 
         self.leakyReLu = nn.LeakyReLU()
         self.sigmoid = nn.Sigmoid()
