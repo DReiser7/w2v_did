@@ -15,7 +15,7 @@ import wandb
 from DidDataset import DidDataset
 from DidModel import DidModel
 from DidModelClassifierOnly import DidModelClassifierOnly
-from DidModelHuggingFace import DidModelHuggingFace
+from DidModelHuggingFaceOld import DidModelHuggingFaceOld
 from DidModelRunner import DidModelRunner
 
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                          exp_norm_func=exp_norm_func,
                          freeze_fairseq=config.model['freeze_fairseq'])
     except:
-        model = DidModelHuggingFace(
+        model = DidModelHuggingFaceOld(
             num_classes=config.model['num_classes'],
             exp_norm_func=exp_norm_func,
             freeze_fairseq=config.model['freeze_fairseq'])

@@ -18,13 +18,15 @@ from torch.nn import functional as F
 import transformers
 from transformers import (
     HfArgumentParser,
+    Trainer,
     Wav2Vec2FeatureExtractor,
     TrainingArguments,
     is_apex_available,
-    set_seed, Trainer,
+    set_seed,
 )
 
 from ArgumentParser import ModelArguments, DataTrainingArguments
+from DidModelHuggingFace import DidModelHuggingFace
 from DidTrainer import DidTrainer
 from processors import CustomWav2Vec2Processor
 from models import Wav2Vec2ClassificationModel
@@ -163,7 +165,7 @@ def main():
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2ClassificationModel.from_pretrained(
+    model = DidModelHuggingFace.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,

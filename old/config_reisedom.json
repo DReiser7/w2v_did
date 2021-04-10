@@ -3,7 +3,7 @@
     "desc": "defines the data",
     "train_dataset": "/cluster/home/reisedom/data/train_splitted/train/",
     "test_dataset": "/cluster/home/reisedom/data/test_numpy/",
-    "batch_size": 16,
+    "batch_size": 4,
     "shuffle": true,
     "train_set_percentage": 0.2
   },
@@ -24,8 +24,8 @@
   "optimizers": {
     "desc": "defines usable optimizer and their needed inputs",
     "adam": {
-      "lr": 0.001,
-      "weight_decay": 0.001
+      "lr": 0.0001,
+      "weight_decay": 0.0001
     }
   },
   "scheduler": {
