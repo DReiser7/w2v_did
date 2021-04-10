@@ -15,7 +15,7 @@ class DidModelHuggingFace(Wav2Vec2PreTrainedModel):
 
         self.classifier_layer = nn.Sequential(
             nn.LeakyReLU(),
-            nn.Linear(1024, 1024),
+            nn.Linear(999, 1024),
             nn.LeakyReLU(),
             nn.Linear(1024, 1024),
             nn.Sigmoid(),
@@ -60,9 +60,10 @@ class DidModelHuggingFace(Wav2Vec2PreTrainedModel):
         )
 
         # reduce dimension with mean
-        x_reduced = torch.mean(outputs.last_hidden_state, -2)
+        # x_reduced = torch.mean(outputs.last_hidden_state, -2)
+        x = outputs.view(-1, 999)
 
-        x = self.classifier_layer(x_reduced)
+        x = self.classifier_layer(x)
 
         result = {'logits': x}
         return result
