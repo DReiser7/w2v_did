@@ -246,7 +246,7 @@ def main():
     data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
 
     # Initialize our Trainer
-    trainer = DidTrainer(
+    trainer = Trainer(
         model=model,
         data_collator=data_collator,
         args=training_args,
