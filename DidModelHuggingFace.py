@@ -14,7 +14,7 @@ class DidModelHuggingFace(Wav2Vec2PreTrainedModel):
         self.model = Wav2Vec2Model(config)
 
         self.inner = 128
-        self.features = 999
+        self.features = 499
 
         self.leakyReLu = nn.LeakyReLU()
         self.sigmoid = nn.Sigmoid()

@@ -75,9 +75,9 @@ class DataCollatorCTCWithPadding:
 
     processor: CustomWav2Vec2Processor
     padding: Union[bool, str] = True
-    max_length: Optional[int] = 320000
+    max_length: Optional[int] = 160000
     max_length_labels: Optional[int] = None
-    pad_to_multiple_of: Optional[int] = 320000
+    pad_to_multiple_of: Optional[int] = 160000
     pad_to_multiple_of_labels: Optional[int] = None
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
@@ -188,7 +188,7 @@ def main():
     # We need to read the audio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch):
         start = 0
-        stop = 20
+        stop = 10
         srate = 16_000
         speech_array, sampling_rate = sf.read(batch["file"], start=start * srate, stop=stop * srate)
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
