@@ -47,7 +47,7 @@ class DidDataset(Dataset):
         sound = np.load(path)
         out = self.feature_extractor(sound, sampling_rate=16000).input_values[0]
 
-        return sound, np.array(self.labels[idx])
+        return out, np.array(self.labels[idx])
 
     def transform(self, path):
         dict = {}
