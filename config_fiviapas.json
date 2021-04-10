@@ -15,5 +15,7 @@
   "save_total_limit": 1,
   "logging_steps": 1000,
   "do_eval": true,
-  "do_train": true
+  "do_train": true,
+  "max_train_samples": 60,
+  "max_val_samples": 60
 }
