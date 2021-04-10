@@ -4,9 +4,9 @@ import torch.nn.functional as F
 from transformers import Wav2Vec2Model
 
 
-class DidModelHuggingFace(nn.Module):
+class DidModelHuggingFaceOld(nn.Module):
     def __init__(self, num_classes, exp_norm_func, freeze_fairseq=False):
-        super(DidModelHuggingFace, self).__init__()
+        super(DidModelHuggingFaceOld, self).__init__()
 
         self.model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-large-xlsr-53")
 
@@ -16,17 +16,16 @@ class DidModelHuggingFace(nn.Module):
                 params.requires_grad = False
             for params in self.model.base_model.encoder.parameters():
                 params.requires_grad = False
-
-        for params in self.model.base_model.feature_extractor.parameters():
-            params.requires_grad = False
-        for params in self.model.base_model.feature_projection.parameters():
-            params.requires_grad = False
-        for params in self.model.encoder.parameters():
-            params.requires_grad = False
-        for params in self.model.feature_extractor.parameters():
-            params.requires_grad = False
-        for params in self.model.feature_projection.parameters():
-            params.requires_grad = False
+            for params in self.model.base_model.feature_extractor.parameters():
+                params.requires_grad = False
+            for params in self.model.base_model.feature_projection.parameters():
+                params.requires_grad = False
+            for params in self.model.encoder.parameters():
+                params.requires_grad = False
+            for params in self.model.feature_extractor.parameters():
+                params.requires_grad = False
+            for params in self.model.feature_projection.parameters():
+                params.requires_grad = False
 
         self.inner = 128
         self.features = 999
