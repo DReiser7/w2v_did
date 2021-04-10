@@ -13,16 +13,13 @@ class DidModelHuggingFace(Wav2Vec2PreTrainedModel):
 
         self.model = Wav2Vec2Model(config)
 
-        self.classifier_layer = nn.Sequential(
-            nn.LeakyReLU(),
-            nn.Linear(999, 1024),
-            nn.LeakyReLU(),
-            nn.Linear(1024, 1024),
-            nn.Sigmoid(),
-            nn.Linear(1024, 1024),
-            nn.Sigmoid(),
-            nn.Linear(1024, 5)
-        )
+        self.inner = 128
+        self.features = 999
+
+        self.fc1 = nn.Linear(1024,  self.inner)
+        self.fc2 = nn.Linear(self.inner * self.features, 1024)
+        self.fc3 = nn.Linear(1024, 1024)
+        self.fc4 = nn.Linear(1024, 5)
 
     def freeze_feature_extractor(self):
         print("Freezing wav2vec layers")
@@ -61,9 +58,11 @@ class DidModelHuggingFace(Wav2Vec2PreTrainedModel):
 
         # reduce dimension with mean
         # x_reduced = torch.mean(outputs.last_hidden_state, -2)
-        x = outputs.view(-1, 999)
 
-        x = self.classifier_layer(x)
+        x = F.leaky_relu(self.fc1(outputs[0]))
+        x = F.leaky_relu(self.fc2(x.view(-1, self.inner * self.features)))
+        x = F.sigmoid(self.fc3(x))
+        x = self.fc4(x)
 
         result = {'logits': x}
         return result
