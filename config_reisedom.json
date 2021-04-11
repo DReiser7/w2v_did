@@ -16,6 +16,6 @@
   "logging_steps": 5,
   "do_eval": true,
   "do_train": true,
-  "max_train_samples": 60,
-  "max_val_samples": 60
+  "max_train_samples": 1000,
+  "max_val_samples": 1000
 }
