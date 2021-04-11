@@ -38,7 +38,7 @@ class DidTrainer(Trainer):
 
     def compute_loss(self, model, inputs, return_outputs=False):
         # labels = inputs.pop("labels").to('cuda')
-        labels = inputs['labels'].to('cpu')
+        labels = inputs['labels'].to('cuda')
         outputs = model(**inputs)  # torch.Size([32, 5])
         loss_fct = torch.nn.CrossEntropyLoss()
         loss = loss_fct(outputs['logits'], labels)
