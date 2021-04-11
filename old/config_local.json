@@ -1,16 +1,15 @@
 {
   "data": {
     "desc": "defines the data",
-    "train_dataset": "data/dev/numpy/",
-    "test_dataset": "data/dev/numpy/",
+    "train_dataset": "../data/dev/numpy/",
+    "test_dataset": "../data/dev/numpy/",
     "batch_size": 2,
     "shuffle": true,
     "train_set_percentage": 1
   },
   "model": {
     "desc": "defines the model",
-    "model_location": "data/models/wav2vec_small.pt",
-    "num_classes": 2,
+    "num_classes": 5,
     "freeze_fairseq": true
   },
   "general": {

@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 def list_field(default=None, metadata=None):
     return field(default_factory=lambda: default, metadata=metadata)
 
+
 @dataclass
 class ModelArguments:
     """
@@ -13,6 +14,9 @@ class ModelArguments:
 
     model_name_or_path: str = field(
         metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
+    )
+    device: Optional[str] = field(
+        default='cuda', metadata={"help": "The device on which to run)."}
     )
     cache_dir: Optional[str] = field(
         default=None,
@@ -41,8 +45,8 @@ class ModelArguments:
         default=0.05,
         metadata={
             "help": "Propability of each feature vector along the time axis to be chosen as the start of the vector"
-            "span to be masked. Approximately ``mask_time_prob * sequence_length // mask_time_length`` feature"
-            "vectors will be masked along the time axis. This is only relevant if ``apply_spec_augment is True``."
+                    "span to be masked. Approximately ``mask_time_prob * sequence_length // mask_time_length`` feature"
+                    "vectors will be masked along the time axis. This is only relevant if ``apply_spec_augment is True``."
         },
     )
     gradient_checkpointing: Optional[bool] = field(
@@ -86,14 +90,14 @@ class DataTrainingArguments:
         default=None,
         metadata={
             "help": "For debugging purposes or quicker training, truncate the number of training examples to this "
-            "value if set."
+                    "value if set."
         },
     )
     max_val_samples: Optional[int] = field(
         default=None,
         metadata={
             "help": "For debugging purposes or quicker training, truncate the number of validation examples to this "
-            "value if set."
+                    "value if set."
         },
     )
     chars_to_ignore: List[str] = list_field(
