@@ -47,6 +47,7 @@ if version.parse(torch.__version__) >= version.parse("1.6"):
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class DataCollatorCTCWithPadding:
     """
@@ -156,14 +157,14 @@ class DataCollatorCTCWithPaddingTutorial:
             pad_to_multiple_of=self.pad_to_multiple_of,
             return_tensors="pt",
         )
-        with self.processor.as_target_processor():
-            labels_batch = self.processor.pad(
-                label_features,
-                padding=self.padding,
-                max_length=self.max_length_labels,
-                pad_to_multiple_of=self.pad_to_multiple_of_labels,
-                return_tensors="pt",
-            )
+
+        labels_batch = self.processor.pad(
+            label_features,
+            padding=self.padding,
+            max_length=self.max_length_labels,
+            pad_to_multiple_of=self.pad_to_multiple_of_labels,
+            return_tensors="pt",
+        )
 
         # replace padding with -100 to ignore loss correctly
         labels = labels_batch["input_ids"].masked_fill(labels_batch.attention_mask.ne(1), -100)
@@ -183,7 +184,8 @@ def main():
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
-    else : exit(1)
+    else:
+        exit(1)
 
     # Detecting last checkpoint.
     last_checkpoint = None
@@ -222,8 +224,10 @@ def main():
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="test", cache_dir=model_args.cache_dir)
+    train_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="train",
+                                          cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="test",
+                                         cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
