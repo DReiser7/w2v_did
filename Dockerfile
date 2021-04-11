@@ -4,7 +4,7 @@ ADD old/DidDataset.py /
 ADD old/DidMain.py /
 ADD old/DidModel.py /
 ADD old/DidModelRunner.py /
-ADD old/DidModelHuggingFace.py /
+ADD old/DidModelHuggingFaceOld.py /
 
 RUN apt-get update
 RUN apt-get --yes install libsndfile1
