@@ -33,7 +33,7 @@ from models import Wav2Vec2ClassificationModel
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 import soundfile as sf
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
@@ -242,10 +242,12 @@ def main():
         labels = pred.label_ids
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
+        f1 = f1_score(labels, preds, average='micro')
         report = classification_report(labels, preds)
         matrix = confusion_matrix(labels, preds)
+        print(report)
         print(matrix)
-        return {"accuracy": acc}
+        return {"accuracy": acc, "f1_score": f1, "matrix": confusion_matrix, "report": report}
 
     # Data collator
     data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
