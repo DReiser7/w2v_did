@@ -239,7 +239,7 @@ def main():
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
-        labels = pred.label_ids.argmax(-1)
+        labels = pred.label_ids
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
         report = classification_report(labels, preds)
