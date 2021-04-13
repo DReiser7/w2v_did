@@ -247,7 +247,8 @@ def main():
         matrix = confusion_matrix(labels, preds)
         print(report)
         print(matrix)
-        return {"accuracy": acc, "f1_score": f1, "matrix": confusion_matrix, "report": report}
+
+        return {"accuracy": acc, "f1_score": f1}
 
     # Data collator
     data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
