@@ -14,7 +14,8 @@ import torch
 from packaging import version
 from torch import nn
 from torch.nn import functional as F
-
+import wandb
+from datetime import datetime
 import transformers
 from transformers import (
     HfArgumentParser,
@@ -248,7 +249,12 @@ def main():
         print(report)
         print(matrix)
 
+        wandb.sklearn.plot_confusion_matrix(labels, preds)
+        # wandb.sklearn.plot_precision_recall(labels, preds)
+
         return {"accuracy": acc, "f1_score": f1}
+
+    wandb.init(name=training_args.output_dir, config=training_args)
 
     # Data collator
     data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
