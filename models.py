@@ -12,7 +12,7 @@ class Wav2Vec2ClassificationModel(Wav2Vec2PreTrainedModel):
         self.model = Wav2Vec2Model(config)
         
         self.inner_dim = 128
-        self.feature_size = 999
+        self.feature_size = 499
         
         self.tanh = nn.Tanh()
         self.linear1 = nn.Linear(1024, self.inner_dim)

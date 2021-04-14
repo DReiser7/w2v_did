@@ -70,6 +70,9 @@ class DataTrainingArguments:
     data_path: Optional[str] = field(
         default=None, metadata={"help": "Specify where the root of your data is located."}
     )
+    labels_csv: Optional[str] = field(
+        default=None, metadata={"help": "Specify where the root of your data is located."}
+    )
     dataset_config_name: Optional[str] = field(
         default=None, metadata={"help": "The configuration name of the dataset to use (via the datasets library)."}
     )
