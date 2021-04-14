@@ -26,6 +26,8 @@ from transformers import (
     set_seed,
 )
 
+import pandas as pd
+
 from ArgumentParser import ModelArguments, DataTrainingArguments
 from DidModelHuggingFace import DidModelHuggingFace
 from DidTrainer import DidTrainer
@@ -162,6 +164,13 @@ def main():
 
     # Get the datasets:
 
+    labels_csv = pd.read_csv(data_args.labels_csv)
+    label_idx = []
+    label_names = []
+    for i in range(0, len(labels_csv)):
+        label_idx.append(labels_csv.iloc[i, 0])
+        label_names.append(labels_csv.iloc[i, 1])
+
     train_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="train",
                                           cache_dir=model_args.cache_dir)
     eval_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="test",
@@ -171,7 +180,7 @@ def main():
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = DidModelHuggingFace.from_pretrained(
+    model = Wav2Vec2ClassificationModel.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
@@ -244,12 +253,14 @@ def main():
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
         f1 = f1_score(labels, preds, average='micro')
-        report = classification_report(labels, preds)
-        matrix = confusion_matrix(labels, preds)
+        report = classification_report(y_true=labels, y_pred=preds, labels=label_idx, target_names=label_names)
+        matrix = confusion_matrix(y_true=labels, y_pred=preds)
         print(report)
         print(matrix)
 
-        wandb.sklearn.plot_confusion_matrix(labels, preds)
+        wandb.log(
+            {"conf_mat": wandb.plot.confusion_matrix(probs=None, y_true=labels, preds=preds, class_names=label_names)})
+        # wandb.sklearn.plot_confusion_matrix(labels, preds, label_names)
         # wandb.sklearn.plot_precision_recall(labels, preds)
 
         return {"accuracy": acc, "f1_score": f1}
