@@ -172,8 +172,10 @@ def main():
         label_names.append(labels_csv.iloc[i, 1])
 
     train_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="train",
+                                          data_files={'labels_csv': data_args.labels_csv},
                                           cache_dir=model_args.cache_dir)
     eval_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="test",
+                                         data_files={'labels_csv': data_args.labels_csv},
                                          cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
