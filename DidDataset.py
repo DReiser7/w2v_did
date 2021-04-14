@@ -7,6 +7,7 @@ import random
 
 import datasets
 import soundfile as sf
+import pandas as pd
 
 _CITATION = ""
 
@@ -43,19 +44,20 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
     ]
 
     def _info(self):
+        labels_csv = pd.read_csv(self.config.data_files['labels_csv'])
+        label_idx = []
+        label_names = []
+        for i in range(0, len(labels_csv)):
+            label_idx.append(labels_csv.iloc[i, 0])
+            label_names.append(labels_csv.iloc[i, 1])
+
         return datasets.DatasetInfo(
             description=_DESCRIPTION,
             features=datasets.Features(
                 {
                     "file": datasets.Value("string"),
                     "label": datasets.features.ClassLabel(
-                        names=[
-                            'EGY',
-                            'NOR',
-                            'GLF',
-                            'LAV',
-                            'MSA'
-                        ]
+                        names=label_names
                     )
                 }
             ),
