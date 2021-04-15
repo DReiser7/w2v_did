@@ -2,7 +2,7 @@
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
   "data_path": "/cluster/home/reisedom/data/",
   "labels_csv": "/cluster/home/reisedom/w2v_did/labels.csv",
-  "output_dir": "/cluster/home/reisedom/data/dialects-test2",
+  "output_dir": "/cluster/home/reisedom/data/dialects-test3",
   "cache_dir": "/cluster/home/reisedom/data/data_dir/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 40,
