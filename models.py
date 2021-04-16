@@ -9,15 +9,14 @@ class Wav2Vec2ClassificationModel(Wav2Vec2PreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         self.model = Wav2Vec2Model(config)
-        
 
-    def buildLayers(self, window_length=10):
+    def build_layers(self, window_length=10, output_size=5):
         self.inner_dim = 128
         self.feature_size = (window_length * 50) - 1
 
         self.tanh = nn.Tanh()
         self.linear1 = nn.Linear(1024, self.inner_dim)
-        self.linear2 = nn.Linear(self.inner_dim * self.feature_size, 5)
+        self.linear2 = nn.Linear(self.inner_dim * self.feature_size, output_size)
         self.init_weights()
 
     def freeze_feature_extractor(self):
