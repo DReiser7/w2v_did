@@ -11,6 +11,7 @@
   "preprocessing_num_workers": 8,
   "learning_rate": 3e-5,
   "warmup_steps": 500,
+  "window_length": 10,
   "evaluation_strategy": "steps",
   "save_steps": 800,
   "eval_steps": 800,
