@@ -33,6 +33,7 @@ import wandb
 from ArgumentParser import ModelArguments, DataTrainingArguments
 from DidModelHuggingFace import DidModelHuggingFace
 from DidTrainer import DidTrainer
+from model_klaam import Wav2Vec2KlaamModel
 from models import Wav2Vec2ClassificationModel
 from processors import CustomWav2Vec2Processor
 
@@ -193,7 +194,7 @@ def main():
         model.build_layers(window_length=data_args.window_length, output_size=len(label_idx))
     else:
         processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path)
-        model = Wav2Vec2ClassificationModel.from_pretrained(model_args.model_name_or_path).to("cuda")
+        model = Wav2Vec2KlaamModel.from_pretrained(model_args.model_name_or_path).to("cuda")
 
     if model_args.freeze_feature_extractor:
         model.freeze_feature_extractor()
