@@ -189,7 +189,7 @@ def main():
         layerdrop=0.01,
         gradient_checkpointing=True,
     )
-    model.buildLayers(data_args.window_length)
+    model.build_layers(window_length=data_args.window_length, output_size=len(label_idx))
 
     if model_args.freeze_feature_extractor:
         model.freeze_feature_extractor()
