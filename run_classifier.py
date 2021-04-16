@@ -271,7 +271,8 @@ def main():
     # Data collator
     data_collator = DataCollatorCTCWithPadding(processor=processor,
                                                padding=True,
-                                               max_length=(data_args.window_length * 160000))
+                                               max_length=(data_args.window_length * 16000),
+                                               pad_to_multiple_of=(data_args.window_length * 16000))
 
     # Initialize our Trainer
     trainer = DidTrainer(
