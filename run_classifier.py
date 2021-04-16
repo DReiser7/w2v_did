@@ -178,17 +178,22 @@ def main():
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
-    processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2ClassificationModel.from_pretrained(
-        model_args.model_name_or_path,
-        attention_dropout=0.01,
-        hidden_dropout=0.01,
-        feat_proj_dropout=0.0,
-        mask_time_prob=0.05,
-        layerdrop=0.01,
-        gradient_checkpointing=True,
-    )
-    model.build_layers(window_length=data_args.window_length, output_size=len(label_idx))
+
+    if model_args.model_name_or_path == "facebook/wav2vec2-large-xlsr-53":
+        processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
+        model = Wav2Vec2ClassificationModel.from_pretrained(
+            model_args.model_name_or_path,
+            attention_dropout=0.01,
+            hidden_dropout=0.01,
+            feat_proj_dropout=0.0,
+            mask_time_prob=0.05,
+            layerdrop=0.01,
+            gradient_checkpointing=True,
+        )
+        model.build_layers(window_length=data_args.window_length, output_size=len(label_idx))
+    else:
+        processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path)
+        model = Wav2Vec2ClassificationModel.from_pretrained(model_args.model_name_or_path).to("cuda")
 
     if model_args.freeze_feature_extractor:
         model.freeze_feature_extractor()
