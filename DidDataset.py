@@ -69,7 +69,7 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(self.config.data_dir, "train")}),
             datasets.SplitGenerator(name="dev", gen_kwargs={"archive_path": os.path.join(self.config.data_dir, "dev")}),
-            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(self.config.data_dir, "test")}),
+            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(self.config.data_dir, "dev")}),
         ]
 
     def _generate_examples(self, archive_path):
