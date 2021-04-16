@@ -67,6 +67,9 @@ class DataTrainingArguments:
     into argparse arguments to be able to specify them on
     the command line.
     """
+    window_length: Optional[int] = field(
+        default=20, metadata={"help": "Specify window length in seconds"}
+    )
     data_path: Optional[str] = field(
         default=None, metadata={"help": "Specify where the root of your data is located."}
     )

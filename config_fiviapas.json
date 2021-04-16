@@ -11,11 +11,14 @@
   "preprocessing_num_workers": 8,
   "learning_rate": 3e-5,
   "warmup_steps": 500,
+  "window_length": 10,
   "evaluation_strategy": "steps",
   "save_steps": 1000,
   "eval_steps": 1000,
   "save_total_limit": 2,
   "logging_steps": 250,
   "do_eval": true,
-  "do_train": true
+  "do_train": true,
+  "max_train_samples": 100,
+  "max_val_samples": 100
 }

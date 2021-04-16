@@ -5,18 +5,20 @@ import os
 import re
 import sys
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
-import librosa
 
 import datasets
+import librosa
 import numpy as np
+import pandas as pd
+import soundfile as sf
 import torch
+import transformers
 from packaging import version
+from sklearn.metrics import accuracy_score, f1_score
 from torch import nn
 from torch.nn import functional as F
-import wandb
-from datetime import datetime
-import transformers
 from transformers import (
     HfArgumentParser,
     Trainer,
@@ -25,18 +27,14 @@ from transformers import (
     is_apex_available,
     set_seed,
 )
+from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
-import pandas as pd
-
+import wandb
 from ArgumentParser import ModelArguments, DataTrainingArguments
 from DidModelHuggingFace import DidModelHuggingFace
 from DidTrainer import DidTrainer
-from processors import CustomWav2Vec2Processor
 from models import Wav2Vec2ClassificationModel
-
-from transformers.trainer_utils import get_last_checkpoint, is_main_process
-import soundfile as sf
-from sklearn.metrics import accuracy_score, f1_score
+from processors import CustomWav2Vec2Processor
 
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
@@ -191,6 +189,7 @@ def main():
         layerdrop=0.01,
         gradient_checkpointing=True,
     )
+    model.buildLayers(data_args.window_length)
 
     if model_args.freeze_feature_extractor:
         model.freeze_feature_extractor()
@@ -205,7 +204,7 @@ def main():
     # We need to read the audio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch):
         start = 0
-        stop = 10
+        stop = data_args.window_length
         srate = 16_000
         speech_array, sampling_rate = sf.read(batch["file"], start=start * srate, stop=stop * srate)
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
@@ -270,7 +269,9 @@ def main():
     wandb.init(name=training_args.output_dir, config=training_args)
 
     # Data collator
-    data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
+    data_collator = DataCollatorCTCWithPadding(processor=processor,
+                                               padding=True,
+                                               max_length=(data_args.window_length * 160000))
 
     # Initialize our Trainer
     trainer = DidTrainer(
