@@ -254,7 +254,7 @@ def main():
         labels = pred.label_ids
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
-        f1 = f1_score(labels, preds, average='micro')
+        f1 = f1_score(labels, preds, average='macro')
         report = classification_report(y_true=labels, y_pred=preds, labels=label_idx, target_names=label_names)
         matrix = confusion_matrix(y_true=labels, y_pred=preds)
         print(report)
