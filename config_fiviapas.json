@@ -2,7 +2,7 @@
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
   "data_path": "/cluster/home/fiviapas/data/",
   "labels_csv": "/cluster/home/fiviapas/w2v_did/labels.csv",
-  "output_dir": "/cluster/home/fiviapas/data/model-saves/",
+  "output_dir": "/cluster/home/fiviapas/data/model-saves/train-klaam/",
   "cache_dir": "/cluster/home/fiviapas/data/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 10,
