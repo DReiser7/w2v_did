@@ -181,7 +181,7 @@ def main():
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
     model = Wav2Vec2ClassificationModel.from_pretrained(
-        "facebook/wav2vec2-large-xlsr-53",
+        model_args.model_name_or_path,
         attention_dropout=0.01,
         hidden_dropout=0.01,
         feat_proj_dropout=0.0,
