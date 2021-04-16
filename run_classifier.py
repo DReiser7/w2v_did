@@ -87,14 +87,13 @@ class DataCollatorCTCWithPadding:
         # different padding methods
 
         input_features = [{"input_values": feature["input_values"]} for feature in features]
-        label_features = [feature["labels"] for feature in features]
 
-        # def onehot(lbl):
-        #     onehot = [0] * 5
-        #     onehot[int(lbl)] = 1
-        #     return onehot
-        #
-        # output_features = [onehot(feature["labels"]) for feature in features]
+        def onehot(lbl):
+            onehot = [0] * 5
+            onehot[int(lbl)] = 1
+            return onehot
+
+        output_features = [onehot(feature["labels"]) for feature in features]
 
         batch = self.processor.pad(
             input_features,
@@ -107,7 +106,7 @@ class DataCollatorCTCWithPadding:
         #   print(val[:10])
         #   print(val[-10:])
         # print(batch['input_values'].shape)
-        batch["labels"] = torch.tensor(label_features)
+        batch["labels"] = torch.tensor(output_features)
         # print(batch["labels"].argmax(-1))
         return batch
 
@@ -250,7 +249,7 @@ def main():
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
-        labels = pred.label_ids
+        labels = pred.label_ids.argmax(-1)
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
         f1 = f1_score(labels, preds, average='macro')
