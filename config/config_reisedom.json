@@ -7,7 +7,7 @@
   "freeze_feature_extractor": true,
   "num_train_epochs": 10,
   "per_device_train_batch_size": 22,
-  "per_device_eval_batch_size": 25,
+  "per_device_eval_batch_size": 22,
   "preprocessing_num_workers": 8,
   "learning_rate": 3e-5,
   "warmup_steps": 20,
