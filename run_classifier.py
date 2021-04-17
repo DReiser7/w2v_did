@@ -83,6 +83,7 @@ class DataCollatorCTCWithPadding:
     max_length_labels: Optional[int] = None
     pad_to_multiple_of: Optional[int] = 160000
     pad_to_multiple_of_labels: Optional[int] = None
+    number_of_labels: Optional[int] = 5
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
         # split inputs and labels since they have to be of different lenghts and need
@@ -91,7 +92,7 @@ class DataCollatorCTCWithPadding:
         input_features = [{"input_values": feature["input_values"]} for feature in features]
 
         def onehot(lbl):
-            onehot = [0] * 5
+            onehot = [0] * self.number_of_labels
             onehot[int(lbl)] = 1
             return onehot
 
@@ -282,7 +283,8 @@ def main():
     data_collator = DataCollatorCTCWithPadding(processor=processor,
                                                padding=True,
                                                max_length=(data_args.window_length * 16000),
-                                               pad_to_multiple_of=(data_args.window_length * 16000))
+                                               pad_to_multiple_of=(data_args.window_length * 16000),
+                                               number_of_labels=len(label_idx))
 
     # Initialize our Trainer
     trainer = DidTrainer(
