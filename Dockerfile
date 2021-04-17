@@ -18,6 +18,7 @@ RUN pip install wandb
 RUN pip install split-folders
 RUN pip install librosa
 RUN pip install datasets
+RUN pip install torchaudio
 
 #install fairseq over repo
 RUN git clone https://github.com/pytorch/fairseq

@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import soundfile as sf
 import torch
+import torchaudio
 import transformers
 from packaging import version
 from sklearn.metrics import accuracy_score, f1_score
@@ -211,7 +212,11 @@ def main():
         start = 0
         stop = data_args.window_length
         srate = 16_000
-        speech_array, sampling_rate = sf.read(batch["file"], start=start * srate, stop=stop * srate)
+        if batch["file"].endswith('.wav') or batch["file"].endswith('.mp3'):
+            speech_array, sampling_rate = sf.read(batch["file"], start=start * srate, stop=stop * srate)
+        elif batch["file"].endswith('.mp3'):
+            speech_array, sampling_rate = torchaudio.load(batch["file"])
+            speech_array = speech_array[0].numpy()[:stop * srate]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
         batch["parent"] = batch["label"]

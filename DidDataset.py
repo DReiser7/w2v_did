@@ -29,11 +29,11 @@ class DialectSpeechCorpusConfig(datasets.BuilderConfig):
         super(DialectSpeechCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
 
 
-def map_to_array(batch):
-    start, stop = batch['segment'].split('_')
-    speech_array, _ = sf.read(batch["file"], start=start, stop=stop)
-    batch["speech"] = speech_array
-    return batch
+# def map_to_array(batch):
+#     start, stop = batch['segment'].split('_')
+#     speech_array, _ = sf.read(batch["file"], start=start, stop=stop)
+#     batch["speech"] = speech_array
+#     return batch
 
 
 class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
@@ -82,7 +82,7 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
         for _, c in enumerate(os.listdir(wav_dir)):
             if os.path.isdir(f'{wav_dir}/{c}/'):
                 for file in os.listdir(f'{wav_dir}/{c}/')[:2200]:
-                    # if file.endswith('.wav'):
+                    if file.endswith('.wav') or file.endswith('.mp3'):
                         wav_path = f'{wav_dir}/{c}/{file}'
                         paths.append(wav_path)
                         labls.append(c)
