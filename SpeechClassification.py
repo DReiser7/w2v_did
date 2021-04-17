@@ -1,3 +1,4 @@
+from model_klaam import Wav2Vec2KlaamModel
 from models import Wav2Vec2ClassificationModel
 from processors import CustomWav2Vec2Processor
 import torch
@@ -8,10 +9,12 @@ class SpeechClassification:
     def __init__(self, path=None):
         if path is None:
             dir = 'Zaid/wav2vec2-large-xlsr-dialect-classification'
+            self.model = Wav2Vec2KlaamModel.from_pretrained(dir).to("cuda")
+            self.processor = CustomWav2Vec2Processor.from_pretrained(dir)
         else:
             dir = path
-        self.model = Wav2Vec2ClassificationModel.from_pretrained(dir).to("cuda")
-        self.processor = CustomWav2Vec2Processor.from_pretrained(dir)
+            self.model = Wav2Vec2ClassificationModel.from_pretrained(dir).to("cuda")
+            self.processor = CustomWav2Vec2Processor.from_pretrained(dir)
 
     def classify(self, wav_file):
         return self.predict(self.load_file_to_data(wav_file),
