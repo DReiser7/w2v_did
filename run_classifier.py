@@ -212,7 +212,7 @@ def main():
         start = 0
         stop = data_args.window_length
         srate = 16_000
-        if batch["file"].endswith('.wav') or batch["file"].endswith('.mp3'):
+        if batch["file"].endswith('.wav'):
             speech_array, sampling_rate = sf.read(batch["file"], start=start * srate, stop=stop * srate)
         elif batch["file"].endswith('.mp3'):
             speech_array, sampling_rate = torchaudio.load(batch["file"])
