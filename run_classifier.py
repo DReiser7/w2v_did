@@ -297,6 +297,7 @@ def main():
         tokenizer=processor.feature_extractor,
     )
 
+    print("Window_lenght: " + str(data_args.window_length))
     # Training
     if training_args.do_train:
         if last_checkpoint is not None:
