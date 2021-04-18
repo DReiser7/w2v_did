@@ -19,7 +19,5 @@
   "logging_steps": 200,
   "gradient_accumulation_steps": 4,
   "do_eval": true,
-  "do_train": true,
-  "max_train_samples": 100,
-  "max_val_samples": 100
+  "do_train": true
 }
