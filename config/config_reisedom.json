@@ -17,7 +17,7 @@
   "eval_steps": 1000,
   "save_total_limit": 1,
   "logging_steps": 200,
-  "gradient_accumulation_steps": 4,
+  "gradient_accumulation_steps": 1,
   "do_eval": true,
   "do_train": true
 }
