@@ -29,11 +29,11 @@ class DialectSpeechCorpusConfig(datasets.BuilderConfig):
         super(DialectSpeechCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
 
 
-# def map_to_array(batch):
-#     start, stop = batch['segment'].split('_')
-#     speech_array, _ = sf.read(batch["file"], start=start, stop=stop)
-#     batch["speech"] = speech_array
-#     return batch
+def map_to_array(batch):
+    start, stop = batch['segment'].split('_')
+    speech_array, _ = sf.read(batch["file"], start=start, stop=stop)
+    batch["speech"] = speech_array
+    return batch
 
 
 class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
