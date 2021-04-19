@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
-import json
 import logging
 import os
-import re
 import sys
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Union
 
 import datasets
 import librosa
@@ -16,13 +13,11 @@ import soundfile as sf
 import torch
 import torchaudio
 import transformers
+import wandb
 from packaging import version
 from sklearn.metrics import accuracy_score, f1_score
-from torch import nn
-from torch.nn import functional as F
 from transformers import (
     HfArgumentParser,
-    Trainer,
     Wav2Vec2FeatureExtractor,
     TrainingArguments,
     is_apex_available,
@@ -30,9 +25,7 @@ from transformers import (
 )
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
-import wandb
 from ArgumentParser import ModelArguments, DataTrainingArguments
-from DidModelHuggingFace import DidModelHuggingFace
 from DidTrainer import DidTrainer
 from model_klaam import Wav2Vec2KlaamModel
 from models import Wav2Vec2ClassificationModel
@@ -42,11 +35,10 @@ os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
 
 if is_apex_available():
-    from apex import amp
+    pass
 
 if version.parse(torch.__version__) >= version.parse("1.6"):
     _is_native_amp_available = True
-    from torch.cuda.amp import autocast
 
 logger = logging.getLogger(__name__)
 
@@ -171,10 +163,10 @@ def main():
         label_idx.append(labels_csv.iloc[i, 0])
         label_names.append(labels_csv.iloc[i, 1])
 
-    train_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="train",
+    train_dataset = datasets.load_dataset("DidDataset.py", data_dir=data_args.data_path, split="train",
                                           data_files={'labels_csv': data_args.labels_csv},
                                           cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("./DidDataset.py", data_dir=data_args.data_path, split="test",
+    eval_dataset = datasets.load_dataset("DidDataset.py", data_dir=data_args.data_path, split="test",
                                          data_files={'labels_csv': data_args.labels_csv},
                                          cache_dir=model_args.cache_dir)
 
