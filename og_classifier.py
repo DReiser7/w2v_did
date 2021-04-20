@@ -14,6 +14,7 @@ import torch
 from packaging import version
 from torch import nn
 from torch.nn import functional as F
+import wandb
 
 import transformers
 from transformers import (
@@ -29,7 +30,7 @@ from model_klaam import Wav2Vec2KlaamModel
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 import soundfile as sf
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
@@ -56,6 +57,9 @@ class ModelArguments:
 
     model_name_or_path: str = field(
         metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
+    )
+    device: Optional[str] = field(
+        default='cuda', metadata={"help": "The device on which to run)."}
     )
     cache_dir: Optional[str] = field(
         default=None,
@@ -238,7 +242,7 @@ class CTCTrainer(Trainer):
 
     def compute_loss(self, model, inputs, return_outputs=False):
         # labels = inputs.pop("labels").to('cuda')
-        labels = inputs['labels'].to('cuda')
+        labels = inputs['labels'].to('cpu')
         outputs = model(**inputs)  # torch.Size([32, 5])
         loss_fct = torch.nn.CrossEntropyLoss()
         loss = loss_fct(outputs['logits'],
@@ -296,8 +300,8 @@ def main():
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("dialect_speech_corpus", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("dialect_speech_corpus", split="dev", cache_dir=model_args.cache_dir)
+    train_dataset = datasets.load_dataset("dialect_speech_corpus", split="train+dev", cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("dialect_speech_corpus", split="test", cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
@@ -372,13 +376,26 @@ def main():
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
+        label_idx = [0, 1, 2, 3, 4]
+        label_names = ['EGY', 'NOR', 'GLF', 'LAV', 'MSA']
         labels = pred.label_ids.argmax(-1)
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
-        report = classification_report(labels, preds)
-        matrix = confusion_matrix(labels, preds)
+        f1 = f1_score(labels, preds, average='macro')
+        report = classification_report(y_true=labels, y_pred=preds, labels=label_idx, target_names=label_names)
+        matrix = confusion_matrix(y_true=labels, y_pred=preds)
+        print(report)
         print(matrix)
-        return {"accuracy": acc}
+
+        wandb.log(
+            {"conf_mat": wandb.plot.confusion_matrix(probs=None, y_true=labels, preds=preds, class_names=label_names)})
+
+        wandb.log(
+            {"precision_recall": wandb.plot.pr_curve(y_true=labels, y_probas=pred.predictions, labels=label_names)})
+
+        return {"accuracy": acc, "f1_score": f1}
+
+    wandb.init(name=training_args.output_dir, config=training_args)
 
     # Data collator
     data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
