@@ -377,8 +377,8 @@ def main():
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
-        label_idx = [0, 1, 2, 3, 4]
-        label_names = ['EGY', 'NOR', 'GLF', 'LAV', 'MSA']
+        label_idx = [0, 1, 2]
+        label_names = ['NLD', 'ESP', 'ITA']
         labels = pred.label_ids.argmax(-1)
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
