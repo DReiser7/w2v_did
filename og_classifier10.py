@@ -25,6 +25,8 @@ from transformers import (
     is_apex_available,
     set_seed,
 )
+
+from model_klaam10 import Wav2Vec2KlaamModel10
 from processors import CustomWav2Vec2Processor
 from model_klaam import Wav2Vec2KlaamModel
 
@@ -175,9 +177,9 @@ class DataCollatorCTCWithPadding:
 
     processor: CustomWav2Vec2Processor
     padding: Union[bool, str] = True
-    max_length: Optional[int] = 320000
+    max_length: Optional[int] = 160000
     max_length_labels: Optional[int] = None
-    pad_to_multiple_of: Optional[int] = 320000
+    pad_to_multiple_of: Optional[int] = 160000
     pad_to_multiple_of_labels: Optional[int] = None
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
@@ -307,7 +309,7 @@ def main():
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2KlaamModel.from_pretrained(
+    model = Wav2Vec2KlaamModel10.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
@@ -330,7 +332,7 @@ def main():
     # We need to read the aduio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch):
         start = 0
-        stop = 20
+        stop = 10
         srate = 16_000
         speech_array, sampling_rate = sf.read(batch["file"], start=start * srate, stop=stop * srate)
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
