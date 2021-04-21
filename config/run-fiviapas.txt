@@ -35,4 +35,5 @@ python run_lid_classifier.py \
     --logging_steps="1000" \
     --do_eval \
     --do_train \
-    --max_val_samples="3000"
+    --max_train_samples="100" \
+    --max_val_samples="100"
