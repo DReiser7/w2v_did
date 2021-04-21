@@ -79,7 +79,7 @@ class ComVoiceSpeechCorpus(datasets.GeneratorBasedBuilder):
         archive_path = '/cluster/home/fiviapas/data_LID/'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
-            datasets.SplitGenerator(name="dev", gen_kwargs={"archive_path": os.path.join(archive_path, "dev")}),
+            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
         ]
 
     def _generate_examples(self, archive_path):
