@@ -20,15 +20,15 @@ python og_classifier.py \
 
 python run_lid_classifier.py \
     --model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
-    --output_dir=/cluster/home/fiviapas/data/model-saves/train-comvoice-b-8/ \
+    --output_dir=/cluster/home/fiviapas/data/model-saves/train-comvoice-b-16-s10/ \
     --cache_dir=/cluster/home/fiviapas/data/cached/ \
     --freeze_feature_extractor \
     --num_train_epochs="10" \
-    --per_device_train_batch_size="12" \
+    --per_device_train_batch_size="16" \
     --preprocessing_num_workers="3" \
     --learning_rate="3e-5" \
     --warmup_steps="20" \
-    --evaluation_strategy="steps"\
+    --evaluation_strategy="epoch"\
     --save_steps="1000" \
     --eval_steps="1000" \
     --save_total_limit="1" \
