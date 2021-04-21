@@ -11,7 +11,7 @@
   "preprocessing_num_workers": 2,
   "learning_rate": 3e-5,
   "warmup_steps": 20,
-  "window_length": 10,
+  "window_length": 5,
   "evaluation_strategy": "epoch",
   "save_steps": 1000,
   "eval_steps": 1000,
