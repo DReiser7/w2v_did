@@ -28,7 +28,7 @@ dataset = dataset.map(map_to_array, remove_columns=["file"])
 
 import soundfile as sf
 
-class DialectSpeechCorpusConfig(datasets.BuilderConfig):
+class ComVoiceSpeechCorpusConfig(datasets.BuilderConfig):
     """BuilderConfig for DialectSpeechCorpusCorpus."""
 
     def __init__(self, **kwargs):
@@ -40,7 +40,7 @@ class DialectSpeechCorpusConfig(datasets.BuilderConfig):
           url: `string`, url for information about the data set
           **kwargs: keyword arguments forwarded to super.
         """
-        super(DialectSpeechCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
+        super(ComVoiceSpeechCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
 
 
 def map_to_array(batch):
@@ -49,11 +49,11 @@ def map_to_array(batch):
     batch["speech"] = speech_array
     return batch
 
-class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
+class ComVoiceSpeechCorpus(datasets.GeneratorBasedBuilder):
     """DialectSpeechCorpus dataset."""
 
     BUILDER_CONFIGS = [
-        DialectSpeechCorpusConfig(name="clean", description="'Clean' speech."),
+        ComVoiceSpeechCorpusConfig(name="clean", description="'Clean' speech."),
     ]
 
     def _info(self):
