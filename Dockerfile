@@ -10,6 +10,8 @@ RUN apt-get update
 RUN apt-get --yes install libsndfile1
 RUN apt --yes install git-all
 
+RUN apt --yes install ffmpeg
+
 RUN pip install pandas
 RUN pip install soundfile
 RUN pip install torch
