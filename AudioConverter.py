@@ -27,7 +27,9 @@ if __name__ == "__main__":
 
     print('parallelizing level: ' + str(mp.cpu_count()))
     pool = mp.Pool(mp.cpu_count())
-    pool.starmap(convert_file, [(path, input_dir, output_dir, input_format, output_format) for path in path_list])
+    pool.starmap_async(convert_file, [(path, input_dir, output_dir, input_format, output_format) for path in path_list])
+
     pool.close()
+    pool.join()
 
     print('finished converting!')
