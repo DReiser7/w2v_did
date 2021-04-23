@@ -10,7 +10,7 @@ RUN apt-get update
 RUN apt-get --yes install libsndfile1
 RUN apt --yes install git-all
 
-RUN apt --yes install ffmpeg
+RUN apt-get --yes install ffmpeg libavcodec-extra
 
 RUN pip install pandas
 RUN pip install soundfile
