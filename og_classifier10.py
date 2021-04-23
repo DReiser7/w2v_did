@@ -26,9 +26,8 @@ from transformers import (
     set_seed,
 )
 
-from model_klaam10 import Wav2Vec2KlaamModel10
+from model_klaam import Wav2Vec2KlaamModel10
 from processors import CustomWav2Vec2Processor
-from model_klaam import Wav2Vec2KlaamModel
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 import soundfile as sf
