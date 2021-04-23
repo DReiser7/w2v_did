@@ -5,8 +5,8 @@ from __future__ import absolute_import, division, print_function
 import os
 
 import datasets
-import soundfile as sf 
-import random 
+import soundfile as sf
+import random
 
 _CITATION = """
 """
@@ -28,7 +28,8 @@ dataset = dataset.map(map_to_array, remove_columns=["file"])
 
 import soundfile as sf
 
-class DialectSpeechCorpusConfig(datasets.BuilderConfig):
+
+class ComVoiceSpeechCorpus5Config(datasets.BuilderConfig):
     """BuilderConfig for DialectSpeechCorpusCorpus."""
 
     def __init__(self, **kwargs):
@@ -40,20 +41,21 @@ class DialectSpeechCorpusConfig(datasets.BuilderConfig):
           url: `string`, url for information about the data set
           **kwargs: keyword arguments forwarded to super.
         """
-        super(DialectSpeechCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
+        super(ComVoiceSpeechCorpus5Config, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
 
 
 def map_to_array(batch):
     start, stop = batch['segment'].split('_')
-    speech_array, _ = sf.read(batch["file"], start = start, stop = stop)
+    speech_array, _ = sf.read(batch["file"], start=start, stop=stop)
     batch["speech"] = speech_array
     return batch
 
-class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
+
+class ComVoiceSpeechCorpus5(datasets.GeneratorBasedBuilder):
     """DialectSpeechCorpus dataset."""
 
     BUILDER_CONFIGS = [
-        DialectSpeechCorpusConfig(name="clean", description="'Clean' speech."),
+        ComVoiceSpeechCorpus5Config(name="clean", description="'Clean' speech."),
     ]
 
     def _info(self):
@@ -64,11 +66,11 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
                     "file": datasets.Value("string"),
                     "label": datasets.features.ClassLabel(
                         names=[
-                        'EGY',
-                        'NOR',
-                        'GLF',
-                        'LAV',
-                        'MSA'
+                            'NLD',
+                            'ESP',
+                            'ITA',
+                            'CHE',
+                            'RUS'
                         ]
                     )
                 }
@@ -78,24 +80,25 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        archive_path = '/cluster/home/fiviapas/data/'
+        archive_path = '/cluster/home/fiviapas/data_LID/'
         return [
-            datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
-            datasets.SplitGenerator(name="dev", gen_kwargs={"archive_path": os.path.join(archive_path, "dev")}),
-            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
+            datasets.SplitGenerator(name="train",
+                                    gen_kwargs={"archive_path": os.path.join(archive_path, "multiling-train")}),
+            datasets.SplitGenerator(name="test",
+                                    gen_kwargs={"archive_path": os.path.join(archive_path, "multiling-val")}),
         ]
 
     def _generate_examples(self, archive_path):
         """Generate examples from a Librispeech archive_path."""
-        wav_dir = os.path.join(archive_path, "wav")
-        
+        wav_dir = archive_path
+
         paths = []
         labls = []
 
         for _, c in enumerate(os.listdir(wav_dir)):
             if os.path.isdir(f'{wav_dir}/{c}/'):
-                for file in os.listdir(f'{wav_dir}/{c}/')[:2200]:
-                    if file.endswith('.wav'):
+                for file in os.listdir(f'{wav_dir}/{c}/')[:4000]:
+                    if file.endswith('.mp3'):
                         wav_path = f'{wav_dir}/{c}/{file}'
                         paths.append(wav_path)
                         labls.append(c)
@@ -104,9 +107,8 @@ class DialectSpeechCorpus(datasets.GeneratorBasedBuilder):
         random.Random(4).shuffle(data)
         paths, labls = zip(*data)
         for i in range(len(paths)):
-          example = {
-              "file": paths[i],
-              "label":labls[i]
-          }
-          yield str(i), example
-
+            example = {
+                "file": paths[i],
+                "label": labls[i]
+            }
+            yield str(i), example
