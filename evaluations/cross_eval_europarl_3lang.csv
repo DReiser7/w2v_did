@@ -1,30 +1,30 @@
-{'x': 'it', 'it': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110606.18.1-095-000.mp3
-{'x': 'it', 'it': '0.57'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20121023.5.2-110-000.mp3
-{'x': 'it', 'it': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110404.19.1-183-000.mp3
-{'x': 'it', 'it': '0.59'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20120215.5.3-082-000.mp3
-{'x': 'it', 'it': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20090203.23.2-442.mp3
-{'x': 'it', 'it': '0.99'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110323.24.3-308-000.mp3
-{'x': 'it', 'it': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110912.23.1-151-000.mp3
-{'x': 'it', 'it': '0.98'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100310.19.3-175.mp3
-{'x': 'it', 'it': '0.99'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110607.6.2-046-000.mp3
-{'x': 'it', 'it': '0.65'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20120509.18.3-128-000.mp3
-{'x': 'it', 'it': '0.76'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100310.24.3-419.mp3
-{'x': 'it', 'it': '0.45'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110914.27.3-381-000.mp3
-{'x': 'it', 'it': '0.73'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110118.18.2-393-000.mp3
-{'x': 'it', 'it': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100705.15.1-058.mp3
-{'x': 'it', 'it': '0.73'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110120.19.4-343-000.mp3
-{'x': 'it', 'it': '0.89'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100209.14.2-268.mp3
-{'x': 'it', 'it': '0.96'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100120.19.3-383.mp3
-{'x': 'it', 'it': '0.79'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100420.8.2-199.mp3
-{'x': 'it', 'it': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20090312.26.4-192.mp3
-{'x': 'it', 'it': '0.97'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20100706.5.2-089.mp3
-{'x': 'it', 'it': '0.54'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20110706.25.3-532-000.mp3
-{'x': 'it', 'it': '0.95'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20110608.26.3-691-000.mp3
-{'x': 'it', 'it': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20090914.24.1-101.mp3
-{'x': 'nl', 'nl': '0.80'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110405.13.2-136-000.mp3
-{'x': 'nl', 'nl': '0.87'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20120417.12.2-019-000.mp3
-{'x': 'es', 'es': '0.84'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20120613.13.3-129-000.mp3
-{'x': 'es', 'es': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20090424.8.5-091.mp3
-{'x': 'es', 'es': '0.93'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20120613.15.3-137-000.mp3
-{'x': 'es', 'es': '1.00'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20090917.3.4-115.mp3
-{'x': 'es', 'es': '0.66'}; /cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20110215.25.2-415-000.mp3
+it,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110606.18.1-095-000.mp3
+it,0.57,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20121023.5.2-110-000.mp3
+it,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110404.19.1-183-000.mp3
+it,0.59,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20120215.5.3-082-000.mp3
+it,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20090203.23.2-442.mp3
+it,0.99,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110323.24.3-308-000.mp3
+it,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110912.23.1-151-000.mp3
+it,0.98,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100310.19.3-175.mp3
+it,0.99,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110607.6.2-046-000.mp3
+it,0.65,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20120509.18.3-128-000.mp3
+it,0.76,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100310.24.3-419.mp3
+it,0.45,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110914.27.3-381-000.mp3
+it,0.73,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110118.18.2-393-000.mp3
+it,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100705.15.1-058.mp3
+it,0.73,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110120.19.4-343-000.mp3
+it,0.89,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100209.14.2-268.mp3
+it,0.96,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100120.19.3-383.mp3
+it,0.79,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20100420.8.2-199.mp3
+it,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20090312.26.4-192.mp3
+it,0.97,/cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20100706.5.2-089.mp3
+it,0.54,/cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20110706.25.3-532-000.mp3
+it,0.95,/cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20110608.26.3-691-000.mp3
+it,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/nl/en.20090914.24.1-101.mp3
+nl,0.80,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20110405.13.2-136-000.mp3
+nl,0.87,/cluster/home/fiviapas/data_Europarl/test-converted/wav/es/en.20120417.12.2-019-000.mp3
+es,0.84,/cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20120613.13.3-129-000.mp3
+es,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20090424.8.5-091.mp3
+es,0.93,/cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20120613.15.3-137-000.mp3
+es,1.00,/cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20090917.3.4-115.mp3
+es,0.66,/cluster/home/fiviapas/data_Europarl/test-converted/wav/it/en.20110215.25.2-415-000.mp3
