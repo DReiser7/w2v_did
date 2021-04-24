@@ -20,7 +20,7 @@ class SpeechClassification:
         return self.predict(self.load_file_to_data(wav_file),
                        self.model, self.processor)
 
-    def load_file_to_data(file, srate=16_000):
+    def load_file_to_data(self, file, srate=16_000):
         batch = {}
         speech, sampling_rate = librosa.load(file, sr=srate)
         batch["speech"] = speech

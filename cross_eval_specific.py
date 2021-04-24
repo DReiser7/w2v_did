@@ -3,8 +3,8 @@ from pathlib import Path
 import numpy as np
 import torchaudio
 
+from model_com_voice import Wav2Vec2CommVoice10sModel
 from model_klaam import Wav2Vec2KlaamModel
-from models import Wav2Vec2ClassificationModel
 from processors import CustomWav2Vec2Processor
 import torch
 import librosa
@@ -18,7 +18,7 @@ class SpeechClassification:
             self.processor = CustomWav2Vec2Processor.from_pretrained(dir)
         else:
             dir = path
-            self.model = Wav2Vec2ClassificationModel.from_pretrained(dir).to("cuda")
+            self.model = Wav2Vec2CommVoice10sModel.from_pretrained(dir).to("cuda")
             self.processor = CustomWav2Vec2Processor.from_pretrained(dir)
 
 
@@ -26,15 +26,15 @@ class SpeechClassification:
         return self.predict(self.load_file_to_data(wav_file),
                        self.model, self.processor)
 
-    def load_file_to_data(file, srate=16_000):
+    def load_file_to_data(self, file, srate=16_000):
         batch = {}
-        speech_array, sampling_rate = torchaudio.load(batch["file"])
+        speech_array, sampling_rate = torchaudio.load(file)
         speech_array = speech_array[0].numpy()[:10 * srate]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = sampling_rate
         return batch
 
-    def predict(data, model, processor):
+    def predict(self, data, model, processor):
 
         max_length = 320000
         features = processor(data["speech"][:max_length],
@@ -60,11 +60,11 @@ if __name__ == "__main__":
     data_path = "/cluster/home/fiviapas/data_Europarl/test-converted/wav/"
     pathlist = Path(data_path).glob('**/*.mp3')
 
-    classifier = SpeechClassification("/cluster/home/fiviapas/data_LID/model-saves/train-comvoice-b-16-s10/")
+    classifier = SpeechClassification(path="/cluster/home/fiviapas/data_LID/model-saves/train-comvoice-b-16-s10/")
 
     for path in pathlist:
-        file = classifier.load_file_to_data(path)
-        subdir = str(path.parent).replace('\\', '/').replace(dir, '')
+        file = classifier.load_file_to_data(file=str(path))
+        subdir = str(path.parent).replace('\\', '/').replace(data_path, '')
         prediction = classifier.classify(file)
 
         if subdir.find(prediction["x"]) == -1:
