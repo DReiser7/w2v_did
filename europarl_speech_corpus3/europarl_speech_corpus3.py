@@ -29,7 +29,7 @@ dataset = dataset.map(map_to_array, remove_columns=["file"])
 import soundfile as sf
 
 
-class ComVoiceSpeechCorpus5Config(datasets.BuilderConfig):
+class EuroparlSpeechCorpus3Config(datasets.BuilderConfig):
     """BuilderConfig for DialectSpeechCorpusCorpus."""
 
     def __init__(self, **kwargs):
@@ -41,7 +41,7 @@ class ComVoiceSpeechCorpus5Config(datasets.BuilderConfig):
           url: `string`, url for information about the data set
           **kwargs: keyword arguments forwarded to super.
         """
-        super(ComVoiceSpeechCorpus5Config, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
+        super(EuroparlSpeechCorpus3Config, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
 
 
 def map_to_array(batch):
@@ -51,11 +51,11 @@ def map_to_array(batch):
     return batch
 
 
-class ComVoiceSpeechCorpus5(datasets.GeneratorBasedBuilder):
+class EuroparlSpeechCorpus3(datasets.GeneratorBasedBuilder):
     """DialectSpeechCorpus dataset."""
 
     BUILDER_CONFIGS = [
-        ComVoiceSpeechCorpus5Config(name="clean", description="'Clean' speech."),
+        EuroparlSpeechCorpus3Config(name="clean", description="'Clean' speech."),
     ]
 
     def _info(self):
@@ -66,9 +66,10 @@ class ComVoiceSpeechCorpus5(datasets.GeneratorBasedBuilder):
                     "file": datasets.Value("string"),
                     "label": datasets.features.ClassLabel(
                         names=[
+                            'nl',
                             'es',
                             'it',
-                            'nl'
+
                         ]
                     )
                 }
