@@ -10,7 +10,7 @@ RUN apt-get update
 RUN apt-get --yes install libsndfile1
 RUN apt --yes install git-all
 
-RUN apt --yes install ffmpeg
+RUN apt-get --yes install ffmpeg libavcodec-extra
 
 RUN apt-get --YES install git-lfs
 RUN git lfs install
@@ -24,6 +24,7 @@ RUN pip install split-folders
 RUN pip install librosa
 RUN pip install datasets
 RUN pip install torchaudio
+RUN pip install pydub
 
 #install fairseq over repo
 RUN git clone https://github.com/pytorch/fairseq
