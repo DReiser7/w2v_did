@@ -1,14 +1,16 @@
+import csv
 from pathlib import Path
 
+import librosa
 import numpy as np
+import torch
 import torchaudio
 
 from model_com_voice import Wav2Vec2CommVoice10sModel
 from model_com_voice5 import Wav2Vec2CommVoice5Lang10sModel
 from model_klaam import Wav2Vec2KlaamModel
 from processors import CustomWav2Vec2Processor
-import torch
-import librosa
+
 
 class SpeechClassification:
 
@@ -106,15 +108,21 @@ if __name__ == "__main__":
 
     data_path = "/cluster/home/fiviapas/data_Europarl/test-converted/wav/"
     pathlist = Path(data_path).glob('**/*.mp3')
+    csv_path = "/cluster/home/fiviapas/data_Europarl/eval.csv"
 
     # classifier = SpeechClassification(path="/cluster/home/fiviapas/data_LID/model-saves/train-comvoice-b-16-s10/")
     classifier = SpeechClassification5(path="/cluster/home/fiviapas/data_LID/model-saves/train-comvoice5lang-b-16-s10/")
 
-    for path in pathlist:
-        subdir = str(path.parent).replace('\\', '/').replace(data_path, '')
-        prediction = classifier.classify(path)
+    with open(csv_path, 'w', newline='') as csvfile:
+        for path in pathlist:
+            subdir = str(path.parent).replace('\\', '/').replace(data_path, '')
+            prediction = classifier.classify(path)
 
-        if subdir.find(prediction["x"]) == -1:
-            print(prediction)
-            print(str(path))
+            if subdir.find(prediction["x"]) == -1:
+                print(prediction)
+                print(str(path))
+                spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                spamwriter.writerow([prediction['x'], prediction[prediction['x']], str(path)])
+
+
 
