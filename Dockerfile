@@ -12,6 +12,9 @@ RUN apt --yes install git-all
 
 RUN apt --yes install ffmpeg
 
+RUN apt-get --YES install git-lfs
+RUN git lfs install
+
 RUN pip install pandas
 RUN pip install soundfile
 RUN pip install torch
