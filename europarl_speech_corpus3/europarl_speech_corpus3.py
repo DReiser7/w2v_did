@@ -89,7 +89,7 @@ class EuroparlSpeechCorpus3(datasets.GeneratorBasedBuilder):
 
     def _generate_examples(self, archive_path):
         """Generate examples from a Librispeech archive_path."""
-        wav_dir = archive_path
+        wav_dir = os.path.join(archive_path, "wav")
 
         paths = []
         labls = []
