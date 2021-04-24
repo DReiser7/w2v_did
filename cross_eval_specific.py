@@ -63,6 +63,7 @@ if __name__ == "__main__":
     classifier = SpeechClassification(path="/cluster/home/fiviapas/data_LID/model-saves/train-comvoice-b-16-s10/")
 
     for path in pathlist:
+        print(str(path))
         file = classifier.load_file_to_data(file=str(path))
         subdir = str(path.parent).replace('\\', '/').replace(data_path, '')
         prediction = classifier.classify(file)
