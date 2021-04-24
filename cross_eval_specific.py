@@ -101,7 +101,7 @@ class SpeechClassification5:
 
         softmax = torch.nn.Softmax(dim=-1)
         probs = softmax(outputs['logits'])
-        top_prob, top_lbls = torch.topk(probs[0], 3)
+        top_prob, top_lbls = torch.topk(probs[0], 5)
         return {"x": dialects[top_lbls[0]], dialects[top_lbls[0]]: format(float(top_prob[0]), '.2f')}
 
 if __name__ == "__main__":
