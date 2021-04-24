@@ -36,7 +36,7 @@ class SpeechClassification:
 
     def predict(self, data, model, processor):
 
-        max_length = 320000
+        max_length = 160000
         features = processor(data["speech"][:max_length],
                              sampling_rate=data["sampling_rate"],
                              max_length=max_length,
