@@ -306,7 +306,8 @@ def main():
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
-    processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path)
+    kwargs = {'padding_side': 'left'}
+    processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path, **kwargs)
     model = Wav2Vec2KlaamModel.from_pretrained(
         model_args.model_name_or_path
     )
