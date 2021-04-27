@@ -26,7 +26,7 @@ from transformers import (
     set_seed,
 )
 from processors import CustomWav2Vec2Processor
-from model_klaam import Wav2Vec2KlaamModel
+from model_klaam_flexible import Wav2Vec2KlaamModelMean
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 import soundfile as sf
@@ -307,7 +307,7 @@ def main():
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path)
-    model = Wav2Vec2KlaamModel.from_pretrained(
+    model = Wav2Vec2KlaamModelMean.from_pretrained(
         model_args.model_name_or_path
     )
 
