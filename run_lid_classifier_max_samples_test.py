@@ -455,9 +455,10 @@ if __name__ == "__main__":
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
     number_of_samples = [250, 500, 1000, 2000, 3000, 4000]
-
+    base_output = training_args.output_dir
     for max_samples in number_of_samples:
         data_args.max_train_samples = max_samples
-        training_args.output_dir = training_args.output_dir + str(max_samples)
+        training_args.output_dir = base_output + str(max_samples)
         main(model_args=model_args, data_args=data_args, training_args=training_args)
+        torch.cuda.empty_cache()
 
