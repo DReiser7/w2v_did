@@ -212,7 +212,6 @@ class DataCollatorCTCWithPadding:
 
 class CTCTrainer(Trainer):
     def cleanup(self):
-        del self.optimizers
         del self.tokenizer
         del self.lr_scheduler
         del self.optimizer
