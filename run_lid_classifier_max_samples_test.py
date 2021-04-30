@@ -211,6 +211,12 @@ class DataCollatorCTCWithPadding:
 
 
 class CTCTrainer(Trainer):
+    def cleanup(self):
+        del self.optimizers
+        del self.tokenizer
+        del self.lr_scheduler
+        del self.optimizer
+
     def training_step(self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
         """
         Perform a training step on a batch of inputs.
@@ -441,6 +447,7 @@ def main(model_args, data_args, training_args):
 
     # clean up memory
     del model
+    trainer.cleanup()
     del trainer
     del processor
     del feature_extractor
