@@ -1,6 +1,6 @@
 {
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/cluster/home/fiviapas/data_LID/model-saves/comvoice-mean-b16-e8-samples_/",
+  "output_dir": "/cluster/home/fiviapas/data_LID/model-saves/comvoice-mean-b16-e8-samples/1/",
   "cache_dir": "/cluster/home/fiviapas/data_LID/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 1,
