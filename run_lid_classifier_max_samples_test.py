@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import gc
 import json
 import logging
 import os
@@ -446,6 +447,7 @@ def main(model_args, data_args, training_args):
     del data_collator
     del train_dataset
     del eval_dataset
+    gc.collect()
     torch.cuda.empty_cache()
 
 
