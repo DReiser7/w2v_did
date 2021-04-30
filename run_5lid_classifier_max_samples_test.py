@@ -455,6 +455,6 @@ if __name__ == "__main__":
 
     number_of_samples = int(sys.argv[2])
 
-    data_args.max_train_samples = number_of_samples
+    data_args.max_train_samples = number_of_samples*5
     training_args.output_dir = training_args.output_dir + str(number_of_samples)
     main(model_args=model_args, data_args=data_args, training_args=training_args)
