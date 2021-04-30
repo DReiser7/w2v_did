@@ -427,7 +427,6 @@ def main(model_args, data_args, training_args):
         trainer.save_state()
 
     # Evaluation
-    results = {}
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
         metrics = trainer.evaluate()
@@ -438,7 +437,16 @@ def main(model_args, data_args, training_args):
         trainer.save_metrics("eval", metrics)
 
     runs.finish()
-    return results
+
+    # clean up memory
+    del model
+    del trainer
+    del processor
+    del feature_extractor
+    del data_collator
+    del train_dataset
+    del eval_dataset
+    torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":
@@ -460,5 +468,4 @@ if __name__ == "__main__":
         data_args.max_train_samples = max_samples
         training_args.output_dir = base_output + str(max_samples)
         main(model_args=model_args, data_args=data_args, training_args=training_args)
-        torch.cuda.empty_cache()
 
