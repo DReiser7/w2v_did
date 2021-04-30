@@ -471,49 +471,10 @@ if __name__ == "__main__":
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
-    number_of_samples = [250, 500, 1000, 2000, 3000, 4000]
-    base_output = training_args.output_dir
+    number_of_samples = int(sys.argv[2])
 
-    def separate_process_wrapper_fn(func: Callable[[], None], do_multi_processing: bool) -> Callable[[], None]:
-        """
-        This function wraps another function into its own separated process.
-        In order to ensure accurate memory measurements it is important that the function
-        is executed in a separate process
-        Args:
-            - `func`: (`callable`): function() -> ...
-                generic function which will be executed in its own separate process
-            - `do_multi_processing`: (`bool`)
-                Whether to run function on separate process or not
-        """
-
-        def multi_process_func(*args, **kwargs):
-            # run function in an individual
-            # process to get correct memory
-            def wrapper_func(queue: Queue, *args):
-                try:
-                    result = func(*args)
-                except Exception as e:
-                    logger.error(e)
-                    print(e)
-                    result = "N/A"
-                queue.put(result)
-
-            queue = Queue()
-            p = Process(target=wrapper_func, args=[queue] + list(args))
-            p.start()
-            result = queue.get()
-            p.join()
-            return result
-
-        if do_multi_processing:
-            logger.info(f"Function {func} is executed in its own process...")
-            return multi_process_func
-        else:
-            return func
-
-    for max_samples in number_of_samples:
-        data_args.max_train_samples = max_samples
-        training_args.output_dir = base_output + str(max_samples)
-        separate_process_wrapper_fn(main(model_args=model_args, data_args=data_args, training_args=training_args), True)()
+    data_args.max_train_samples = number_of_samples
+    training_args.output_dir = training_args.output_dir + str(number_of_samples)
+    main(model_args=model_args, data_args=data_args, training_args=training_args)
 
 
