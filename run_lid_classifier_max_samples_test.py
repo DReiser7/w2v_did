@@ -6,8 +6,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass, field
-from multiprocessing import Queue, Process
-from typing import Any, Dict, List, Optional, Union, Callable
+from typing import Any, Dict, List, Optional, Union
 import librosa
 
 import datasets
@@ -212,10 +211,6 @@ class DataCollatorCTCWithPadding:
 
 
 class CTCTrainer(Trainer):
-    def cleanup(self):
-        del self.tokenizer
-        del self.lr_scheduler
-        del self.optimizer
 
     def training_step(self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
         """
@@ -444,18 +439,6 @@ def main(model_args, data_args, training_args):
         trainer.save_metrics("eval", metrics)
 
     runs.finish()
-
-    # clean up memory
-    del model
-    trainer.cleanup()
-    del trainer
-    del processor
-    del feature_extractor
-    del data_collator
-    del train_dataset
-    del eval_dataset
-    gc.collect()
-    torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":
