@@ -1,0 +1,21 @@
+{
+  "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
+  "output_dir": "/cluster/home/fiviapas/data_LID/model-saves/comvoice-mean-b16-e8-samples_/",
+  "cache_dir": "/cluster/home/fiviapas/data_LID/cached/",
+  "freeze_feature_extractor": true,
+  "num_train_epochs": 1,
+  "per_device_train_batch_size": 16,
+  "per_device_eval_batch_size": 16,
+  "preprocessing_num_workers": 3,
+  "learning_rate": 3e-5,
+  "warmup_steps": 20,
+  "evaluation_strategy": "epoch",
+  "save_steps": 1000,
+  "eval_steps": 1000,
+  "save_total_limit": 2,
+  "gradient_accumulation_steps": 1,
+  "logging_steps": 300,
+  "do_eval": true,
+  "do_train": true,
+  "max_val_samples": 200
+}
