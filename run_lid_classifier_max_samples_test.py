@@ -27,7 +27,7 @@ from transformers import (
     set_seed,
 )
 
-from model_com_voice import Wav2Vec2CommVoice10sModel
+from model_com_voice import Wav2Vec2CommVoice10sModel, Wav2Vec2CommVoiceMeanModel
 from processors import CustomWav2Vec2Processor
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
@@ -296,7 +296,7 @@ def main(model_args, data_args, training_args):
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2CommVoice10sModel.from_pretrained(
+    model = Wav2Vec2CommVoiceMeanModel.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
