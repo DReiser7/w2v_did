@@ -1,23 +1,19 @@
 #!/usr/bin/env python3
-import json
 import logging
 import os
-import re
 import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
-import librosa
 
 import datasets
+import librosa
 import numpy as np
 import torch
 import torchaudio
-from packaging import version
-from torch import nn
-from torch.nn import functional as F
-import wandb
-
 import transformers
+from packaging import version
+from sklearn.metrics import accuracy_score, f1_score
+from torch import nn
 from transformers import (
     HfArgumentParser,
     Trainer,
@@ -26,12 +22,11 @@ from transformers import (
     is_apex_available,
     set_seed,
 )
-
-from model_com_voice import Wav2Vec2CommVoice10sModel
-from processors import CustomWav2Vec2Processor
-
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
-from sklearn.metrics import accuracy_score, f1_score
+
+import wandb
+from models import Wav2Vec2ClassifierModelMean3
+from processors import CustomWav2Vec2Processor
 
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
@@ -307,7 +302,7 @@ def main():
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2CommVoice10sModel.from_pretrained(
+    model = Wav2Vec2ClassifierModelMean3.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,

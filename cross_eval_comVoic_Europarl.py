@@ -301,7 +301,7 @@ def main():
     # Get the datasets:
 
     # train_dataset = datasets.load_dataset("europarl_speech_corpus3", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("europarl_speech_corpus3", split="test", cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("corpora/europarl_speech_corpus3", split="test", cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
