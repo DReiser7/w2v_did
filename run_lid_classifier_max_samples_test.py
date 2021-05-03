@@ -6,8 +6,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass, field
-from multiprocessing import Queue, Process
-from typing import Any, Dict, List, Optional, Union, Callable
+from typing import Any, Dict, List, Optional, Union
 import librosa
 
 import datasets
@@ -212,10 +211,6 @@ class DataCollatorCTCWithPadding:
 
 
 class CTCTrainer(Trainer):
-    def cleanup(self):
-        del self.tokenizer
-        del self.lr_scheduler
-        del self.optimizer
 
     def training_step(self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
         """
@@ -296,8 +291,8 @@ def main(model_args, data_args, training_args):
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("com_voice_speech_corpus", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("com_voice_speech_corpus", split="test", cache_dir=model_args.cache_dir)
+    train_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="train", cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="test", cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
@@ -445,18 +440,6 @@ def main(model_args, data_args, training_args):
 
     runs.finish()
 
-    # clean up memory
-    del model
-    trainer.cleanup()
-    del trainer
-    del processor
-    del feature_extractor
-    del data_collator
-    del train_dataset
-    del eval_dataset
-    gc.collect()
-    torch.cuda.empty_cache()
-
 
 if __name__ == "__main__":
     # See all possible arguments in src/transformers/training_args.py
@@ -473,7 +456,7 @@ if __name__ == "__main__":
 
     number_of_samples = int(sys.argv[2])
 
-    data_args.max_train_samples = number_of_samples
+    data_args.max_train_samples = number_of_samples * 3
     training_args.output_dir = training_args.output_dir + str(number_of_samples)
     main(model_args=model_args, data_args=data_args, training_args=training_args)
 

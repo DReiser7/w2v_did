@@ -8,7 +8,7 @@ import torchaudio
 
 from model_com_voice import Wav2Vec2CommVoice10sModel
 from model_com_voice5 import Wav2Vec2CommVoice5Lang10sModel
-from model_klaam import Wav2Vec2KlaamModel
+from archive.model_klaam import Wav2Vec2KlaamModel
 from processors import CustomWav2Vec2Processor
 
 

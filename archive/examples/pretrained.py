@@ -6,8 +6,8 @@ from torch.nn.utils.rnn import pack_sequence
 import torch.nn.functional as F
 
 
-from old.DidDataset import DidDataset
-from old.DidModel import DidModel
+from archive.old.DidDataset import DidDataset
+from archive.old.DidModel import DidModel
 
 
 def my_collate(batch):
