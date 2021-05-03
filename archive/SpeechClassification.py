@@ -1,4 +1,4 @@
-from model_klaam import Wav2Vec2KlaamModel
+from archive.model_klaam import Wav2Vec2KlaamModel
 from models import Wav2Vec2ClassificationModel
 from processors import CustomWav2Vec2Processor
 import torch

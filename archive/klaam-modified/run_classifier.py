@@ -27,7 +27,7 @@ from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
 from ArgumentParser import ModelArguments, DataTrainingArguments
 from DidTrainer import DidTrainer
-from model_klaam import Wav2Vec2KlaamModel
+from archive.model_klaam import Wav2Vec2KlaamModel
 from models import Wav2Vec2ClassificationModel
 from processors import CustomWav2Vec2Processor
 

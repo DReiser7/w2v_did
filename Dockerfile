@@ -1,11 +1,5 @@
 FROM python:3
 
-ADD old/DidDataset.py /
-ADD old/DidMain.py /
-ADD old/DidModel.py /
-ADD old/DidModelRunner.py /
-ADD old/DidModelHuggingFaceOld.py /
-
 RUN apt-get update
 RUN apt-get --yes install libsndfile1
 RUN apt --yes install git-all
