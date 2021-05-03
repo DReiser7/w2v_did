@@ -25,21 +25,21 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
 import wandb
-from models import Wav2Vec2ClassifierModelMean3
 from processors import CustomWav2Vec2Processor
-
 #######################################################
-
 #            GLOBALS TO MODIFY TRAINING
-
 #######################################################
+from models import Wav2VecClassifierModelMean3 as Wav2VecClassifierModel
 
-
-NUMBER_OF_CLASSES = 3    # has to fit Model!
+NUMBER_OF_CLASSES = 3  # has to fit Model!
 SECONDS_STOP = 10
 S_RATE = 16_000
 SAMPLE_LENGTH = SECONDS_STOP * S_RATE
 CORPORA_PATH = "corpora/com_voice_speech_corpus"
+LABEL_IDX = [0, 1, 2]
+LABEL_NAMES = ['NLD', 'ESP', 'ITA']
+
+######################################################
 
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
@@ -315,7 +315,7 @@ def main():
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2ClassifierModelMean3.from_pretrained(
+    model = Wav2VecClassifierModel.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
@@ -385,8 +385,8 @@ def main():
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
-        label_idx = [0, 1, 2]
-        label_names = ['NLD', 'ESP', 'ITA']
+        label_idx = LABEL_IDX
+        label_names = LABEL_NAMES
         labels = pred.label_ids.argmax(-1)
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
