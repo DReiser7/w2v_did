@@ -28,7 +28,7 @@ dataset = dataset.map(map_to_array, remove_columns=["file"])
 
 import soundfile as sf
 
-class ComVoiceSpeechCorpusConfig(datasets.BuilderConfig):
+class ComVoiceGenderCorpusConfig(datasets.BuilderConfig):
     """BuilderConfig for DialectSpeechCorpusCorpus."""
 
     def __init__(self, **kwargs):
@@ -40,7 +40,7 @@ class ComVoiceSpeechCorpusConfig(datasets.BuilderConfig):
           url: `string`, url for information about the data set
           **kwargs: keyword arguments forwarded to super.
         """
-        super(ComVoiceSpeechCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
+        super(ComVoiceGenderCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
 
 
 def map_to_array(batch):
@@ -49,11 +49,11 @@ def map_to_array(batch):
     batch["speech"] = speech_array
     return batch
 
-class ComVoiceSpeechCorpus(datasets.GeneratorBasedBuilder):
+class ComVoiceGenderCorpus(datasets.GeneratorBasedBuilder):
     """DialectSpeechCorpus dataset."""
 
     BUILDER_CONFIGS = [
-        ComVoiceSpeechCorpusConfig(name="clean", description="'Clean' speech."),
+        ComVoiceGenderCorpusConfig(name="clean", description="'Clean' speech."),
     ]
 
     def _info(self):
@@ -64,9 +64,8 @@ class ComVoiceSpeechCorpus(datasets.GeneratorBasedBuilder):
                     "file": datasets.Value("string"),
                     "label": datasets.features.ClassLabel(
                         names=[
-                        'NLD',
-                        'ESP',
-                        'ITA',
+                        'female',
+                        'male',
                         ]
                     )
                 }
@@ -76,15 +75,15 @@ class ComVoiceSpeechCorpus(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        archive_path = '/cluster/home/reisedom/data/'
+        archive_path = '/cluster/home/reisedom/data/gender-splitted'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
-            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
+            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "val")}),
         ]
 
     def _generate_examples(self, archive_path):
         """Generate examples from a Librispeech archive_path."""
-        wav_dir = os.path.join(archive_path, "wav")
+        wav_dir = archive_path
         
         paths = []
         labls = []
