@@ -28,6 +28,19 @@ import wandb
 from models import Wav2Vec2ClassifierModelMean3
 from processors import CustomWav2Vec2Processor
 
+#######################################################
+
+#            GLOBALS TO MODIFY TRAINING
+
+#######################################################
+
+
+NUMBER_OF_CLASSES = 3    # has to fit Model!
+SECONDS_STOP = 10
+S_RATE = 16_000
+SAMPLE_LENGTH = SECONDS_STOP * S_RATE
+CORPORA_PATH = "corpora/com_voice_speech_corpus"
+
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
 
@@ -170,9 +183,9 @@ class DataCollatorCTCWithPadding:
 
     processor: CustomWav2Vec2Processor
     padding: Union[bool, str] = True
-    max_length: Optional[int] = 160000
+    max_length: Optional[int] = SAMPLE_LENGTH
     max_length_labels: Optional[int] = None
-    pad_to_multiple_of: Optional[int] = 160000
+    pad_to_multiple_of: Optional[int] = SAMPLE_LENGTH
     pad_to_multiple_of_labels: Optional[int] = None
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
@@ -182,7 +195,7 @@ class DataCollatorCTCWithPadding:
         input_features = [{"input_values": feature["input_values"]} for feature in features]
 
         def onehot(lbl):
-            onehot = [0] * 3
+            onehot = [0] * NUMBER_OF_CLASSES
             onehot[int(lbl)] = 1
             return onehot
 
@@ -295,8 +308,8 @@ def main():
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="test", cache_dir=model_args.cache_dir)
+    train_dataset = datasets.load_dataset(CORPORA_PATH, split="train", cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset(CORPORA_PATH, split="test", cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
@@ -325,8 +338,8 @@ def main():
     # We need to read the aduio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch):
         start = 0
-        stop = 10
-        srate = 16_000
+        stop = SECONDS_STOP
+        srate = S_RATE
         speech_array, sampling_rate = torchaudio.load(batch["file"])
         speech_array = speech_array[0].numpy()[:stop * srate]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
