@@ -76,7 +76,7 @@ class ComVoiceAccentCorpus(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        archive_path = '/cluster/home/reisedom/data/accents-splitted'
+        archive_path = '/cluster/home/reisedom/data/german-accents'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
             datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "val")}),
