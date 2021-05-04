@@ -33,21 +33,34 @@ def reduce_files(output_dir, attributes):
     smallest_attribute = min(file_counts_per_attribute, key=file_counts_per_attribute.get)
     number_limit = 2 * file_counts_per_attribute[smallest_attribute]
 
+    print('smallest attribute: ', smallest_attribute)
+    print('number limit: ', str(number_limit))
+
     for attribute in attributes:
         if attribute != smallest_attribute:
             files = os.listdir(output_dir + attribute)
-            for file in sample(files, file_counts_per_attribute[attribute] - number_limit):
-                file_to_remove = output_dir + attribute + '/' + file
-                os.remove(file_to_remove)
-                print('removing file: ', file_to_remove)
+            num_of_deletes = file_counts_per_attribute[attribute] - number_limit
+            if num_of_deletes > 0:
+                for file in sample(files, num_of_deletes):
+                    file_to_remove = output_dir + attribute + '/' + file
+                    os.remove(file_to_remove)
+                    print('removing file: ', file_to_remove)
 
 
 if __name__ == "__main__":
     # specific config
     do_copy = False
     do_reduce = True
-    base_dir = 'C:/Users/domin/Downloads/cv-corpus-6.1-2020-12-11/de/'
-    list_of_attributes = ['austria', 'germany', 'switzerland']
+    base_dir = 'C:/workspaces/BA/Corpora/cv-corpus-6.1-2020-12-11/es/'
+    # list_of_attributes = ['austria', 'germany', 'switzerland']
+    list_of_attributes = ['mexicano',
+                          'caribe',
+                          'andino',
+                          'centrosurpeninsular',
+                          'americacentral',
+                          'rioplatense',
+                          'nortepeninsular',
+                          'surpeninsular']
     # list_of_attributes = ['male', 'female']
     # list_of_attributes = ['teens', 'twenties', 'thirties', 'fourties', 'fifties', 'sixties', 'seventies', 'eighties',
     #                       'nineties']
