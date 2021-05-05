@@ -28,7 +28,7 @@ dataset = dataset.map(map_to_array, remove_columns=["file"])
 
 import soundfile as sf
 
-class ComVoiceGenderCorpusConfig(datasets.BuilderConfig):
+class ComVoiceSexCorpusConfig(datasets.BuilderConfig):
     """BuilderConfig for DialectSpeechCorpusCorpus."""
 
     def __init__(self, **kwargs):
@@ -40,7 +40,7 @@ class ComVoiceGenderCorpusConfig(datasets.BuilderConfig):
           url: `string`, url for information about the data set
           **kwargs: keyword arguments forwarded to super.
         """
-        super(ComVoiceGenderCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
+        super(ComVoiceSexCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
 
 
 def map_to_array(batch):
@@ -49,11 +49,11 @@ def map_to_array(batch):
     batch["speech"] = speech_array
     return batch
 
-class ComVoiceGenderCorpus(datasets.GeneratorBasedBuilder):
+class ComVoiceSexCorpus(datasets.GeneratorBasedBuilder):
     """DialectSpeechCorpus dataset."""
 
     BUILDER_CONFIGS = [
-        ComVoiceGenderCorpusConfig(name="clean", description="'Clean' speech."),
+        ComVoiceSexCorpusConfig(name="clean", description="'Clean' speech."),
     ]
 
     def _info(self):
@@ -75,10 +75,10 @@ class ComVoiceGenderCorpus(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        archive_path = '/cluster/home/reisedom/data/gender-splitted'
+        archive_path = '/cluster/home/reisedom/data/german-sex'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
-            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "val")}),
+            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
         ]
 
     def _generate_examples(self, archive_path):
