@@ -94,7 +94,7 @@ class ComVoiceEnglishAccentCorpus(datasets.GeneratorBasedBuilder):
 
         for _, c in enumerate(os.listdir(wav_dir)):
             if os.path.isdir(f'{wav_dir}/{c}/'):
-                for file in os.listdir(f'{wav_dir}/{c}/')[:2000]:
+                for file in os.listdir(f'{wav_dir}/{c}/')[:6000]:
                     if file.endswith('.mp3'):
                         wav_path = f'{wav_dir}/{c}/{file}'
                         paths.append(wav_path)
