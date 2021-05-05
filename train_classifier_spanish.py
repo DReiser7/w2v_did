@@ -385,8 +385,15 @@ def main():
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
-        label_idx = [0, 1, 2]
-        label_names = ['NLD', 'ESP', 'ITA']
+        label_idx = [0, 1, 2, 3, 4, 5, 6, 7]
+        label_names = ['nortepeninsular',
+                        'centrosurpeninsular',
+                        'surpeninsular',
+                        'rioplatense',
+                        'americacentral',
+                        'caribe',
+                        'andino',
+                        'mexicano']
         labels = pred.label_ids.argmax(-1)
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
