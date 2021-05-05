@@ -39,7 +39,7 @@ NUMBER_OF_CLASSES = 6    # has to fit Model!
 SECONDS_STOP = 10
 S_RATE = 16_000
 SAMPLE_LENGTH = SECONDS_STOP * S_RATE
-CORPORA_PATH = "corpora/com_voice_spanish_accent_corpus"
+CORPORA_PATH = "corpora/com_voice_english_accent_corpus"
 
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
