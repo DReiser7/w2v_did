@@ -57,7 +57,7 @@ if __name__ == "__main__":
                           'caribe',
                           'andino',
                           'centrosurpeninsular',
-                          'americacentral',
+                          # 'americacentral',
                           'rioplatense',
                           'nortepeninsular',
                           'surpeninsular']
@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
         # copy train and dev to train
         copy_files(train_data, train_dir, list_of_attributes, tsv_column_indices[attribute_type])
-        copy_files(dev_data, train_dir, list_of_attributes, tsv_column_indices[attribute_type])
+        copy_files(dev_data, test_dir, list_of_attributes, tsv_column_indices[attribute_type])
         # copy test to test
         copy_files(test_data, test_dir, list_of_attributes, tsv_column_indices[attribute_type])
 

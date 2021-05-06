@@ -68,7 +68,6 @@ class ComVoiceSpanishAccentCorpus(datasets.GeneratorBasedBuilder):
                         'centrosurpeninsular',
                         'surpeninsular',
                         'rioplatense',
-                        'americacentral',
                         'caribe',
                         'andino',
                         'mexicano',
@@ -81,7 +80,7 @@ class ComVoiceSpanishAccentCorpus(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        archive_path = '/cluster/home/reisedom/data/spanish-accents'
+        archive_path = '/cluster/home/reisedom/data/spanish-accents-test-aug'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
             datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
