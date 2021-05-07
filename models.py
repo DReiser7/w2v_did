@@ -168,7 +168,7 @@ class Wav2VecClassifierModelMean6(Wav2Vec2PreTrainedModel):
         return {'logits': x}
 
 
-class Wav2Vec2ClassifierModelMean7(Wav2Vec2PreTrainedModel):
+class Wav2VecClassifierModelMean7(Wav2Vec2PreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
 
@@ -209,7 +209,7 @@ class Wav2Vec2ClassifierModelMean7(Wav2Vec2PreTrainedModel):
         return {'logits': x}
 
 
-class Wav2Vec2ClassifierModelMean8(Wav2Vec2PreTrainedModel):
+class Wav2VecClassifierModelMean8(Wav2Vec2PreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
 
