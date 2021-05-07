@@ -29,15 +29,20 @@ from processors import CustomWav2Vec2Processor
 #######################################################
 #            GLOBALS TO MODIFY TRAINING
 #######################################################
-from models import Wav2VecClassifierModelMean3 as Wav2VecClassifierModel
+from models import Wav2VecClassifierModelMean6 as Wav2VecClassifierModel
 
-NUMBER_OF_CLASSES = 3  # has to fit Model!
+NUMBER_OF_CLASSES = 6  # has to fit Model!
 SECONDS_STOP = 5
 S_RATE = 16_000
 SAMPLE_LENGTH = SECONDS_STOP * S_RATE
-CORPORA_PATH = "corpora/com_voice_speech_corpus"
-LABEL_IDX = [0, 1, 2]
-LABEL_NAMES = ['NLD', 'ESP', 'ITA']
+CORPORA_PATH = "corpora/com_voice_english_accent_corpus"
+LABEL_IDX = [0, 1, 2, 3, 4, 5]
+LABEL_NAMES = ['us',
+               'australia',
+               'canada',
+               'england',
+               'indian',
+               'scotland']
 
 ######################################################
 
