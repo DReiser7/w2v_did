@@ -14,7 +14,7 @@ def resample_and_segment_audio(dir_path, seconds):
 
         # do resampling on root path
         speech_array, sampling_rate = torchaudio.load(str(path))
-        speech_resampled = librosa.resample(np.asarray(speech_array), sampling_rate, 16_000)
+        speech_resampled = librosa.resample(np.asarray(speech_array[0].numpy()), sampling_rate, 16_000)
 
         segmented_path = str(path.parent).replace('test', 'test-segmented-' + str(seconds))
 
