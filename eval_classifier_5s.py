@@ -346,7 +346,7 @@ def main():
         stop = SECONDS_STOP
         srate = S_RATE
         speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[:stop * srate]
+        speech_array = speech_array[0].numpy()[start:stop * srate]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
         batch["parent"] = batch["label"]
@@ -357,7 +357,7 @@ def main():
         stop = 10
         srate = S_RATE
         speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[:stop * srate]
+        speech_array = speech_array[0].numpy()[start:stop * srate]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
         batch["parent"] = batch["label"]
