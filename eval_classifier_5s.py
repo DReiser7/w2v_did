@@ -317,12 +317,9 @@ def main():
     eval_dataset = datasets.load_dataset(CORPORA_PATH, split="test", cache_dir=model_args.cache_dir)
     eval_dataset5 = datasets.load_dataset(CORPORA_PATH, split="test", cache_dir=model_args.cache_dir)
 
-    feature_extractor = Wav2Vec2FeatureExtractor(
-        feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
-    )
-    processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
+    processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path)
     model = Wav2VecClassifierModel.from_pretrained(
-        "facebook/wav2vec2-large-xlsr-53",
+        model_args.model_name_or_path,
         attention_dropout=0.01,
         hidden_dropout=0.01,
         feat_proj_dropout=0.0,
@@ -331,8 +328,8 @@ def main():
         gradient_checkpointing=True,
     )
 
-    if model_args.freeze_feature_extractor:
-        model.freeze_feature_extractor()
+    # if model_args.freeze_feature_extractor:
+    #     model.freeze_feature_extractor()
 
     # if data_args.max_val_samples is not None:
     #     max_val_samples = min(data_args.max_val_samples, len(eval_dataset))
