@@ -29,7 +29,7 @@ from processors import CustomWav2Vec2Processor
 #######################################################
 #            GLOBALS TO MODIFY TRAINING
 #######################################################
-from models import Wav2Vec2ClassifierModelMean7 as Wav2VecClassifierModel
+from models import Wav2VecClassifierModelMean7 as Wav2VecClassifierModel
 
 NUMBER_OF_CLASSES = 7  # has to fit Model!
 SECONDS_STOP = 10
@@ -265,18 +265,7 @@ class CTCTrainer(Trainer):
         return (loss, outputs) if return_outputs else loss
 
 
-def main():
-    # See all possible arguments in src/transformers/training_args.py
-    # or by passing the --help flag to this script.
-    # We now keep distinct sets of args, for a cleaner separation of concerns.
-
-    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
-    if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
-        # If we pass only one argument to the script and it's the path to a json file,
-        # let's parse it to get our arguments.
-        model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
-    else:
-        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+def main(model_args, data_args, training_args):
     # Detecting last checkpoint.
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
@@ -467,4 +456,20 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # See all possible arguments in src/transformers/training_args.py
+    # or by passing the --help flag to this script.
+    # We now keep distinct sets of args, for a cleaner separation of concerns.
+
+    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
+    # if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
+        # If we pass only one argument to the script and it's the path to a json file,
+        # let's parse it to get our arguments.
+    model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
+    # else:
+    #     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+    number_of_samples = int(sys.argv[2])
+
+    data_args.max_train_samples = number_of_samples * NUMBER_OF_CLASSES
+    training_args.output_dir = training_args.output_dir + str(number_of_samples)
+    main(model_args=model_args, data_args=data_args, training_args=training_args)
