@@ -15,7 +15,7 @@ class Wav2Vec2CommVoiceAccentModel(Wav2Vec2PreTrainedModel):
 
         self.tanh = nn.Tanh()
         self.linear1 = nn.Linear(1024, 1024)
-        self.linear2 = nn.Linear(1024, 3)
+        self.linear2 = nn.Linear(1024, 6)
         self.init_weights()
 
     def freeze_feature_extractor(self):
