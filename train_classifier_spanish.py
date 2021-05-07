@@ -35,7 +35,7 @@ NUMBER_OF_CLASSES = 7  # has to fit Model!
 SECONDS_STOP = 10
 S_RATE = 16_000
 SAMPLE_LENGTH = SECONDS_STOP * S_RATE
-CORPORA_PATH = "corpora/com_voice_speech_corpus"
+CORPORA_PATH = "corpora/com_voice_spanish_accent_corpus"
 LABEL_IDX = [0, 1, 2, 3, 4, 5, 6]
 LABEL_NAMES = ['nortepeninsular',
                'centrosurpeninsular',
