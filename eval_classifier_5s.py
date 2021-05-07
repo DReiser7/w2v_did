@@ -29,7 +29,7 @@ from processors import CustomWav2Vec2Processor
 #######################################################
 #            GLOBALS TO MODIFY TRAINING
 #######################################################
-from models import Wav2VecClassifierModelMean6 as Wav2VecClassifierModel
+from model_com_voice_extra import Wav2Vec2CommVoiceAccentModel as Wav2VecClassifierModel
 
 NUMBER_OF_CLASSES = 6  # has to fit Model!
 SECONDS_STOP = 5
