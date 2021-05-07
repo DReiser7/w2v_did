@@ -1,6 +1,6 @@
 {
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/cluster/home/fiviapas/data_english/model-saves/train-accents/6k",
+  "output_dir": "/cluster/home/fiviapas/data_english/model-saves/train-accents/2k",
   "cache_dir": "/cluster/home/fiviapas/data_english/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 8,
@@ -16,5 +16,6 @@
   "gradient_accumulation_steps": 1,
   "logging_steps": 300,
   "do_eval": true,
-  "do_train": true
+  "do_train": true,
+  "max_train_samples": 2000
 }
