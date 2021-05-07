@@ -1,7 +1,7 @@
 {
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/cluster/home/fiviapas/data_LID/model-saves/train-comvoice-b-16-s10-e10/",
-  "cache_dir": "/cluster/home/fiviapas/data_LID/cached/",
+  "output_dir": "/cluster/home/fiviapas/data_english/model-saves/train-accents/6k",
+  "cache_dir": "/cluster/home/fiviapas/data_english/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 8,
   "per_device_train_batch_size": 16,
@@ -13,10 +13,9 @@
   "save_steps": 1000,
   "eval_steps": 1000,
   "save_total_limit": 2,
-  "gradient_accumulation_steps": 2,
+  "gradient_accumulation_steps": 1,
   "logging_steps": 300,
   "do_eval": true,
   "do_train": true,
-  "max_train_samples": 250,
-  "max_val_samples": 250
+  "max_val_samples": 8000
 }

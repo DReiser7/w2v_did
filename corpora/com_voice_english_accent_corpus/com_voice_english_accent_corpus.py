@@ -79,7 +79,7 @@ class ComVoiceEnglishAccentCorpus(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        archive_path = '/cluster/home/reisedom/data/en-accents'
+        archive_path = '/cluster/home/fiviapas/en-accents'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
             datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
@@ -94,7 +94,7 @@ class ComVoiceEnglishAccentCorpus(datasets.GeneratorBasedBuilder):
 
         for _, c in enumerate(os.listdir(wav_dir)):
             if os.path.isdir(f'{wav_dir}/{c}/'):
-                for file in os.listdir(f'{wav_dir}/{c}/')[:4000]:
+                for file in os.listdir(f'{wav_dir}/{c}/')[:6000]:
                     if file.endswith('.mp3'):
                         wav_path = f'{wav_dir}/{c}/{file}'
                         paths.append(wav_path)
