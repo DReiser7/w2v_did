@@ -1,6 +1,6 @@
 {
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/cluster/home/reisedom/data_spanish/model-saves/max-samples/2/",
+  "output_dir": "/cluster/home/reisedom/data_spanish/model-saves/max-samples/batchsize32/",
   "cache_dir": "/cluster/home/reisedom/data_spanish/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 8,
