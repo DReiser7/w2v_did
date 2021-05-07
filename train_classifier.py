@@ -332,7 +332,8 @@ def main():
         train_dataset = train_dataset.select(range(data_args.max_train_samples))
 
     if data_args.max_val_samples is not None:
-        eval_dataset = eval_dataset.select(range(data_args.max_val_samples))
+        max_val_samples = min(data_args.max_val_samples, len(eval_dataset))
+        eval_dataset = eval_dataset.select(range(max_val_samples))
 
     # Preprocessing the datasets.
     # We need to read the aduio files as arrays and tokenize the targets.
