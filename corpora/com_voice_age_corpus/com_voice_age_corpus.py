@@ -79,10 +79,10 @@ class ComVoiceAgeCorpus(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        archive_path = '/cluster/home/reisedom/data/age-splitted'
+        archive_path = '/cluster/home/reisedom/data/german-age'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
-            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "val")}),
+            datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
         ]
 
     def _generate_examples(self, archive_path):
