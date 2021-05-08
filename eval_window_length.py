@@ -29,20 +29,18 @@ from processors import CustomWav2Vec2Processor
 #######################################################
 #            GLOBALS TO MODIFY TRAINING
 #######################################################
-from model_com_voice_extra import Wav2Vec2CommVoiceAccentModel as Wav2VecClassifierModel
+from models import Wav2VecClassifierModelMean2 as Wav2VecClassifierModel
 
 NUMBER_OF_CLASSES = 6  # has to fit Model!
-SECONDS_STOP = 5
+WINDOW_COUNT = 3
+WINDOW_LENGTH = 10
 S_RATE = 16_000
-SAMPLE_LENGTH = SECONDS_STOP * S_RATE
-CORPORA_PATH = "corpora/com_voice_english_accent_corpus"
-LABEL_IDX = [0, 1, 2, 3, 4, 5]
-LABEL_NAMES = ['us',
-               'australia',
-               'canada',
-               'england',
-               'indian',
-               'scotland']
+SAMPLE_LENGTH = WINDOW_LENGTH * S_RATE
+CORPORA_PATH = "archive/dialect_speech_corpus"
+LABEL_IDX = [0, 1]
+LABEL_NAMES = ['EGY',
+               'GLF', ]
+
 
 ######################################################
 
@@ -312,10 +310,7 @@ def main():
     set_seed(training_args.seed)
 
     # Get the datasets:
-
-    # train_dataset = datasets.load_dataset(CORPORA_PATH, split="train", cache_dir=model_args.cache_dir)
     eval_dataset = datasets.load_dataset(CORPORA_PATH, split="test", cache_dir=model_args.cache_dir)
-    eval_dataset5 = datasets.load_dataset(CORPORA_PATH, split="test", cache_dir=model_args.cache_dir)
 
     processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path)
     model = Wav2VecClassifierModel.from_pretrained(
@@ -328,51 +323,40 @@ def main():
         gradient_checkpointing=True,
     )
 
-    # if model_args.freeze_feature_extractor:
-    #     model.freeze_feature_extractor()
+    if data_args.max_val_samples is not None:
+        max_val_samples = min(data_args.max_val_samples, len(eval_dataset))
+        eval_dataset = eval_dataset.select(range(max_val_samples))
 
-    # if data_args.max_val_samples is not None:
-    #     max_val_samples = min(data_args.max_val_samples, len(eval_dataset))
-    #     eval_dataset = eval_dataset.select(range(max_val_samples))
-
-    # Prep.
-    # rocessing the datasets.
+    # Preprocessing the datasets.
     # We need to read the aduio files as arrays and tokenize the targets.
-    def speech_file_to_array_fn(batch):
-        start = 0
-        stop = SECONDS_STOP
-        srate = S_RATE
+    def speech_file_to_array_fn(batch, start_param, stop_param):
         speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[start * srate:stop * srate]
-        batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
-        batch["sampling_rate"] = srate
+        speech_array = speech_array[0].numpy()[start_param:stop_param]
+        batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, S_RATE)
+        batch["sampling_rate"] = S_RATE
         batch["parent"] = batch["label"]
         return batch
 
-    def speech_file_to_array_fn2(batch):
-        start = SECONDS_STOP
-        stop = 10
-        srate = S_RATE
-        speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[start * srate:stop * srate]
-        batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
-        batch["sampling_rate"] = srate
-        batch["parent"] = batch["label"]
-        return batch
+    def filter_null(batch):
+        return not (batch['speech'] == np.array([0])).all()
 
-    eval_dataset = eval_dataset.map(
-        speech_file_to_array_fn,
-        remove_columns=eval_dataset.column_names,
-        num_proc=data_args.preprocessing_num_workers,
-    )
 
-    eval_dataset5 = eval_dataset5.map(
-        speech_file_to_array_fn2,
-        remove_columns=eval_dataset5.column_names,
-        num_proc=data_args.preprocessing_num_workers,
-    )
+    eval_dataset_array = []
+    stop = 0
+    for i in range(WINDOW_COUNT):
+        start = 0 if i == 0 else stop
+        stop = start + SAMPLE_LENGTH
+        arguments = {'start_param': start, 'stop_param': stop}
+        eval_dataset_array.append(eval_dataset.map(
+            speech_file_to_array_fn,
+            remove_columns=eval_dataset.column_names,
+            num_proc=data_args.preprocessing_num_workers,
+            fn_kwargs=arguments
 
-    eval_dataset = datasets.concatenate_datasets([eval_dataset, eval_dataset5])
+        ).filter(filter_null))
+
+    eval_dataset = datasets.concatenate_datasets(eval_dataset_array)
+
 
     def prepare_dataset(batch):
         # check that all files have the correct sampling rate

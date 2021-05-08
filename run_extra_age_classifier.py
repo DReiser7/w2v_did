@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-import json
 import logging
 import os
-import re
 import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
@@ -14,7 +12,6 @@ import torch
 import torchaudio
 from packaging import version
 from torch import nn
-from torch.nn import functional as F
 import wandb
 
 import transformers
@@ -27,7 +24,7 @@ from transformers import (
     set_seed,
 )
 
-from model_com_voice_extra import Wav2Vec2CommVoiceAgeModel
+from archive.model_com_voice_extra import Wav2Vec2CommVoiceAgeModel
 from processors import CustomWav2Vec2Processor
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
