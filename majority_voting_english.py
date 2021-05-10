@@ -25,9 +25,11 @@ class SpeechClassification:
         batch = {}
         speech_array, sampling_rate = torchaudio.load(file)
         speech_samples = []
+        sample_length = self.window_lenth * sampling_rate
         for i in range(self.number_of_windows):
-            start = random.randrange(0, (len(speech_array[0]) - self.window_length))
-            speech_samples.append(speech_array[0].numpy()[start:(start + self.window_length * sampling_rate)])
+            start = random.randrange(0, (len(speech_array[0]) - sample_length))
+            stop = start + sample_length
+            speech_samples.append(speech_array[0].numpy()[start:stop])
 
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
