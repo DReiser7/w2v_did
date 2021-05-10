@@ -27,7 +27,7 @@ class SpeechClassification:
         speech_samples = []
         for i in range(self.number_of_windows):
             start = random.randrange(0, (len(speech_array[0]) - self.window_length))
-            speech_samples.append(speech_array[0].numpy()[start:(start + self.window_length * srate)])
+            speech_samples.append(speech_array[0].numpy()[start:(start + self.window_length * sampling_rate)])
 
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
