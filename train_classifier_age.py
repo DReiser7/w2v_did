@@ -12,7 +12,7 @@ import torch
 import torchaudio
 import transformers
 from packaging import version
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, mean_squared_error, mean_absolute_error
 from torch import nn
 from transformers import (
     HfArgumentParser,
@@ -374,6 +374,20 @@ def main(model_args, data_args, training_args):
 
     from sklearn.metrics import classification_report, confusion_matrix
 
+    def macro_averaged_mean_absolute_error(y_true, y_pred):
+        c = np.unique(y_true)
+        c_len = len(c)
+
+        err = 0.0
+        for i in c:
+            idx = np.where(y_true == i)[0]
+            y_true_label = np.take(y_true, idx)
+            y_pred_label = np.take(y_pred, idx)
+
+            err = err + mean_absolute_error(y_true=y_true_label, y_pred=y_pred_label)
+
+        return err / c_len
+
     def compute_metrics(pred):
         label_idx = LABEL_IDX
         label_names = LABEL_NAMES
@@ -392,18 +406,12 @@ def main(model_args, data_args, training_args):
         wandb.log(
             {"precision_recall": wandb.plot.pr_curve(y_true=labels, y_probas=pred.predictions, labels=label_names)})
 
-        preds_nearest_neighbour_correct = np.copy(preds)
-        diffs = abs(labels-preds)
-        for i in range(len(labels)):
-            if diffs[i] == 1:
-                preds_nearest_neighbour_correct[i] = labels[i]
+        mse = mean_squared_error(y_true=labels, y_pred=preds)
+        mae = mean_absolute_error(y_true=labels, y_pred=preds)
 
-        f1_order = f1_score(labels, preds_nearest_neighbour_correct, average='macro')
+        maem = macro_averaged_mean_absolute_error(y_true=labels, y_pred=preds)
 
-        wandb.log(
-            {"conf_mat_with_order": wandb.plot.confusion_matrix(probs=None, y_true=labels, preds=preds_nearest_neighbour_correct, class_names=label_names)})
-
-        return {"accuracy": acc, "f1_score": f1, "f1_score_with_order": f1_order}
+        return {"accuracy": acc, "f1_score": f1, "MSE": mse, "MAE": mae, "MAE^M": maem}
 
     wandb.init(name=training_args.output_dir, config=training_args)
 
