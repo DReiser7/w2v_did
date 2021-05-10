@@ -331,7 +331,7 @@ def main():
     # We need to read the aduio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch, start_param, stop_param):
         speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[start_param:stop_param]
+        speech_array = speech_array[0].numpy()[(start_param * sampling_rate):(stop_param * sampling_rate)]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, S_RATE)
         batch["sampling_rate"] = S_RATE
         batch["parent"] = batch["label"]
@@ -345,7 +345,7 @@ def main():
     stop = 0
     for i in range(WINDOW_COUNT):
         start = 0 if i == 0 else stop
-        stop = start + SAMPLE_LENGTH
+        stop = start + WINDOW_LENGTH
         arguments = {'start_param': start, 'stop_param': stop}
         eval_dataset_array.append(eval_dataset.map(
             speech_file_to_array_fn,
