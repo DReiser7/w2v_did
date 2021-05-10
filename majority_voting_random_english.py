@@ -76,15 +76,20 @@ class SpeechClassification:
 
 if __name__ == "__main__":
 
-    data_path = "/cluster/home/fiviapas/data_Europarl/test-converted/wav/"
+    data_path = "/cluster/home/fiviapas/en-accents/test/"
     pathlist = Path(data_path).glob('**/*.mp3')
-    csv_path = "/cluster/home/fiviapas/data_Europarl/eval.csv"
+    csv_path = "/cluster/home/fiviapas/data_english/major-vote-eval-3s.csv"
 
     classifier = SpeechClassification(
-        path="/cluster/home/fiviapas/data_LID/model-saves/train-comvoice-b-16-s10/",
+        path="/cluster/home/fiviapas/data_english/model-saves/train-accents/1/5000",
         window_length=3,
         number_of_windows=3,
-        labels=['nl', 'es', 'it'])
+        labels=['us',
+               'australia',
+               'canada',
+               'england',
+               'indian',
+               'scotland'])
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
