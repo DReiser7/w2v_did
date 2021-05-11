@@ -28,7 +28,7 @@ dataset = dataset.map(map_to_array, remove_columns=["file"])
 
 import soundfile as sf
 
-class ComVoiceAgeCorpusConfig(datasets.BuilderConfig):
+class ComVoiceSpanishBinaryCorpusConfig(datasets.BuilderConfig):
     """BuilderConfig for DialectSpeechCorpusCorpus."""
 
     def __init__(self, **kwargs):
@@ -40,7 +40,7 @@ class ComVoiceAgeCorpusConfig(datasets.BuilderConfig):
           url: `string`, url for information about the data set
           **kwargs: keyword arguments forwarded to super.
         """
-        super(ComVoiceAgeCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
+        super(ComVoiceSpanishBinaryCorpusConfig, self).__init__(version=datasets.Version("2.1.0", ""), **kwargs)
 
 
 def map_to_array(batch):
@@ -49,11 +49,11 @@ def map_to_array(batch):
     batch["speech"] = speech_array
     return batch
 
-class ComVoiceAgeCorpus(datasets.GeneratorBasedBuilder):
+class ComVoiceSpanishBinaryCorpus(datasets.GeneratorBasedBuilder):
     """DialectSpeechCorpus dataset."""
 
     BUILDER_CONFIGS = [
-        ComVoiceAgeCorpusConfig(name="clean", description="'Clean' speech."),
+        ComVoiceSpanishBinaryCorpusConfig(name="clean", description="'Clean' speech."),
     ]
 
     def _info(self):
@@ -64,12 +64,8 @@ class ComVoiceAgeCorpus(datasets.GeneratorBasedBuilder):
                     "file": datasets.Value("string"),
                     "label": datasets.features.ClassLabel(
                         names=[
-                        'teens',
-                        'twenties',
-                        'thirties',
-                        'fourties',
-                        'fifties',
-                        'sixties-nineties',
+                        'hispanic-america',
+                        'spain'
                         ]
                     )
                 }
@@ -79,7 +75,7 @@ class ComVoiceAgeCorpus(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        archive_path = '/cluster/home/reisedom/data/german-age'
+        archive_path = '/cluster/home/reisedom/data/spanish-accents-test-aug-bin'
         return [
             datasets.SplitGenerator(name="train", gen_kwargs={"archive_path": os.path.join(archive_path, "train")}),
             datasets.SplitGenerator(name="test", gen_kwargs={"archive_path": os.path.join(archive_path, "test")}),
@@ -94,7 +90,7 @@ class ComVoiceAgeCorpus(datasets.GeneratorBasedBuilder):
 
         for _, c in enumerate(os.listdir(wav_dir)):
             if os.path.isdir(f'{wav_dir}/{c}/'):
-                for file in os.listdir(f'{wav_dir}/{c}/')[:4000]:
+                for file in os.listdir(f'{wav_dir}/{c}/')[:6000]:
                     if file.endswith('.mp3'):
                         wav_path = f'{wav_dir}/{c}/{file}'
                         paths.append(wav_path)
