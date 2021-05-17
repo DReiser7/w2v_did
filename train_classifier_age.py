@@ -482,7 +482,8 @@ if __name__ == "__main__":
     #     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
     number_of_samples = int(sys.argv[2])
+    run = sys.argv[3]
 
     data_args.max_train_samples = number_of_samples * NUMBER_OF_CLASSES
-    training_args.output_dir = training_args.output_dir + str(number_of_samples)
+    training_args.output_dir = training_args.output_dir + str(run)+ str(number_of_samples)
     main(model_args=model_args, data_args=data_args, training_args=training_args)
