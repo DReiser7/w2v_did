@@ -441,5 +441,8 @@ if __name__ == "__main__":
     print(str(WINDOW_LENGTH))
     print(str(WINDOW_COUNT))
 
-    training_args.output_dir = training_args.output_dir + str(WINDOW_LENGTH)
+    run = sys.argv[3]
+
+    model_args.model_name_or_path = model_args.model_name_or_path + str(run)
+    training_args.output_dir = training_args.output_dir + str(run) + str(WINDOW_LENGTH)
     main(model_args=model_args, data_args=data_args, training_args=training_args)
