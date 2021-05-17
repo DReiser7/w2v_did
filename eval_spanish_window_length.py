@@ -329,7 +329,7 @@ def main(model_args, data_args, training_args):
     def speech_file_to_array_fn(batch, start_param, stop_param):
         speech_array, sampling_rate = torchaudio.load(batch["file"])
 
-        if start_param * sampling_rate > len(speech_array[0]):
+        if start_param * sampling_rate >= len(speech_array[0]):
             batch["speech"] = np.asarray([0])
             batch["sampling_rate"] = S_RATE
             batch["parent"] = batch["label"]
