@@ -437,7 +437,7 @@ if __name__ == "__main__":
 
     WINDOW_LENGTH = int(sys.argv[2])
     WINDOW_COUNT = math.ceil(10 / WINDOW_LENGTH)
-    SAMPLE_LENGTH = WINDOW_LENGTH * S_RATE
+    SAMPLE_LENGTH = WINDOW_LENGTH * 48_000
     print(str(WINDOW_LENGTH))
     print(str(WINDOW_COUNT))
 
