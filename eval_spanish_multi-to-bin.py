@@ -329,24 +329,14 @@ def main(model_args, data_args, training_args):
         batch["parent"] = batch["label"]
         return batch
 
-    def filter_null(batch):
-        return not (batch['speech'] == np.array([0])).all()
 
-    eval_dataset_array = []
-    stop = 0
-    for i in range(WINDOW_COUNT):
-        start = 0 if i == 0 else stop
-        stop = start + SAMPLE_LENGTH
-        arguments = {'start_param': start, 'stop_param': stop}
-        eval_dataset_array.append(eval_dataset.map(
-            speech_file_to_array_fn,
-            remove_columns=eval_dataset.column_names,
-            num_proc=data_args.preprocessing_num_workers,
-            fn_kwargs=arguments
-
-        ).filter(filter_null))
-
-    eval_dataset = datasets.concatenate_datasets(eval_dataset_array)
+    arguments = {'start_param': 0, 'stop_param': 10}
+    eval_dataset = eval_dataset.map(
+        speech_file_to_array_fn,
+        remove_columns=eval_dataset.column_names,
+        num_proc=data_args.preprocessing_num_workers,
+        fn_kwargs=arguments
+    )
 
     def prepare_dataset(batch):
         # check that all files have the correct sampling rate
