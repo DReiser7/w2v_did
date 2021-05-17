@@ -42,9 +42,9 @@ LABEL_NAMES = ['spain',
                'hispanic-america']
 
 # Parametrized
-WINDOW_COUNT = 3
-WINDOW_LENGTH = 10
-SAMPLE_LENGTH = WINDOW_LENGTH * S_RATE
+SECONDS_STOP = 10
+S_RATE = 16_000
+SAMPLE_LENGTH = SECONDS_STOP * S_RATE
 
 ######################################################
 
@@ -321,21 +321,21 @@ def main(model_args, data_args, training_args):
 
     # Preprocessing the datasets.
     # We need to read the aduio files as arrays and tokenize the targets.
-    def speech_file_to_array_fn(batch, start_param, stop_param):
+    def speech_file_to_array_fn(batch):
+        start = 0
+        stop = SECONDS_STOP
+        srate = S_RATE
         speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[start_param:stop_param]
-        batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, S_RATE)
-        batch["sampling_rate"] = S_RATE
+        speech_array = speech_array[0].numpy()[:stop * sampling_rate]
+        batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
+        batch["sampling_rate"] = srate
         batch["parent"] = batch["label"]
         return batch
 
-
-    arguments = {'start_param': 0, 'stop_param': 10}
     eval_dataset = eval_dataset.map(
         speech_file_to_array_fn,
         remove_columns=eval_dataset.column_names,
-        num_proc=data_args.preprocessing_num_workers,
-        fn_kwargs=arguments
+        num_proc=data_args.preprocessing_num_workers
     )
 
     def prepare_dataset(batch):
