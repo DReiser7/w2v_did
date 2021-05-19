@@ -1,7 +1,7 @@
 import csv
 import random
 from pathlib import Path
-
+from sklearn.metrics import accuracy_score, f1_score
 import librosa
 import numpy as np
 import torch
@@ -114,13 +114,21 @@ if __name__ == "__main__":
             subdir = str(path.parent).replace('\\', '/').replace(data_path, '')
             prediction = classifier.classify(path)
 
+            label = path.parts[len(path.parts) - 2]
+
+            np.append(preds, dict_idx[prediction['x']])
+            np.append(labels, dict_idx[label])
+
             if subdir.find(prediction["x"]) == -1:
                 print(prediction)
                 print(str(path))
                 spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 spamwriter.writerow([prediction['x'], prediction[prediction['x']], str(path)])
 
-                print(path.parts)
+        acc = accuracy_score(labels, preds)
+        f1 = f1_score(labels, preds, average='macro')
 
-                np.append(preds, dict_idx[prediction['x']])
-                np.append(labels, dict_idx[prediction['x']])
+        print("accuracy: " + str(acc))
+        print("f1-score: " + str(f1))
+        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        spamwriter.writerow(['accuracy', acc, 'f1-score', f1])
