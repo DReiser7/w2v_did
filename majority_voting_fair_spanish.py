@@ -1,5 +1,6 @@
 import csv
 import random
+import sys
 from pathlib import Path
 from sklearn.metrics import accuracy_score, f1_score
 import librosa
@@ -78,16 +79,18 @@ class SpeechClassification:
 
 
 if __name__ == "__main__":
+    run = sys.argv[1]
+    window_length = sys.argv[2]
+    number_of_windows = sys.argv[3]
 
-    window_length = 1
-    number_of_windows = 8
+    model_path = "/cluster/home/reisedom/data_spanish/model-saves/max-samples/" + str(run)+"/4000"
 
-    data_path = "/cluster/home/reisedom/data/spanish-accents/test/"
+    data_path = "/cluster/home/reisedom/data/spanish-accents-test-aug/test/"
     pathlist = Path(data_path).glob('**/*.mp3')
-    csv_path = "/cluster/home/reisedom/data_spanish/major-vote-eval-" + str(window_length) + "s.csv"
+    csv_path = "/cluster/home/reisedom/data_spanish/major-vote-eval-" + str(window_length) + "s_run"+str(run)+".csv"
 
     classifier = SpeechClassification(
-        path="/cluster/home/fiviapas/data_spanish/model-saves/max-samples/1/4000",
+        path=model_path,
         window_length=window_length,
         number_of_windows=number_of_windows,
         labels=['nortepeninsular',
