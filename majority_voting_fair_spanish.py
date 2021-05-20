@@ -84,8 +84,8 @@ class SpeechClassification:
 
 if __name__ == "__main__":
     run = sys.argv[1]
-    window_length = sys.argv[2]
-    number_of_windows = sys.argv[3]
+    window_length = int(sys.argv[2])
+    number_of_windows = int(sys.argv[3])
 
     model_path = "/cluster/home/reisedom/data_spanish/model-saves/max-samples/" + str(run)+"/4000"
 
