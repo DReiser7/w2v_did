@@ -30,7 +30,7 @@ class SpeechClassification:
         batch = {}
         speech_array, sampling_rate = torchaudio.load(file)
         speech_samples = []
-        sample_length = self.window_lenth * sampling_rate
+        sample_length = self.window_length * sampling_rate
         stop = 0
         for i in range(self.number_of_windows):
             start = 0 if i == 0 else stop
