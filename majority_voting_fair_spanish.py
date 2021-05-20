@@ -7,6 +7,7 @@ import librosa
 import numpy as np
 import torch
 import torchaudio
+import wandb
 
 from archive.model_com_voice import Wav2Vec2CommVoice10sModel
 from processors import CustomWav2Vec2Processor
@@ -89,17 +90,19 @@ if __name__ == "__main__":
     pathlist = Path(data_path).glob('**/*.mp3')
     csv_path = "/cluster/home/reisedom/data_spanish/major-vote-eval-" + str(window_length) + "s_run"+str(run)+".csv"
 
-    classifier = SpeechClassification(
-        path=model_path,
-        window_length=window_length,
-        number_of_windows=number_of_windows,
-        labels=['nortepeninsular',
+    label_names = ['nortepeninsular',
                 'centrosurpeninsular',
                 'surpeninsular',
                 'rioplatense',
                 'caribe',
                 'andino',
-                'mexicano'])
+                'mexicano']
+
+    classifier = SpeechClassification(
+        path=model_path,
+        window_length=window_length,
+        number_of_windows=number_of_windows,
+        labels=label_names)
 
     dict_idx = {'nortepeninsular': 0,
                 'centrosurpeninsular': 1,
@@ -110,7 +113,9 @@ if __name__ == "__main__":
                 'mexicano': 6}
 
     preds = np.array([])
-    labels = np.array([])
+    labs = np.array([])
+
+    wandb.init(name=csv_path)
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
@@ -120,7 +125,7 @@ if __name__ == "__main__":
             label = path.parts[len(path.parts) - 2]
 
             np.append(preds, dict_idx[prediction['x']])
-            np.append(labels, dict_idx[label])
+            np.append(labs, dict_idx[label])
 
             if subdir.find(prediction["x"]) == -1:
                 print(prediction)
@@ -128,11 +133,14 @@ if __name__ == "__main__":
                 spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 spamwriter.writerow([prediction['x'], prediction[prediction['x']], str(path)])
 
-        acc = accuracy_score(labels, preds)
-        f1 = f1_score(labels, preds, average='macro')
+        acc = accuracy_score(labs, preds)
+        f1 = f1_score(labs, preds, average='macro')
 
         print("run: " + str(run) + " window_legth:" + window_length)
         print("accuracy: " + str(acc))
         print("f1-score: " + str(f1))
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(['accuracy', acc, 'f1-score', f1])
+
+        wandb.log(
+            {"conf_mat": wandb.plot.confusion_matrix(probs=None, y_true=labs, preds=preds, class_names=label_names)})
