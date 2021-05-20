@@ -80,6 +80,9 @@ class SpeechClassification:
             if value > max_value:
                 max_value = value
                 max_lbl = key
+        #pick on random vote if no max vote
+        if max_lbl == '':
+            max_lbl = random.choice(list(votes.keys()))
         return {'x': max_lbl, 'votes': max_value}
 
 
