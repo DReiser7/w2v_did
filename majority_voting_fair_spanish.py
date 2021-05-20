@@ -72,7 +72,7 @@ class SpeechClassification:
                 {"x": self.labels[top_lbls[0]], self.labels[top_lbls[0]]: format(float(top_prob[0]), '.2f')})
 
         for prediction in predictions:
-            votes[prediction['x']] = self.votes[prediction['x']] + 1
+            votes[prediction['x']] = votes[prediction['x']] + 1
 
         max_value = 0
         max_lbl = ''
