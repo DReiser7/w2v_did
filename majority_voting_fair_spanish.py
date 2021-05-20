@@ -143,7 +143,7 @@ if __name__ == "__main__":
         acc = accuracy_score(labs, preds)
         f1 = f1_score(labs, preds, average='macro')
 
-        print("run: " + str(run) + " window_legth:" + window_length)
+        print("run: " + str(run) + " window_legth:" + str(window_length))
         print("accuracy: " + str(acc))
         print("f1-score: " + str(f1))
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
