@@ -135,7 +135,7 @@ if __name__ == "__main__":
                 print(prediction)
                 print(str(path))
                 spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                spamwriter.writerow([prediction['x'], prediction[prediction['x']], str(path)])
+                spamwriter.writerow([prediction['x'], prediction['votes'], str(path)])
 
         acc = accuracy_score(labs, preds)
         f1 = f1_score(labs, preds, average='macro')
