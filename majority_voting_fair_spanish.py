@@ -9,14 +9,14 @@ import torch
 import torchaudio
 import wandb
 
-from archive.model_com_voice import Wav2Vec2CommVoice10sModel
+from models import Wav2VecClassifierModelMean2 as Wav2VecClassifierModel
 from processors import CustomWav2Vec2Processor
 
 
 class SpeechClassification:
 
     def __init__(self, path, window_length, number_of_windows, labels):
-        self.model = Wav2Vec2CommVoice10sModel.from_pretrained(path).to("cuda")
+        self.model = Wav2VecClassifierModel.from_pretrained(path).to("cuda")
         self.processor = CustomWav2Vec2Processor.from_pretrained(path)
 
     def classify(self, wav_file):
