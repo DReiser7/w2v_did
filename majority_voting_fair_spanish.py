@@ -38,9 +38,9 @@ class SpeechClassification:
             if start * sampling_rate < len(speech_array[0]):
                 speech = speech_array[0].numpy()[start:stop]
                 if not (speech == np.array([0])).all():  # skip empty sections
-                    speech_samples.append(speech)
+                    speech_samples.append(librosa.resample(np.asarray(speech), sampling_rate, srate))
 
-        batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
+        batch["speech"] = speech_samples
         batch["sampling_rate"] = srate
         return batch
 
