@@ -80,7 +80,7 @@ class SpeechClassification:
             if value > max_value:
                 max_value = value
                 max_lbl = key
-        #pick on random vote if no max vote
+        # pick on random vote if no max vote
         if max_lbl == '':
             max_lbl = random.choice(list(votes.keys()))
         return {'x': max_lbl, 'votes': max_value}
@@ -91,19 +91,19 @@ if __name__ == "__main__":
     window_length = int(sys.argv[2])
     number_of_windows = int(sys.argv[3])
 
-    model_path = "/cluster/home/reisedom/data_spanish/model-saves/max-samples/" + str(run)+"/4000"
+    model_path = "/cluster/home/reisedom/data_spanish/model-saves/max-samples/" + str(run) + "/4000"
 
     data_path = "/cluster/home/reisedom/data/spanish-accents-test-aug/test/"
     pathlist = Path(data_path).glob('**/*.mp3')
-    csv_path = "/cluster/home/reisedom/data_spanish/major-vote-eval-" + str(window_length) + "s_run"+str(run)+".csv"
+    csv_path = "/cluster/home/reisedom/data_spanish/major-vote-eval-" + str(window_length) + "s_run" + str(run) + ".csv"
 
     label_names = ['nortepeninsular',
-                'centrosurpeninsular',
-                'surpeninsular',
-                'rioplatense',
-                'caribe',
-                'andino',
-                'mexicano']
+                   'centrosurpeninsular',
+                   'surpeninsular',
+                   'rioplatense',
+                   'caribe',
+                   'andino',
+                   'mexicano']
 
     classifier = SpeechClassification(
         path=model_path,
@@ -119,8 +119,8 @@ if __name__ == "__main__":
                 'andino': 5,
                 'mexicano': 6}
 
-    preds = np.array([])
-    labs = np.array([])
+    preds = []
+    labs = []
 
     wandb.init(name=csv_path)
 
@@ -131,8 +131,8 @@ if __name__ == "__main__":
 
             label = path.parts[len(path.parts) - 2]
 
-            np.append(preds, dict_idx[prediction['x']])
-            np.append(labs, dict_idx[label])
+            preds.append(dict_idx[prediction['x']])
+            labs.append(dict_idx[label])
 
             if subdir.find(prediction["x"]) == -1:
                 print(prediction)
@@ -140,14 +140,18 @@ if __name__ == "__main__":
                 spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 spamwriter.writerow([prediction['x'], prediction['votes'], str(path)])
 
+        labs = np.array(labs)
+        pred = np.array(preds)
+
         acc = accuracy_score(labs, preds)
         f1 = f1_score(labs, preds, average='macro')
 
-        print("run: " + str(run) + " window_legth:" + str(window_length))
-        print("accuracy: " + str(acc))
-        print("f1-score: " + str(f1))
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(['accuracy', acc, 'f1-score', f1])
 
         wandb.log(
             {"conf_mat": wandb.plot.confusion_matrix(probs=None, y_true=labs, preds=preds, class_names=label_names)})
+
+        print("run: " + str(run) + " window_legth:" + str(window_length))
+        print("accuracy: " + str(acc))
+        print("f1-score: " + str(f1))
