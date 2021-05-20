@@ -35,9 +35,10 @@ class SpeechClassification:
         for i in range(self.number_of_windows):
             start = 0 if i == 0 else stop
             stop = start + sample_length
-            speech = speech_array[0].numpy()[start:stop]
-            if not (speech == np.array([0])).all():  # skip empty sections
-                speech_samples.append(speech)
+            if start * sampling_rate < len(speech_array[0]):
+                speech = speech_array[0].numpy()[start:stop]
+                if not (speech == np.array([0])).all():  # skip empty sections
+                    speech_samples.append(speech)
 
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
