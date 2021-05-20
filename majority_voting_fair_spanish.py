@@ -18,6 +18,9 @@ class SpeechClassification:
     def __init__(self, path, window_length, number_of_windows, labels):
         self.model = Wav2VecClassifierModel.from_pretrained(path).to("cuda")
         self.processor = CustomWav2Vec2Processor.from_pretrained(path)
+        self.window_length = window_length
+        self.number_of_windows = number_of_windows
+        self.labels = labels
 
     def classify(self, wav_file):
         return self.predict(self.load_file_to_data(wav_file),
