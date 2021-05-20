@@ -1,6 +1,6 @@
 {
-  "model_name_or_path": "/cluster/home/fiviapas/data_english/model-saves/train-accents/6k",
-  "output_dir": "/cluster/home/fiviapas/data_english/model-saves/train-accents/6k",
+  "model_name_or_path": "/cluster/home/fiviapas/data_english/model-saves/train-accents/",
+  "output_dir": "/cluster/home/fiviapas/data_english/model-saves/train-accents/",
   "cache_dir": "/cluster/home/fiviapas/data_english/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 8,
