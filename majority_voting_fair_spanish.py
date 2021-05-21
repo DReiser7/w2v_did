@@ -67,7 +67,11 @@ class SpeechClassification:
             input_values = feature.input_values.to("cuda")
             attention_mask = feature.attention_mask.to("cuda")
             with torch.no_grad():
-                outputs.append(model(input_values, attention_mask=attention_mask))
+                try:
+                    outputs.append(model(input_values, attention_mask=attention_mask))
+                except:
+                    print("inputvalueslength: " + len(input_values))
+                    print("test: " + str(input_values == np.array([0]).all()))
 
         softmax = torch.nn.Softmax(dim=-1)
         predictions = []
