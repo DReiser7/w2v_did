@@ -72,10 +72,13 @@ class SpeechClassification:
             predictions.append(
                 {"x": self.labels[top_lbls[0]], self.labels[top_lbls[0]]: format(float(top_prob[0]), '.2f')})
 
+        print('features' + str(len(features)))
+        print('predictions' + str(len(predictions)))
         for prediction in predictions:
             votes[prediction['x']] = votes[prediction['x']] + 1
 
-        max_lbl, max_value = max(votes.items(), key=operator.itemgetter(1))
+        max_entries = [(k, v) for k, v in votes.items() if v == max(votes.values())]
+        max_lbl, max_value = random.choice(max_entries)
 
         return {'x': max_lbl, 'votes': max_value, 'all_votes': votes}
 
