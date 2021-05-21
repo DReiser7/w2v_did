@@ -70,7 +70,7 @@ class SpeechClassification:
                 try:
                     outputs.append(model(input_values, attention_mask=attention_mask))
                 except RuntimeError:
-                    print("inputvalueslength: " + len(input_values))
+                    print("inputvalueslength: " + str(len(input_values)))
                     print("test: " + str(input_values == np.array([0]).all()))
 
         softmax = torch.nn.Softmax(dim=-1)
