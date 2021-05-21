@@ -69,7 +69,7 @@ class SpeechClassification:
             with torch.no_grad():
                 try:
                     outputs.append(model(input_values, attention_mask=attention_mask))
-                except:
+                except RuntimeError:
                     print("inputvalueslength: " + len(input_values))
                     print("test: " + str(input_values == np.array([0]).all()))
 
