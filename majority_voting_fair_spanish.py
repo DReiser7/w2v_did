@@ -36,7 +36,7 @@ class SpeechClassification:
         for i in range(self.number_of_windows):
             start = 0 if i == 0 else stop
             stop = start + sample_length
-            if start * sampling_rate < len(speech_array[0]):
+            if start < len(speech_array[0]):
                 speech = speech_array[0].numpy()[start:stop]
                 if not (speech == np.array([0])).all():  # skip empty sections
                     speech_samples.append(librosa.resample(np.asarray(speech), sampling_rate, srate))
@@ -72,8 +72,9 @@ class SpeechClassification:
             predictions.append(
                 {"x": self.labels[top_lbls[0]], self.labels[top_lbls[0]]: format(float(top_prob[0]), '.2f')})
 
-        print('features' + str(len(features)))
-        print('predictions' + str(len(predictions)))
+        print('speech ' + str(len(data['speech'])))
+        print('features ' + str(len(features)))
+        print('predictions ' + str(len(predictions)))
         for prediction in predictions:
             votes[prediction['x']] = votes[prediction['x']] + 1
 
