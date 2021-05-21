@@ -10,7 +10,7 @@ import torch
 import torchaudio
 import wandb
 
-from models import Wav2VecClassifierModelMean7 as Wav2VecClassifierModel
+from models import Wav2VecClassifierModelMean6 as Wav2VecClassifierModel
 from processors import CustomWav2Vec2Processor
 
 
