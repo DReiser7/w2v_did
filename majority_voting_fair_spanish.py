@@ -39,7 +39,7 @@ class SpeechClassification:
             stop = start + sample_length
             if start < len(speech_array[0]):
                 speech = speech_array[0].numpy()[start:stop]
-                if not (speech == np.array([0])).all():  # skip empty sections
+                if not (speech == np.array([0])).all() and len(speech) >= 0.1*sampling_rate:  # skip empty sections
                     speech_samples.append(librosa.resample(np.asarray(speech), sampling_rate, srate))
 
         batch["speech"] = speech_samples
@@ -70,7 +70,7 @@ class SpeechClassification:
                 try:
                     outputs.append(model(input_values, attention_mask=attention_mask))
                 except RuntimeError:
-                    print("inputvalueslength: " + str(len(input_values)))
+                    print("inputvalueslength: " + str(len(input_values[0])))
                     print("test: " + str(input_values == np.array([0]).all()))
 
         softmax = torch.nn.Softmax(dim=-1)
