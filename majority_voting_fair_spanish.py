@@ -33,7 +33,6 @@ class SpeechClassification:
         speech_samples = []
         sample_length = self.window_length * sampling_rate
         stop = 0
-        print("number of seconds: "+str(len(speech_array[0])/sampling_rate))
         for i in range(self.number_of_windows):
             start = 0 if i == 0 else stop
             stop = start + sample_length
@@ -52,15 +51,11 @@ class SpeechClassification:
         for lbl in self.labels:
             votes[lbl] = 0
 
-        print('speech ' + str(len(data['speech'])))
-
         features = []
         for speech in data['speech']:
             features.append(processor(speech,
                                       sampling_rate=data["sampling_rate"],
                                       return_tensors="pt"))
-
-        print('features ' + str(len(features)))
 
         outputs = []
         for feature in features:
@@ -81,8 +76,6 @@ class SpeechClassification:
             predictions.append(
                 {"x": self.labels[top_lbls[0]], self.labels[top_lbls[0]]: format(float(top_prob[0]), '.2f')})
 
-
-        print('predictions ' + str(len(predictions)))
         for prediction in predictions:
             votes[prediction['x']] = votes[prediction['x']] + 1
 
@@ -132,7 +125,6 @@ if __name__ == "__main__":
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
-            subdir = str(path.parent).replace('\\', '/').replace(data_path, '')
             prediction = classifier.classify(path)
 
             label = path.parts[len(path.parts) - 2]
@@ -140,11 +132,13 @@ if __name__ == "__main__":
             preds.append(dict_idx[prediction['x']])
             labs.append(dict_idx[label])
 
-            if subdir.find(prediction["x"]) == -1:
-                print(prediction)
-                print(str(path))
+            if label != prediction["x"]:
+                print("false: ", prediction)
                 spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 spamwriter.writerow([prediction['x'], prediction['votes'], str(path)])
+            else:
+                print("correct: ", prediction)
+
 
         labs = np.array(labs)
         pred = np.array(preds)
