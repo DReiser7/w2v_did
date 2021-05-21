@@ -62,7 +62,11 @@ class SpeechClassification:
             input_values = feature.input_values.to("cuda")
             attention_mask = feature.attention_mask.to("cuda")
             with torch.no_grad():
-                outputs.append(model(input_values, attention_mask=attention_mask))
+                try:
+                    outputs.append(model(input_values, attention_mask=attention_mask))
+                except RuntimeError:
+                    print("inputvalueslength: " + str(len(input_values[0])))
+                    print("test: " + str(input_values == np.array([0]).all()))
 
         softmax = torch.nn.Softmax(dim=-1)
         predictions = []
@@ -119,7 +123,6 @@ if __name__ == "__main__":
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
-            subdir = str(path.parent).replace('\\', '/').replace(data_path, '')
             prediction = classifier.classify(path)
 
             label = path.parts[len(path.parts) - 2]
@@ -127,11 +130,12 @@ if __name__ == "__main__":
             preds.append(dict_idx[prediction['x']])
             labs.append(dict_idx[label])
 
-            if subdir.find(prediction["x"]) == -1:
-                print(prediction)
-                print(str(path))
+            if label != prediction["x"]:
+                print("false: ", prediction)
                 spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 spamwriter.writerow([prediction['x'], prediction['votes'], str(path)])
+            else:
+                print("correct: ", prediction)
 
         labs = np.array(labs)
         pred = np.array(preds)
