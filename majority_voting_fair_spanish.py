@@ -1,4 +1,5 @@
 import csv
+import operator
 import random
 import sys
 from pathlib import Path
@@ -74,16 +75,9 @@ class SpeechClassification:
         for prediction in predictions:
             votes[prediction['x']] = votes[prediction['x']] + 1
 
-        max_value = 0
-        max_lbl = ''
-        for key, value in votes.items():
-            if value > max_value:
-                max_value = value
-                max_lbl = key
-        # pick on random vote if no max vote
-        if max_lbl == '':
-            max_lbl = random.choice(list(votes.keys()))
-        return {'x': max_lbl, 'votes': max_value}
+        max_lbl, max_value = max(votes.items(), key=operator.itemgetter(1))
+
+        return {'x': max_lbl, 'votes': max_value, 'all_votes': votes}
 
 
 if __name__ == "__main__":
