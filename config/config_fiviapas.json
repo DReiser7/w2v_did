@@ -6,7 +6,7 @@
   "num_train_epochs": 10,
   "per_device_train_batch_size": 8,
   "per_device_eval_batch_size": 12,
-  "preprocessing_num_workers": 8,
+  "preprocessing_num_workers": 3,
   "learning_rate": 3e-5,
   "warmup_steps": 20,
   "window_length": 20,
