@@ -6,7 +6,7 @@ import numpy as np
 import torch
 import torchaudio
 
-from models import Wav2VecClassifierModelMean5 as Wav2VecClassifierModel
+from models import Wav2VecClassifierModelMean2 as Wav2VecClassifierModel
 from archive.model_klaam import Wav2Vec2KlaamModel
 from processors import CustomWav2Vec2Processor
 
