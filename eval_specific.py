@@ -31,7 +31,7 @@ class SpeechClassification:
     def load_file_to_data(self, file, srate=16_000):
         batch = {}
         speech_array, sampling_rate = torchaudio.load(file)
-        speech_array = speech_array[0].numpy()[:10 * srate]
+        speech_array = speech_array[0].numpy()[:10 * sampling_rate]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
         return batch
