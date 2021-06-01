@@ -68,10 +68,10 @@ if __name__ == "__main__":
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
-            subdir = str(path.parent).replace('\\', '/').replace(data_path, '')
+            label = path.parts[len(path.parts) - 2]
             prediction = classifier.classify(path)
 
-            if subdir.find(prediction["x"]) == -1:
+            if label != prediction["x"]:
                 print(prediction)
                 print(str(path))
                 spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
