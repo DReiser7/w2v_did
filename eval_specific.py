@@ -67,9 +67,9 @@ if __name__ == "__main__":
 
     data_path = "/cluster/home/fiviapas/en-accents/test/"
     pathlist = Path(data_path).glob('**/*.mp3')
-    csv_path = "/cluster/home/fiviapas/data_english/eval_english_5000_1.csv"
+    csv_path = "/cluster/home/fiviapas/data_english/eval_english_5000_2.csv"
 
-    classifier = SpeechClassification(path="/cluster/home/fiviapas/data_english/model-saves/train-accents/1/5000/")
+    classifier = SpeechClassification(path="/cluster/home/fiviapas/data_english/model-saves/train-accents/2/5000/")
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
