@@ -79,5 +79,5 @@ if __name__ == "__main__":
             if label != prediction["x"]:
                 print(prediction)
                 print(str(path))
-                spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)ev
+                spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 spamwriter.writerow([prediction['x'], prediction[prediction['x']], str(path)])
