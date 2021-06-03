@@ -23,10 +23,9 @@ class SpeechClassification:
             self.model = Wav2VecClassifierModel.from_pretrained(dir).to("cuda")
             self.processor = CustomWav2Vec2Processor.from_pretrained(dir)
 
-
     def classify(self, wav_file):
         return self.predict(self.load_file_to_data(wav_file),
-                       self.model, self.processor)
+                            self.model, self.processor)
 
     def load_file_to_data(self, file, srate=16_000):
         batch = {}
@@ -50,7 +49,13 @@ class SpeechClassification:
         with torch.no_grad():
             outputs = model(input_values, attention_mask=attention_mask)
 
-        dialects = ['teens', 'twenties', 'thirties', 'fourties', 'fifties', 'sixties-nineties']
+        dialects = [
+            'us',
+            'australia',
+            'canada',
+            'england',
+            'indian',
+            'scotland']
 
         softmax = torch.nn.Softmax(dim=-1)
         probs = softmax(outputs['logits'])
@@ -76,6 +81,3 @@ if __name__ == "__main__":
                 print(str(path))
                 spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 spamwriter.writerow([prediction['x'], prediction[prediction['x']], str(path)])
-
-
-
