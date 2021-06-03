@@ -6,7 +6,7 @@ import numpy as np
 import torch
 import torchaudio
 
-from models import Wav2VecClassifierModelMean2 as Wav2VecClassifierModel
+from models import Wav2VecClassifierModelMean6 as Wav2VecClassifierModel
 from archive.model_klaam import Wav2Vec2KlaamModel
 from processors import CustomWav2Vec2Processor
 
@@ -50,7 +50,7 @@ class SpeechClassification:
         with torch.no_grad():
             outputs = model(input_values, attention_mask=attention_mask)
 
-        dialects = ['female', 'male']
+        dialects = ['teens', 'twenties', 'thirties', 'fourties', 'fifties', 'sixties-nineties']
 
         softmax = torch.nn.Softmax(dim=-1)
         probs = softmax(outputs['logits'])
@@ -60,11 +60,11 @@ class SpeechClassification:
 
 if __name__ == "__main__":
 
-    data_path = "/cluster/home/reisedom/data/german-sex/test/"
+    data_path = "/cluster/home/reisedom/data/german-age/test/"
     pathlist = Path(data_path).glob('**/*.mp3')
-    csv_path = "/cluster/home/reisedom/data_german/eval.csv"
+    csv_path = "/cluster/home/reisedom/data_german/eval_age_1.csv"
 
-    classifier = SpeechClassification(path="/cluster/home/reisedom/data_german/model-saves/sex/max-samples/2/4000/")
+    classifier = SpeechClassification(path="/cluster/home/reisedom/data_german/model-saves/age/max-samples-correct/1/4000/")
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
