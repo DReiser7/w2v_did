@@ -23,10 +23,9 @@ class SpeechClassification:
             self.model = Wav2VecClassifierModel.from_pretrained(dir).to("cuda")
             self.processor = CustomWav2Vec2Processor.from_pretrained(dir)
 
-
     def classify(self, wav_file):
         return self.predict(self.load_file_to_data(wav_file),
-                       self.model, self.processor)
+                            self.model, self.processor)
 
     def load_file_to_data(self, file, srate=16_000):
         batch = {}
@@ -54,8 +53,10 @@ class SpeechClassification:
 
         softmax = torch.nn.Softmax(dim=-1)
         probs = softmax(outputs['logits'])
-        top_prob, top_lbls = torch.topk(probs[0], 2)
-        return {"x": dialects[top_lbls[0]], dialects[top_lbls[0]]: format(float(top_prob[0]), '.2f')}
+        top_prob, top_lbls = torch.topk(probs[0], 3)
+        return {"x": dialects[top_lbls[0]], dialects[top_lbls[0]]: format(float(top_prob[0]), '.2f'),
+                "y": dialects[top_lbls[1]], dialects[top_lbls[1]]: format(float(top_prob[1]), '.2f'),
+                "z": dialects[top_lbls[2]], dialects[top_lbls[2]]: format(float(top_prob[2]), '.2f')}
 
 
 if __name__ == "__main__":
@@ -64,18 +65,17 @@ if __name__ == "__main__":
     pathlist = Path(data_path).glob('**/*.mp3')
     csv_path = "/cluster/home/reisedom/data_german/eval_age-sanity-1.csv"
 
-    classifier = SpeechClassification(path="/cluster/home/reisedom/data_german/model-saves/age/max-samples-correct/1/4000/")
+    classifier = SpeechClassification(
+        path="/cluster/home/reisedom/data_german/model-saves/age/max-samples-correct/1/4000/")
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
             label = path.parts[len(path.parts) - 2]
             prediction = classifier.classify(path)
 
-            if label != prediction["x"]:
-                print(prediction)
-                print(str(path))
-                spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                spamwriter.writerow([prediction['x'], prediction[prediction['x']], str(path)])
-
-
-
+            # if label != prediction["x"]:
+            print(prediction)
+            print(str(path))
+            spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            spamwriter.writerow([prediction['x'], prediction[prediction['x']], prediction['y'], prediction[
+                prediction['y']], prediction['z'], prediction[prediction['z']], str(path), str(label)])
