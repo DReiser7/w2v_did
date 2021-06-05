@@ -60,11 +60,11 @@ class SpeechClassification:
 
 if __name__ == "__main__":
 
-    data_path = "/cluster/home/reisedom/data/german-age/test/"
+    data_path = "/cluster/home/reisedom/data/sanity-age/"
     pathlist = Path(data_path).glob('**/*.mp3')
-    csv_path = "/cluster/home/reisedom/data_german/eval_age_3.csv"
+    csv_path = "/cluster/home/reisedom/data_german/eval_age-sanity-1.csv"
 
-    classifier = SpeechClassification(path="/cluster/home/reisedom/data_german/model-saves/age/max-samples-correct/3/4000/")
+    classifier = SpeechClassification(path="/cluster/home/reisedom/data_german/model-saves/age/max-samples-correct/1/4000/")
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
