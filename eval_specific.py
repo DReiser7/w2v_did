@@ -63,14 +63,15 @@ if __name__ == "__main__":
 
     data_path = "/cluster/home/reisedom/data/sanity-age/"
     pathlist = Path(data_path).glob('**/*.mp3')
-    csv_path = "/cluster/home/reisedom/data_german/eval_age-sanity-3.csv"
+    csv_path = "/cluster/home/reisedom/data_german/eval_age-sanity-1.csv"
 
     classifier = SpeechClassification(
-        path="/cluster/home/reisedom/data_german/model-saves/age/max-samples-correct/3/4000/")
+        path="/cluster/home/reisedom/data_german/model-saves/age/max-samples-correct/1/4000/")
 
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
             label = path.parts[len(path.parts) - 2]
+            file = path.parts[len(path.parts) - 1]
             prediction = classifier.classify(path)
 
             # if label != prediction["x"]:
@@ -78,4 +79,4 @@ if __name__ == "__main__":
             print(str(path))
             spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             spamwriter.writerow([prediction['x'], prediction[prediction['x']], prediction['y'], prediction[
-                prediction['y']], prediction['z'], prediction[prediction['z']], str(path), str(label)])
+                prediction['y']], prediction['z'], prediction[prediction['z']], str(file), str(label)])
