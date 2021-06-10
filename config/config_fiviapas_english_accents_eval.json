@@ -1,7 +1,7 @@
 {
-  "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/cluster/home/reisedom/data_LID/model-saves/train-comvoice5lang-b-16-s5/",
-  "cache_dir": "/cluster/home/reisedom/data_LID/cached/",
+  "model_name_or_path": "/cluster/home/fiviapas/data_english/model-saves/train-accents/",
+  "output_dir": "/cluster/home/fiviapas/data_english/model-saves/train-accents/",
+  "cache_dir": "/cluster/home/fiviapas/data_english/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 8,
   "per_device_train_batch_size": 16,
@@ -16,6 +16,5 @@
   "gradient_accumulation_steps": 1,
   "logging_steps": 300,
   "do_eval": true,
-  "do_train": true,
-  "max_val_samples": 5000
+  "do_train": false
 }

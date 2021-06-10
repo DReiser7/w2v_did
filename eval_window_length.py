@@ -4,17 +4,16 @@ import os
 import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
-import librosa
 
 import datasets
+import librosa
 import numpy as np
 import torch
 import torchaudio
-from packaging import version
-from torch import nn
-import wandb
-
 import transformers
+from packaging import version
+from sklearn.metrics import accuracy_score, f1_score
+from torch import nn
 from transformers import (
     HfArgumentParser,
     Trainer,
@@ -23,12 +22,27 @@ from transformers import (
     is_apex_available,
     set_seed,
 )
-
-from archive.model_com_voice import Wav2Vec2CommVoice10sModel
-from processors import CustomWav2Vec2Processor
-
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
-from sklearn.metrics import accuracy_score, f1_score
+
+import wandb
+from processors import CustomWav2Vec2Processor
+#######################################################
+#            GLOBALS TO MODIFY TRAINING
+#######################################################
+from models import Wav2VecClassifierModelMean2 as Wav2VecClassifierModel
+
+NUMBER_OF_CLASSES = 6  # has to fit Model!
+WINDOW_COUNT = 3
+WINDOW_LENGTH = 10
+S_RATE = 16_000
+SAMPLE_LENGTH = WINDOW_LENGTH * S_RATE
+CORPORA_PATH = "archive/dialect_speech_corpus"
+LABEL_IDX = [0, 1]
+LABEL_NAMES = ['EGY',
+               'GLF', ]
+
+
+######################################################
 
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
@@ -172,9 +186,9 @@ class DataCollatorCTCWithPadding:
 
     processor: CustomWav2Vec2Processor
     padding: Union[bool, str] = True
-    max_length: Optional[int] = 160000
+    max_length: Optional[int] = SAMPLE_LENGTH
     max_length_labels: Optional[int] = None
-    pad_to_multiple_of: Optional[int] = 160000
+    pad_to_multiple_of: Optional[int] = SAMPLE_LENGTH
     pad_to_multiple_of_labels: Optional[int] = None
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
@@ -184,7 +198,7 @@ class DataCollatorCTCWithPadding:
         input_features = [{"input_values": feature["input_values"]} for feature in features]
 
         def onehot(lbl):
-            onehot = [0] * 3
+            onehot = [0] * NUMBER_OF_CLASSES
             onehot[int(lbl)] = 1
             return onehot
 
@@ -296,16 +310,11 @@ def main():
     set_seed(training_args.seed)
 
     # Get the datasets:
+    eval_dataset = datasets.load_dataset(CORPORA_PATH, split="test", cache_dir=model_args.cache_dir)
 
-    train_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="test", cache_dir=model_args.cache_dir)
-
-    feature_extractor = Wav2Vec2FeatureExtractor(
-        feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
-    )
-    processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2CommVoice10sModel.from_pretrained(
-        "facebook/wav2vec2-large-xlsr-53",
+    processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path)
+    model = Wav2VecClassifierModel.from_pretrained(
+        model_args.model_name_or_path,
         attention_dropout=0.01,
         hidden_dropout=0.01,
         feat_proj_dropout=0.0,
@@ -314,38 +323,40 @@ def main():
         gradient_checkpointing=True,
     )
 
-    if model_args.freeze_feature_extractor:
-        model.freeze_feature_extractor()
-
-    if data_args.max_train_samples is not None:
-        train_dataset = train_dataset.select(range(data_args.max_train_samples))
-
     if data_args.max_val_samples is not None:
-        eval_dataset = eval_dataset.select(range(data_args.max_val_samples))
+        max_val_samples = min(data_args.max_val_samples, len(eval_dataset))
+        eval_dataset = eval_dataset.select(range(max_val_samples))
 
     # Preprocessing the datasets.
     # We need to read the aduio files as arrays and tokenize the targets.
-    def speech_file_to_array_fn(batch):
-        start = 0
-        stop = 10
-        srate = 16_000
+    def speech_file_to_array_fn(batch, start_param, stop_param):
         speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[:stop * sampling_rate]
-        batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
-        batch["sampling_rate"] = srate
+        speech_array = speech_array[0].numpy()[(start_param * sampling_rate):(stop_param * sampling_rate)]
+        batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, S_RATE)
+        batch["sampling_rate"] = S_RATE
         batch["parent"] = batch["label"]
         return batch
 
-    train_dataset = train_dataset.map(
-        speech_file_to_array_fn,
-        remove_columns=train_dataset.column_names,
-        num_proc=data_args.preprocessing_num_workers,
-    )
-    eval_dataset = eval_dataset.map(
-        speech_file_to_array_fn,
-        remove_columns=eval_dataset.column_names,
-        num_proc=data_args.preprocessing_num_workers,
-    )
+    def filter_null(batch):
+        return not (batch['speech'] == np.array([0])).all()
+
+
+    eval_dataset_array = []
+    stop = 0
+    for i in range(WINDOW_COUNT):
+        start = 0 if i == 0 else stop
+        stop = start + WINDOW_LENGTH
+        arguments = {'start_param': start, 'stop_param': stop}
+        eval_dataset_array.append(eval_dataset.map(
+            speech_file_to_array_fn,
+            remove_columns=eval_dataset.column_names,
+            num_proc=data_args.preprocessing_num_workers,
+            fn_kwargs=arguments
+
+        ).filter(filter_null))
+
+    eval_dataset = datasets.concatenate_datasets(eval_dataset_array)
+
 
     def prepare_dataset(batch):
         # check that all files have the correct sampling rate
@@ -356,13 +367,6 @@ def main():
         batch["labels"] = batch["parent"]
         return batch
 
-    train_dataset = train_dataset.map(
-        prepare_dataset,
-        remove_columns=train_dataset.column_names,
-        batch_size=training_args.per_device_train_batch_size,
-        batched=True,
-        num_proc=data_args.preprocessing_num_workers,
-    )
     eval_dataset = eval_dataset.map(
         prepare_dataset,
         remove_columns=eval_dataset.column_names,
@@ -374,8 +378,8 @@ def main():
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
-        label_idx = [0, 1, 2]
-        label_names = ['NLD', 'ESP', 'ITA']
+        label_idx = LABEL_IDX
+        label_names = LABEL_NAMES
         labels = pred.label_ids.argmax(-1)
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
@@ -404,35 +408,10 @@ def main():
         data_collator=data_collator,
         args=training_args,
         compute_metrics=compute_metrics,
-        train_dataset=train_dataset if training_args.do_train else None,
+        train_dataset=None,
         eval_dataset=eval_dataset if training_args.do_eval else None,
         tokenizer=processor.feature_extractor,
     )
-
-    # Training
-    if training_args.do_train:
-        if last_checkpoint is not None:
-            checkpoint = last_checkpoint
-        elif os.path.isdir(model_args.model_name_or_path):
-            checkpoint = model_args.model_name_or_path
-        else:
-            checkpoint = None
-        train_result = trainer.train(resume_from_checkpoint=checkpoint)
-        trainer.save_model()
-
-        # save the feature_extractor and the tokenizer
-        if is_main_process(training_args.local_rank):
-            processor.save_pretrained(training_args.output_dir)
-
-        metrics = train_result.metrics
-        max_train_samples = (
-            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
-        )
-        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
-
-        trainer.log_metrics("train", metrics)
-        trainer.save_metrics("train", metrics)
-        trainer.save_state()
 
     # Evaluation
     results = {}

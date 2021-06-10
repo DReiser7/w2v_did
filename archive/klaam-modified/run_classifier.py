@@ -2,33 +2,34 @@
 import logging
 import os
 import sys
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
-import librosa
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Union
 
 import datasets
+import librosa
 import numpy as np
+import pandas as pd
+import soundfile as sf
 import torch
 import torchaudio
-from packaging import version
-from torch import nn
-import wandb
-
 import transformers
+import wandb
+from packaging import version
+from sklearn.metrics import accuracy_score, f1_score
 from transformers import (
     HfArgumentParser,
-    Trainer,
     Wav2Vec2FeatureExtractor,
     TrainingArguments,
     is_apex_available,
     set_seed,
 )
-
-from archive.model_com_voice import Wav2Vec2CommVoice10sModel
-from processors import CustomWav2Vec2Processor
-
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
-from sklearn.metrics import accuracy_score, f1_score
+
+from ArgumentParser import ModelArguments, DataTrainingArguments
+from DidTrainer import DidTrainer
+from archive.model_klaam import Wav2Vec2KlaamModel
+from models import Wav2Vec2ClassificationModel
+from processors import CustomWav2Vec2Processor
 
 os.environ['WANDB_PROJECT'] = 'w2v_did'
 os.environ['WANDB_LOG_MODEL'] = 'true'
@@ -40,108 +41,6 @@ if version.parse(torch.__version__) >= version.parse("1.6"):
     _is_native_amp_available = True
 
 logger = logging.getLogger(__name__)
-
-
-def list_field(default=None, metadata=None):
-    return field(default_factory=lambda: default, metadata=metadata)
-
-
-@dataclass
-class ModelArguments:
-    """
-    Arguments pertaining to which model/config/tokenizer we are going to fine-tune from.
-    """
-
-    model_name_or_path: str = field(
-        metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
-    )
-    device: Optional[str] = field(
-        default='cuda', metadata={"help": "The device on which to run)."}
-    )
-    cache_dir: Optional[str] = field(
-        default=None,
-        metadata={"help": "Where do you want to store the pretrained models downloaded from huggingface.co"},
-    )
-    freeze_feature_extractor: Optional[bool] = field(
-        default=True, metadata={"help": "Whether to freeze the feature extractor layers of the model."}
-    )
-    attention_dropout: Optional[float] = field(
-        default=0.1, metadata={"help": "The dropout ratio for the attention probabilities."}
-    )
-    activation_dropout: Optional[float] = field(
-        default=0.1, metadata={"help": "The dropout ratio for activations inside the fully connected layer."}
-    )
-    hidden_dropout: Optional[float] = field(
-        default=0.1,
-        metadata={
-            "help": "The dropout probabilitiy for all fully connected layers in the embeddings, encoder, and pooler."
-        },
-    )
-    feat_proj_dropout: Optional[float] = field(
-        default=0.1,
-        metadata={"help": "The dropout probabilitiy for all 1D convolutional layers in feature extractor."},
-    )
-    mask_time_prob: Optional[float] = field(
-        default=0.05,
-        metadata={
-            "help": "Propability of each feature vector along the time axis to be chosen as the start of the vector"
-                    "span to be masked. Approximately ``mask_time_prob * sequence_length // mask_time_length`` feature"
-                    "vectors will be masked along the time axis. This is only relevant if ``apply_spec_augment is True``."
-        },
-    )
-    gradient_checkpointing: Optional[bool] = field(
-        default=True,
-        metadata={
-            "help": "If True, use gradient checkpointing to save memory at the expense of slower backward pass."
-        },
-    )
-    layerdrop: Optional[float] = field(default=0.0, metadata={"help": "The LayerDrop probability."})
-
-
-@dataclass
-class DataTrainingArguments:
-    """
-    Arguments pertaining to what data we are going to input our model for training and eval.
-
-    Using `HfArgumentParser` we can turn this class
-    into argparse arguments to be able to specify them on
-    the command line.
-    """
-
-    dataset_config_name: Optional[str] = field(
-        default=None, metadata={"help": "The configuration name of the dataset to use (via the datasets library)."}
-    )
-    train_split_name: Optional[str] = field(
-        default="train+validation",
-        metadata={
-            "help": "The name of the training data set split to use (via the datasets library). Defaults to 'train'"
-        },
-    )
-    overwrite_cache: bool = field(
-        default=False, metadata={"help": "Overwrite the cached preprocessed datasets or not."}
-    )
-    preprocessing_num_workers: Optional[int] = field(
-        default=None,
-        metadata={"help": "The number of processes to use for the preprocessing."},
-    )
-    max_train_samples: Optional[int] = field(
-        default=None,
-        metadata={
-            "help": "For debugging purposes or quicker training, truncate the number of training examples to this "
-                    "value if set."
-        },
-    )
-    max_val_samples: Optional[int] = field(
-        default=None,
-        metadata={
-            "help": "For debugging purposes or quicker training, truncate the number of validation examples to this "
-                    "value if set."
-        },
-    )
-    chars_to_ignore: List[str] = list_field(
-        default=[",", "?", ".", "!", "-", ";", ":", '""', "%", "'", '"', "�"],
-        metadata={"help": "A list of characters to remove from the transcripts."},
-    )
 
 
 @dataclass
@@ -176,6 +75,7 @@ class DataCollatorCTCWithPadding:
     max_length_labels: Optional[int] = None
     pad_to_multiple_of: Optional[int] = 160000
     pad_to_multiple_of_labels: Optional[int] = None
+    number_of_labels: Optional[int] = 5
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
         # split inputs and labels since they have to be of different lenghts and need
@@ -184,7 +84,7 @@ class DataCollatorCTCWithPadding:
         input_features = [{"input_values": feature["input_values"]} for feature in features]
 
         def onehot(lbl):
-            onehot = [0] * 3
+            onehot = [0] * self.number_of_labels
             onehot[int(lbl)] = 1
             return onehot
 
@@ -206,48 +106,6 @@ class DataCollatorCTCWithPadding:
         return batch
 
 
-class CTCTrainer(Trainer):
-    def training_step(self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
-        """
-        Perform a training step on a batch of inputs.
-
-        Subclass and override to inject custom behavior.
-
-        Args:
-            model (:obj:`nn.Module`):
-                The model to train.
-            inputs (:obj:`Dict[str, Union[torch.Tensor, Any]]`):
-                The inputs and targets of the model.
-
-                The dictionary will be unpacked before being fed to the model. Most models expect the targets under the
-                argument :obj:`labels`. Check your model's documentation for all accepted arguments.
-
-        Return:
-            :obj:`torch.Tensor`: The tensor with training loss on this batch.
-        """
-
-        model.train()
-        inputs = self._prepare_inputs(inputs)
-        loss = self.compute_loss(model, inputs)
-
-        if self.args.gradient_accumulation_steps > 1:
-            loss = loss / self.args.gradient_accumulation_steps
-
-        loss.backward()
-
-        return loss.detach()
-
-    def compute_loss(self, model, inputs, return_outputs=False):
-        # labels = inputs.pop("labels").to('cuda')
-        labels = inputs['labels'].to('cuda')
-        outputs = model(**inputs)  # torch.Size([32, 5])
-        loss_fct = torch.nn.CrossEntropyLoss()
-        loss = loss_fct(outputs['logits'],
-                        labels.argmax(-1).long())
-
-        return (loss, outputs) if return_outputs else loss
-
-
 def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
@@ -259,7 +117,8 @@ def main():
         # let's parse it to get our arguments.
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
-        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+        exit(1)
+
     # Detecting last checkpoint.
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
@@ -297,22 +156,39 @@ def main():
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="test", cache_dir=model_args.cache_dir)
+    labels_csv = pd.read_csv(data_args.labels_csv)
+    label_idx = []
+    label_names = []
+    for i in range(0, len(labels_csv)):
+        label_idx.append(labels_csv.iloc[i, 0])
+        label_names.append(labels_csv.iloc[i, 1])
+
+    train_dataset = datasets.load_dataset("DidDataset.py", data_dir=data_args.data_path, split="train",
+                                          data_files={'labels_csv': data_args.labels_csv},
+                                          cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("DidDataset.py", data_dir=data_args.data_path, split="test",
+                                         data_files={'labels_csv': data_args.labels_csv},
+                                         cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
-    processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2CommVoice10sModel.from_pretrained(
-        "facebook/wav2vec2-large-xlsr-53",
-        attention_dropout=0.01,
-        hidden_dropout=0.01,
-        feat_proj_dropout=0.0,
-        mask_time_prob=0.05,
-        layerdrop=0.01,
-        gradient_checkpointing=True,
-    )
+
+    if model_args.model_name_or_path == "facebook/wav2vec2-large-xlsr-53":
+        processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
+        model = Wav2Vec2ClassificationModel.from_pretrained(
+            model_args.model_name_or_path,
+            attention_dropout=0.01,
+            hidden_dropout=0.01,
+            feat_proj_dropout=0.0,
+            mask_time_prob=0.05,
+            layerdrop=0.01,
+            gradient_checkpointing=True,
+        )
+        model.build_layers(window_length=data_args.window_length, output_size=len(label_idx))
+    else:
+        processor = CustomWav2Vec2Processor.from_pretrained(model_args.model_name_or_path)
+        model = Wav2Vec2KlaamModel.from_pretrained(model_args.model_name_or_path).to("cuda")
 
     if model_args.freeze_feature_extractor:
         model.freeze_feature_extractor()
@@ -324,13 +200,16 @@ def main():
         eval_dataset = eval_dataset.select(range(data_args.max_val_samples))
 
     # Preprocessing the datasets.
-    # We need to read the aduio files as arrays and tokenize the targets.
+    # We need to read the audio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch):
         start = 0
-        stop = 10
+        stop = data_args.window_length
         srate = 16_000
-        speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[:stop * sampling_rate]
+        if batch["file"].endswith('.wav'):
+            speech_array, sampling_rate = sf.read(batch["file"], start=start * srate, stop=stop * srate)
+        elif batch["file"].endswith('.mp3'):
+            speech_array, sampling_rate = torchaudio.load(batch["file"])
+            speech_array = speech_array[0].numpy()[:stop * srate]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
         batch["parent"] = batch["label"]
@@ -374,8 +253,6 @@ def main():
     from sklearn.metrics import classification_report, confusion_matrix
 
     def compute_metrics(pred):
-        label_idx = [0, 1, 2]
-        label_names = ['NLD', 'ESP', 'ITA']
         labels = pred.label_ids.argmax(-1)
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)
@@ -387,19 +264,22 @@ def main():
 
         wandb.log(
             {"conf_mat": wandb.plot.confusion_matrix(probs=None, y_true=labels, preds=preds, class_names=label_names)})
-
-        wandb.log(
-            {"precision_recall": wandb.plot.pr_curve(y_true=labels, y_probas=pred.predictions, labels=label_names)})
+        # wandb.sklearn.plot_confusion_matrix(labels, preds, label_names)
+        # wandb.sklearn.plot_precision_recall(labels, preds)
 
         return {"accuracy": acc, "f1_score": f1}
 
     wandb.init(name=training_args.output_dir, config=training_args)
 
     # Data collator
-    data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
+    data_collator = DataCollatorCTCWithPadding(processor=processor,
+                                               padding=True,
+                                               max_length=(data_args.window_length * 16000),
+                                               pad_to_multiple_of=(data_args.window_length * 16000),
+                                               number_of_labels=len(label_idx))
 
     # Initialize our Trainer
-    trainer = CTCTrainer(
+    trainer = DidTrainer(
         model=model,
         data_collator=data_collator,
         args=training_args,
@@ -409,6 +289,7 @@ def main():
         tokenizer=processor.feature_extractor,
     )
 
+    print("Window_lenght: " + str(data_args.window_length))
     # Training
     if training_args.do_train:
         if last_checkpoint is not None:

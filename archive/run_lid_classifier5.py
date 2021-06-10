@@ -24,7 +24,7 @@ from transformers import (
     set_seed,
 )
 
-from archive.model_com_voice import Wav2Vec2CommVoice10sModel
+from archive.model_com_voice5 import Wav2Vec2CommVoice5Lang10sModel
 from processors import CustomWav2Vec2Processor
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
@@ -172,9 +172,9 @@ class DataCollatorCTCWithPadding:
 
     processor: CustomWav2Vec2Processor
     padding: Union[bool, str] = True
-    max_length: Optional[int] = 160000
+    max_length: Optional[int] = 80000
     max_length_labels: Optional[int] = None
-    pad_to_multiple_of: Optional[int] = 160000
+    pad_to_multiple_of: Optional[int] = 80000
     pad_to_multiple_of_labels: Optional[int] = None
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
@@ -297,14 +297,14 @@ def main():
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="test", cache_dir=model_args.cache_dir)
+    train_dataset = datasets.load_dataset("../corpora/com_voice_speech_corpus", split="train", cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("../corpora/com_voice_speech_corpus", split="test", cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2CommVoice10sModel.from_pretrained(
+    model = Wav2Vec2CommVoice5Lang10sModel.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
@@ -327,10 +327,10 @@ def main():
     # We need to read the aduio files as arrays and tokenize the targets.
     def speech_file_to_array_fn(batch):
         start = 0
-        stop = 10
+        stop = 5
         srate = 16_000
         speech_array, sampling_rate = torchaudio.load(batch["file"])
-        speech_array = speech_array[0].numpy()[:stop * sampling_rate]
+        speech_array = speech_array[0].numpy()[:stop * srate]
         batch["speech"] = librosa.resample(np.asarray(speech_array), sampling_rate, srate)
         batch["sampling_rate"] = srate
         batch["parent"] = batch["label"]

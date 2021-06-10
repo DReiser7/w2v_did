@@ -24,7 +24,7 @@ from transformers import (
     set_seed,
 )
 
-from archive.model_com_voice import Wav2Vec2CommVoice10sModel
+from archive.model_com_voice_extra import Wav2Vec2CommVoiceAccentModel
 from processors import CustomWav2Vec2Processor
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
@@ -297,14 +297,14 @@ def main():
 
     # Get the datasets:
 
-    train_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="train", cache_dir=model_args.cache_dir)
-    eval_dataset = datasets.load_dataset("corpora/com_voice_speech_corpus", split="test", cache_dir=model_args.cache_dir)
+    train_dataset = datasets.load_dataset("corpora/com_voice_accent_corpus", split="train", cache_dir=model_args.cache_dir)
+    eval_dataset = datasets.load_dataset("corpora/com_voice_accent_corpus", split="test", cache_dir=model_args.cache_dir)
 
     feature_extractor = Wav2Vec2FeatureExtractor(
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2CommVoice10sModel.from_pretrained(
+    model = Wav2Vec2CommVoiceAccentModel.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
@@ -375,7 +375,7 @@ def main():
 
     def compute_metrics(pred):
         label_idx = [0, 1, 2]
-        label_names = ['NLD', 'ESP', 'ITA']
+        label_names = ['austria', 'germany', 'switzerland']
         labels = pred.label_ids.argmax(-1)
         preds = pred.predictions.argmax(-1)
         acc = accuracy_score(labels, preds)

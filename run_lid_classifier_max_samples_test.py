@@ -24,7 +24,7 @@ from transformers import (
     set_seed,
 )
 
-from archive.model_com_voice import Wav2Vec2CommVoice10sModel
+from archive.model_com_voice import Wav2Vec2CommVoiceMeanModel
 from processors import CustomWav2Vec2Processor
 
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
@@ -207,6 +207,7 @@ class DataCollatorCTCWithPadding:
 
 
 class CTCTrainer(Trainer):
+
     def training_step(self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
         """
         Perform a training step on a batch of inputs.
@@ -248,18 +249,7 @@ class CTCTrainer(Trainer):
         return (loss, outputs) if return_outputs else loss
 
 
-def main():
-    # See all possible arguments in src/transformers/training_args.py
-    # or by passing the --help flag to this script.
-    # We now keep distinct sets of args, for a cleaner separation of concerns.
-
-    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
-    if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
-        # If we pass only one argument to the script and it's the path to a json file,
-        # let's parse it to get our arguments.
-        model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
-    else:
-        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+def main(model_args, data_args, training_args):
     # Detecting last checkpoint.
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
@@ -304,7 +294,7 @@ def main():
         feature_size=1, sampling_rate=16_000, padding_value=0.0, do_normalize=True, return_attention_mask=True
     )
     processor = CustomWav2Vec2Processor(feature_extractor=feature_extractor)
-    model = Wav2Vec2CommVoice10sModel.from_pretrained(
+    model = Wav2Vec2CommVoiceMeanModel.from_pretrained(
         "facebook/wav2vec2-large-xlsr-53",
         attention_dropout=0.01,
         hidden_dropout=0.01,
@@ -393,7 +383,7 @@ def main():
 
         return {"accuracy": acc, "f1_score": f1}
 
-    wandb.init(name=training_args.output_dir, config=training_args)
+    runs = wandb.init(name=training_args.output_dir, config=training_args, reinit=True)
 
     # Data collator
     data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
@@ -435,7 +425,6 @@ def main():
         trainer.save_state()
 
     # Evaluation
-    results = {}
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
         metrics = trainer.evaluate()
@@ -445,8 +434,26 @@ def main():
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
 
-    return results
+    runs.finish()
 
 
 if __name__ == "__main__":
-    main()
+    # See all possible arguments in src/transformers/training_args.py
+    # or by passing the --help flag to this script.
+    # We now keep distinct sets of args, for a cleaner separation of concerns.
+
+    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
+    # if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
+        # If we pass only one argument to the script and it's the path to a json file,
+        # let's parse it to get our arguments.
+    model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
+    # else:
+    #     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+    number_of_samples = int(sys.argv[2])
+
+    data_args.max_train_samples = number_of_samples * 3
+    training_args.output_dir = training_args.output_dir + str(number_of_samples)
+    main(model_args=model_args, data_args=data_args, training_args=training_args)
+
+

@@ -1,6 +1,6 @@
 {
-  "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/cluster/home/reisedom/data/klaam-flexible-first_20s",
+  "model_name_or_path": "/cluster/home/reisedom/data/exp_batch_size_16_augmented_20s/",
+  "output_dir": "/cluster/home/reisedom/data/exp_batch_size_16_augmented_20s/",
   "cache_dir": "/cluster/home/reisedom/data/data_dir/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 10,
@@ -17,5 +17,5 @@
   "gradient_accumulation_steps": 2,
   "eval_accumulation_steps": 2,
   "do_eval": true,
-  "do_train": true
+  "do_train": false
 }

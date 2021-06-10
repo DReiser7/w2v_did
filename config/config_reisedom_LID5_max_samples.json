@@ -1,6 +1,6 @@
 {
   "model_name_or_path": "facebook/wav2vec2-large-xlsr-53",
-  "output_dir": "/cluster/home/reisedom/data_LID/model-saves/train-comvoice5lang-b-16-s5/",
+  "output_dir": "/cluster/home/reisedom/data_LID/model-saves/comvoice5lang-mean-b16-e8-samples/2/",
   "cache_dir": "/cluster/home/reisedom/data_LID/cached/",
   "freeze_feature_extractor": true,
   "num_train_epochs": 8,
