@@ -74,6 +74,7 @@ if __name__ == "__main__":
     with open(csv_path, 'w', newline='') as csvfile:
         for path in pathlist:
             label = path.parts[len(path.parts) - 2]
+            file = path.parts[len(path.parts) - 1]
             prediction = classifier.classify(path)
 
             if label != prediction["x"]:

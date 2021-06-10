@@ -4,7 +4,7 @@ train_tsv = 'C:/Users/domin/Downloads/cv-corpus-6.1-2020-12-11/en/train.tsv'
 test_tsv = 'C:/Users/domin/Downloads/cv-corpus-6.1-2020-12-11/en/test.tsv'
 dev_tsv = 'C:/Users/domin/Downloads/cv-corpus-6.1-2020-12-11/en/dev.tsv'
 
-files_to_check = 'C:/workspaces/BA/Corpora/eval_english_5000_2.csv'
+files_to_check = 'C:/workspaces/BA/Corpora/eval_english_5000_3.csv'
 
 train = pd.read_table(train_tsv, sep='\t')
 test = pd.read_table(test_tsv, sep='\t')
