@@ -52,11 +52,11 @@ class SpeechClassification:
 if __name__ == '__main__':
     classifier = SpeechClassification(path="/cluster/home/reisedom/data_german/model-saves/sex/max-samples/2/4000/")
     bot = telebot.TeleBot("1279015836:AAEQXV5w70Z7fpijHcfL7ACBikuZvRrlWz4")
-
+    path = "/cluster/home/reisedom/data_german/bot_inputs/"
 
     @bot.message_handler(commands=['start', 'help'])
     def send_welcome(message):
-        bot.reply_to(message, "Hi, please send me your voice so I can determine your sex.")
+        bot.reply_to(message, "Hi, please send me your voice so I can identify your sex.")
 
 
     @bot.message_handler(func=lambda message: True)
@@ -69,7 +69,6 @@ if __name__ == '__main__':
         file_info = bot.get_file(message.voice.file_id)
         downloaded_file = bot.download_file(file_info.file_path)
 
-        path = "C:/temp/"
         file_name = message.chat.first_name + message.chat.last_name + str(message.id)
         file_ending = ".mp3"
 
