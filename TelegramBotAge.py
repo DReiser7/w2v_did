@@ -51,6 +51,7 @@ class SpeechClassification:
 if __name__ == '__main__':
     classifier = SpeechClassification(path="/cluster/home/reisedom/data_german/model-saves/age/max-samples-correct/3/4000/")
     bot = telebot.TeleBot("1853091605:AAEvSc0m1OA0o1hbajwIBdg1wrESeVxUyLE")
+    print("bot started ...")
     path = "/cluster/home/reisedom/data_german/bot_age_inputs/"
 
     @bot.message_handler(commands=['start', 'help'])
@@ -84,4 +85,4 @@ if __name__ == '__main__':
 
 
     bot.polling()
-    print("bot started ...")
+    print("bot stopped ...")
