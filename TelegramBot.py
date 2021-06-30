@@ -1,3 +1,4 @@
+# pip install pyTelegramBotAPI
 import telebot
 import librosa
 import numpy as np
@@ -52,7 +53,7 @@ class SpeechClassification:
 if __name__ == '__main__':
     classifier = SpeechClassification(path="/cluster/home/reisedom/data_german/model-saves/sex/max-samples/2/4000/")
     bot = telebot.TeleBot("1279015836:AAEQXV5w70Z7fpijHcfL7ACBikuZvRrlWz4")
-    path = "/cluster/home/reisedom/data_german/bot_inputs/"
+    path = "/cluster/home/reisedom/data_german/bot_sex_inputs/"
 
     @bot.message_handler(commands=['start', 'help'])
     def send_welcome(message):
