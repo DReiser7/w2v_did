@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     @bot.message_handler(func=lambda message: True)
     def echo_all(message):
-        bot.reply_to(message, message.text)
+        bot.reply_to(message, "Please send me your voice so I can identify your sex.")
 
 
     @bot.message_handler(content_types=['voice'])
@@ -73,13 +73,16 @@ if __name__ == '__main__':
         file_ending = ".mp3"
 
         full_path = path + file_name + file_ending
+        print("received file: " + full_path)
 
         with open(full_path, 'wb') as new_file:
             new_file.write(downloaded_file)
 
         prediction = classifier.classify(full_path)
+        print("identified file " + full_path + " as: " + prediction['x'])
 
         bot.reply_to(message, "Thanks, by you voice I think you are " + prediction["x"] + ".")
 
 
     bot.polling()
+    print("bot started ...")
