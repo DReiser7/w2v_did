@@ -69,8 +69,7 @@ if __name__ == '__main__':
         file_info = bot.get_file(message.voice.file_id)
         downloaded_file = bot.download_file(file_info.file_path)
 
-        file_name = message.chat.first_name + (str(message.last_name) if message.last_name else "_unknown") + (
-            str(message.id) if message.id else "_unknown")
+        file_name = message.chat.first_name + (str(message.id) if message.id else "_unknown")
         file_ending = ".mp3"
 
         full_path = path + file_name + file_ending
